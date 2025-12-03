@@ -23,15 +23,7 @@ PixTab 是一款轻量级 Chrome/Chromium 扩展，可在新标签页显示来�
 
 ## 安装方法
 
-### 方式一：从 Release 安装（推荐）
-
-1. 前往 [Releases](https://github.com/cloud-oc/PixTab/releases) 页面。
-2. 下载最新的 `.crx` 文件。
-3. 在浏览器中打开 `chrome://extensions`。
-4. 启用 **开发者模式**。
-5. 将 `.crx` 文件拖放到扩展页面中。
-
-### 方式二：加载已解压的扩展
+> **注意**：本扩展暂未上架 Chrome Web Store，请按以下步骤手动安装。
 
 1. 克隆或下载本仓库。
 2. 在浏览器中打开 `chrome://extensions`。

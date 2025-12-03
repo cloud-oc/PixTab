@@ -23,15 +23,7 @@ PixTab is a lightweight Chrome/Chromium extension that displays Pixiv artworks o
 
 ## Installation
 
-### Option 1: Install from Release (Recommended)
-
-1. Go to the [Releases](https://github.com/cloud-oc/PixTab/releases) page.
-2. Download the latest `.crx` file.
-3. Open `chrome://extensions` in your browser.
-4. Enable **Developer mode**.
-5. Drag and drop the `.crx` file into the extensions page.
-
-### Option 2: Load Unpacked
+> **Note**: This extension is not listed on the Chrome Web Store. Please install it manually using the steps below.
 
 1. Clone or download this repository.
 2. Open `chrome://extensions` in your browser.
