@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             feature6Desc: '无冗余依赖，新标签页秒开，不拖慢你的浏览体验。',
             license: 'Released under MIT License.',
             designed: 'Designed for Chrome & Edge.',
-            typeText: '科技 · 纯净 · 陪伴'
+            typeText: '在 Chromium 浏览器的新标签页展示 Pixiv 插画'
         },
         en: {
             description: 'Enjoy beautiful Pixiv artworks every time you open a new tab.<br>Multiple rankings, keyword search, bookmark filtering — create your own wallpaper experience.',
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             feature6Desc: 'No bloat. New tabs open instantly without slowing your browsing.',
             license: 'Released under MIT License.',
             designed: 'Designed for Chrome & Edge.',
-            typeText: 'Tech · Pure · Companion'
+            typeText: 'Bring Pixiv artworks to the new tab of your Chromium browser.'
         },
         ja: {
             description: '新しいタブを開くたびに、Pixiv の厳選イラストを楽しめます。<br>多彩なランキング、キーワード検索、ブックマーク数フィルタで、あなただけの壁紙体験を。',
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             feature6Desc: '無駄な依存なし。新しいタブが瞬時に開き、ブラウジングを遅くしません。',
             license: 'MIT License で公開。',
             designed: 'Chrome & Edge 向けにデザイン。',
-            typeText: 'テクノロジー · ピュア · コンパニオン'
+            typeText: 'Chromium ブラウザの新しいタブに Pixiv のイラストを'
         }
     };
 
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyTranslation(lang) {
         currentLang = lang;
         const translations = i18n[lang];
-        
+
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (translations[key]) {
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 重新启动打字机效果
         startTyping(translations.typeText);
-        
+
         // 保存语言偏好
         localStorage.setItem('pixtab-lang', lang);
     }
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeTimer) {
             clearTimeout(typeTimer);
         }
-        
+
         let index = 0;
         let txt = '';
         subtitleElement.innerHTML = cursor;
