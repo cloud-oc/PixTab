@@ -49,6 +49,40 @@ body {
     text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
 }
 
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.lang-switcher {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.lang-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: var(--font-body);
+}
+
+.lang-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+.lang-btn.active {
+    background: rgba(0, 240, 255, 0.15);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
 .github-link {
     color: var(--text-color);
     text-decoration: none;

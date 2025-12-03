@@ -18,6 +18,11 @@
     <nav class="navbar">
         <div class="logo">PixTab_</div>
         <div class="nav-links">
+            <div class="lang-switcher">
+                <button class="lang-btn active" data-lang="zh">中文</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="ja">日本語</button>
+            </div>
             <a href="https://github.com/cloud-oc/PixTab" target="_blank" class="github-link">GitHub Repository</a>
         </div>
     </nav>
@@ -27,16 +32,16 @@
             <div class="badge">v1.0</div>
             <h1>PixTab</h1>
             <p class="subtitle"><span id="typing-cursor">|</span></p>
-            <p class="description">
+            <p class="description" data-i18n="description">
                 每次打开新标签页，都能欣赏来自 Pixiv 的精选插画。<br>
                 支持多种排行榜、关键词搜索、收藏数筛选，打造属于你的壁纸体验。
             </p>
 
             <div class="cta-group">
                 <a href="https://github.com/cloud-oc/PixTab/releases" class="btn btn-primary">
-                    <span class="icon">⬇</span> 下载扩展
+                    <span class="icon">⬇</span> <span data-i18n="download">下载扩展</span>
                 </a>
-                <a href="https://github.com/cloud-oc/PixTab" class="btn btn-outline">查看源码</a>
+                <a href="https://github.com/cloud-oc/PixTab" class="btn btn-outline" data-i18n="viewSource">查看源码</a>
             </div>
         </div>
     </header>
@@ -44,39 +49,39 @@
     <section class="features">
         <div class="feature-card">
             <div class="icon-box">🎨</div>
-            <h3>精选 Pixiv 插画</h3>
-            <p>支持每日/每周/每月排行榜、新人榜、原创榜、人气榜等多种模式。</p>
+            <h3 data-i18n="feature1Title">精选 Pixiv 插画</h3>
+            <p data-i18n="feature1Desc">支持每日/每周/每月排行榜、新人榜、原创榜、人气榜等多种模式。</p>
         </div>
         <div class="feature-card">
             <div class="icon-box">🔍</div>
-            <h3>高级筛选</h3>
-            <p>关键词搜索、收藏数范围、作品类型过滤、分辨率要求，精准定制你想要的内容。</p>
+            <h3 data-i18n="feature2Title">高级筛选</h3>
+            <p data-i18n="feature2Desc">关键词搜索、收藏数范围、作品类型过滤、分辨率要求，精准定制你想要的内容。</p>
         </div>
         <div class="feature-card">
             <div class="icon-box">🌓</div>
-            <h3>明暗主题</h3>
-            <p>界面主题随系统时间自动切换，白天明亮清爽，夜间深色护眼。</p>
+            <h3 data-i18n="feature3Title">明暗主题</h3>
+            <p data-i18n="feature3Desc">界面主题随系统时间自动切换，白天明亮清爽，夜间深色护眼。</p>
         </div>
         <div class="feature-card">
             <div class="icon-box">🔒</div>
-            <h3>隐私优先</h3>
-            <p>完全开源，所有设置保存在本地，不向外部服务器发送任何数据。</p>
+            <h3 data-i18n="feature4Title">隐私优先</h3>
+            <p data-i18n="feature4Desc">完全开源，所有设置保存在本地，不向外部服务器发送任何数据。</p>
         </div>
         <div class="feature-card">
             <div class="icon-box">🌍</div>
-            <h3>多语言支持</h3>
-            <p>提供 English、中文、日本語 三种界面语言。</p>
+            <h3 data-i18n="feature5Title">多语言支持</h3>
+            <p data-i18n="feature5Desc">提供 English、中文、日本語 三种界面语言。</p>
         </div>
         <div class="feature-card">
             <div class="icon-box">⚡</div>
-            <h3>轻量快速</h3>
-            <p>无冗余依赖，新标签页秒开，不拖慢你的浏览体验。</p>
+            <h3 data-i18n="feature6Title">轻量快速</h3>
+            <p data-i18n="feature6Desc">无冗余依赖，新标签页秒开，不拖慢你的浏览体验。</p>
         </div>
     </section>
 
     <footer>
-        <p>&copy; 2025 PixTab Project. Released under MIT License.</p>
-        <p class="small">Designed for Chrome & Edge.</p>
+        <p>&copy; 2025 PixTab Project. <span data-i18n="license">Released under MIT License.</span></p>
+        <p class="small" data-i18n="designed">Designed for Chrome & Edge.</p>
     </footer>
 
     <script src="./script.js"></script>
