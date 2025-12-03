@@ -28,8 +28,10 @@ body[data-theme="dark"] {
   --control-shadow-dark: rgba(0, 0, 0, 0.5);
   --control-shadow-light: rgba(255, 255, 255, 0.15);
   --icon-color: #f4f4f4;
-  --spinner-core-color: rgba(255, 255, 255, 0.9);
-  --spinner-core-glow: rgba(255, 255, 255, 0.3);
+  /* 确保 spinner 的框架在深色主题下可见（用于显示字母 P 等元素） */
+  --spinner-frame-color: #f4f4f4;
+  --spinner-core-color: rgba(5, 5, 5, 0.95);
+  --spinner-core-glow: rgba(5, 5, 5, 0.45);
   background-color: #050505;
   color: #f4f4f4;
 }
