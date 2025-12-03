@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PixTab - Pixiv新标签页</title>
+    <title>PixTab</title>
     <meta name="description" content="PixTab - 在 Chrome 新标签页展示 Pixiv 精选插画，支持多种排行榜、关键词搜索和自定义筛选。">
     <link rel="icon" type="image/png" href="./PixTab.png">
     <link rel="stylesheet" href="./style.css">
@@ -14,77 +14,113 @@
         rel="stylesheet">
 </head>
 
-<body>
+<body class="loading">
+
+    <!-- 粒子背景 -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- 自定义光标 -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- 加载动画 -->
+    <div id="loadingScreen">
+        <div class="pix-spinner" role="img" aria-label="Loading">
+            <svg class="pix-spinner__frame" viewBox="-150 -120 260 240" xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true">
+                <rect class="pix-spinner__stem" x="-92" y="-82" width="50" height="174"></rect>
+                <circle class="pix-spinner__loop" cx="0" cy="0" r="92"></circle>
+                <circle class="pix-spinner__core" cx="0" cy="0" r="41"></circle>
+            </svg>
+        </div>
+    </div>
 
     <nav class="navbar">
-        <a href="./" class="logo">
+        <div class="logo">
             <img src="./PixTab.png" alt="PixTab" class="logo-img">
-        </a>
+        </div>
         <div class="nav-links">
-            <div class="lang-switcher">
-                <button class="lang-btn active" data-lang="zh">中文</button>
-                <button class="lang-btn" data-lang="en">EN</button>
-                <button class="lang-btn" data-lang="ja">日本語</button>
+            <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                <svg class="theme-icon sun-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <path
+                        d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z" />
+                </svg>
+                <svg class="theme-icon moon-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <path
+                        d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z" />
+                </svg>
+            </button>
+            <div class="lang-dropdown">
+                <button class="lang-trigger" id="langTrigger">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <path
+                            d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" />
+                    </svg>
+                    <span class="lang-current" id="langCurrent">中文</span>
+                    <svg class="dropdown-arrow" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M7 10l5 5 5-5z" />
+                    </svg>
+                </button>
+                <div class="lang-menu" id="langMenu">
+                    <button class="lang-option" data-lang="zh">中文</button>
+                    <button class="lang-option" data-lang="en">English</button>
+                    <button class="lang-option" data-lang="ja">日本語</button>
+                </div>
             </div>
-            <a href="https://github.com/cloud-oc/PixTab" target="_blank" class="github-link">GitHub Repository</a>
+            <a href="https://github.com/cloud-oc/PixTab" target="_blank" class="github-link" title="GitHub Repository">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                    <path
+                        d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                </svg>
+            </a>
         </div>
     </nav>
 
-    <header class="hero hero-centered">
+    <!-- 装饰线条 -->
+    <div class="deco-line deco-line-left"></div>
+    <div class="deco-line deco-line-right"></div>
+    <div class="deco-corner deco-corner-tl"></div>
+    <div class="deco-corner deco-corner-br"></div>
+
+    <main class="main-layout">
         <div class="hero-content">
-            <div class="badge">v1.0</div>
-            <h1>PixTab</h1>
-            <p class="subtitle"><span id="typing-cursor">|</span></p>
+            <div class="version-tag">
+                <span class="tag-bracket">[</span>
+                <span id="versionBadge">Loading...</span>
+                <span class="tag-bracket">]</span>
+            </div>
+            <div class="title-wrapper">
+                <span class="title-deco title-deco-left">//</span>
+                <h1>PIX<span class="title-accent">TAB</span></h1>
+                <span class="title-deco title-deco-right">//</span>
+            </div>
+            <div class="subtitle-wrapper">
+                <span class="subtitle-line"></span>
+                <p class="subtitle"><span id="typing-cursor">|</span></p>
+                <span class="subtitle-line"></span>
+            </div>
             <p class="description" data-i18n="description">
                 每次打开新标签页，都能欣赏来自 Pixiv 的精选插画。<br>
                 支持多种排行榜、关键词搜索、收藏数筛选，打造属于你的壁纸体验。
             </p>
-
             <div class="cta-group">
                 <a href="https://github.com/cloud-oc/PixTab/releases" class="btn btn-primary">
-                    <span class="icon">⬇</span> <span data-i18n="download">下载扩展</span>
+                    <span class="btn-corner btn-corner-tl"></span>
+                    <span class="btn-corner btn-corner-br"></span>
+                    <span class="btn-text"><span class="icon">↓</span> <span data-i18n="download">下载</span></span>
                 </a>
-                <a href="https://github.com/cloud-oc/PixTab" class="btn btn-outline" data-i18n="viewSource">查看源码</a>
+            </div>
+            <div class="status-bar">
+                <span class="status-item">STATUS: <span class="status-online">ONLINE</span></span>
+                <span class="status-divider">|</span>
+                <span class="status-item">CHROMIUM READY</span>
             </div>
         </div>
-    </header>
-
-    <section class="features">
-        <div class="feature-card">
-            <div class="icon-box">🎨</div>
-            <h3 data-i18n="feature1Title">精选 Pixiv 插画</h3>
-            <p data-i18n="feature1Desc">支持每日/每周/每月排行榜、新人榜、原创榜、人气榜等多种模式。</p>
-        </div>
-        <div class="feature-card">
-            <div class="icon-box">🔍</div>
-            <h3 data-i18n="feature2Title">高级筛选</h3>
-            <p data-i18n="feature2Desc">关键词搜索、收藏数范围、作品类型过滤、分辨率要求，精准定制你想要的内容。</p>
-        </div>
-        <div class="feature-card">
-            <div class="icon-box">🌓</div>
-            <h3 data-i18n="feature3Title">明暗主题</h3>
-            <p data-i18n="feature3Desc">界面主题随系统时间自动切换，白天明亮清爽，夜间深色护眼。</p>
-        </div>
-        <div class="feature-card">
-            <div class="icon-box">🔒</div>
-            <h3 data-i18n="feature4Title">隐私优先</h3>
-            <p data-i18n="feature4Desc">完全开源，所有设置保存在本地，不向外部服务器发送任何数据。</p>
-        </div>
-        <div class="feature-card">
-            <div class="icon-box">🌍</div>
-            <h3 data-i18n="feature5Title">多语言支持</h3>
-            <p data-i18n="feature5Desc">提供 English、中文、日本語 三种界面语言。</p>
-        </div>
-        <div class="feature-card">
-            <div class="icon-box">⚡</div>
-            <h3 data-i18n="feature6Title">轻量快速</h3>
-            <p data-i18n="feature6Desc">无冗余依赖，新标签页秒开，不拖慢你的浏览体验。</p>
-        </div>
-    </section>
+    </main>
 
     <footer>
-        <p>&copy; 2025 PixTab Project. <span data-i18n="license">Released under MIT License.</span></p>
-        <p class="small" data-i18n="designed">Designed for Chrome & Edge.</p>
+        <p>&copy; 2025 PixTab Project. <span data-i18n="license">Released under Apache-2.0 License.</span></p>
+        <p class="small" data-i18n="designed">Designed for Chromium browser.</p>
     </footer>
 
     <script src="./script.js"></script>

@@ -1,69 +1,218 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // 粒子背景 - 游戏主界面风格
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const particleCount = 40;
+
+    // 统一的飘动方向（略微向右上飘）
+    const windX = 0.3;
+    const windY = -0.2;
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Particle {
+        constructor(init = false) {
+            this.reset(init);
+        }
+
+        reset(init = false) {
+            // 初始化时随机分布，之后从底部或左侧进入
+            if (init) {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+            } else {
+                // 从底部或右侧重新进入
+                if (Math.random() > 0.5) {
+                    this.x = Math.random() * canvas.width;
+                    this.y = canvas.height + 10;
+                } else {
+                    this.x = -10;
+                    this.y = Math.random() * canvas.height;
+                }
+            }
+
+            // 大小在 1-4px 之间随机
+            this.size = Math.random() * 3 + 1;
+
+            // 基础速度 + 随机扰动
+            this.speedX = windX + (Math.random() - 0.5) * 0.2;
+            this.speedY = windY + (Math.random() - 0.5) * 0.2;
+
+            // 透明度在 0.1-0.6 之间随机
+            this.opacity = Math.random() * 0.5 + 0.1;
+
+            // 轻微的闪烁效果
+            this.flickerSpeed = Math.random() * 0.02 + 0.005;
+            this.flickerOffset = Math.random() * Math.PI * 2;
+        }
+
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+
+            // 闪烁效果
+            this.flickerOffset += this.flickerSpeed;
+
+            // 超出边界后重置
+            if (this.x > canvas.width + 10 || this.y < -10) {
+                this.reset(false);
+            }
+        }
+
+        draw() {
+            const isLight = document.body.classList.contains('light-theme');
+            const baseColor = isLight ? '0, 0, 0' : '255, 255, 255';
+
+            // 闪烁透明度
+            const flicker = Math.sin(this.flickerOffset) * 0.15;
+            const finalOpacity = Math.max(0.05, Math.min(0.7, this.opacity + flicker));
+
+            ctx.fillStyle = `rgba(${baseColor}, ${finalOpacity})`;
+            ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+        }
+    }
+
+    // 初始化粒子
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle(true));
+    }
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(particle => {
+            particle.update();
+            particle.draw();
+        });
+
+        requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // 自定义光标
+    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorOutline = document.querySelector('.cursor-outline');
+
+    let mouseX = 0, mouseY = 0;
+    let outlineX = 0, outlineY = 0;
+
+    // 鼠标移动时更新光标位置
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        // 圆点立即跟随
+        cursorDot.style.left = mouseX + 'px';
+        cursorDot.style.top = mouseY + 'px';
+    });
+
+    // 正方形外框平滑跟随
+    function animateOutline() {
+        outlineX += (mouseX - outlineX) * 0.15;
+        outlineY += (mouseY - outlineY) * 0.15;
+
+        cursorOutline.style.left = outlineX + 'px';
+        cursorOutline.style.top = outlineY + 'px';
+
+        requestAnimationFrame(animateOutline);
+    }
+    animateOutline();
+
+    // 点击时旋转
+    document.addEventListener('mousedown', () => {
+        cursorOutline.classList.add('clicking');
+    });
+
+    document.addEventListener('mouseup', () => {
+        setTimeout(() => {
+            cursorOutline.classList.remove('clicking');
+        }, 400);
+    });
+
+    // 悬停在可点击元素上时放大
+    const clickableElements = document.querySelectorAll('a, button, [role="button"], input, select, textarea');
+    clickableElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursorDot.classList.add('hovering');
+            cursorOutline.classList.add('hovering');
+        });
+        el.addEventListener('mouseleave', () => {
+            cursorDot.classList.remove('hovering');
+            cursorOutline.classList.remove('hovering');
+        });
+    });
+
+    // 鼠标离开窗口时隐藏光标
+    document.addEventListener('mouseleave', () => {
+        cursorDot.style.opacity = '0';
+        cursorOutline.style.opacity = '0';
+    });
+
+    document.addEventListener('mouseenter', () => {
+        cursorDot.style.opacity = '1';
+        cursorOutline.style.opacity = '1';
+    });
+
+    // 隐藏加载动画
+    setTimeout(() => {
+        document.body.classList.remove('loading');
+    }, 800);
+
+    // 获取 GitHub 最新版本号（包括 Pre-release）
+    const versionBadge = document.getElementById('versionBadge');
+    fetch('https://api.github.com/repos/cloud-oc/PixTab/releases')
+        .then(res => res.json())
+        .then(data => {
+            if (Array.isArray(data) && data.length > 0 && data[0].tag_name) {
+                versionBadge.textContent = data[0].tag_name;
+            } else {
+                versionBadge.textContent = 'v1.0.0';
+            }
+        })
+        .catch(() => {
+            versionBadge.textContent = 'v1.0.0';
+        });
+
     // 多语言翻译数据
     const i18n = {
         zh: {
             description: '每次打开新标签页，都能欣赏来自 Pixiv 的精选插画。<br>支持多种排行榜、关键词搜索、收藏数筛选，打造属于你的壁纸体验。',
-            download: '下载扩展',
-            viewSource: '查看源码',
-            feature1Title: '精选 Pixiv 插画',
-            feature1Desc: '支持每日/每周/每月排行榜、新人榜、原创榜、人气榜等多种模式。',
-            feature2Title: '高级筛选',
-            feature2Desc: '关键词搜索、收藏数范围、作品类型过滤、分辨率要求，精准定制你想要的内容。',
-            feature3Title: '明暗主题',
-            feature3Desc: '界面主题随系统时间自动切换，白天明亮清爽，夜间深色护眼。',
-            feature4Title: '隐私优先',
-            feature4Desc: '完全开源，所有设置保存在本地，不向外部服务器发送任何数据。',
-            feature5Title: '多语言支持',
-            feature5Desc: '提供 English、中文、日本語 三种界面语言。',
-            feature6Title: '轻量快速',
-            feature6Desc: '无冗余依赖，新标签页秒开，不拖慢你的浏览体验。',
-            license: 'Released under MIT License.',
-            designed: 'Designed for Chrome & Edge.',
-            typeText: '在 Chromium 浏览器的新标签页展示 Pixiv 插画'
+            download: '下载',
+            license: 'Released under Apache-2.0 License.',
+            designed: 'Designed for Chromium browser.',
+            typeText: '将 Pixiv 插画作为你的 Chromium 浏览器新标签页'
         },
         en: {
             description: 'Enjoy beautiful Pixiv artworks every time you open a new tab.<br>Multiple rankings, keyword search, bookmark filtering — create your own wallpaper experience.',
             download: 'Download',
-            viewSource: 'View Source',
-            feature1Title: 'Curated Pixiv Art',
-            feature1Desc: 'Daily, weekly, monthly rankings, rookie, original, popular and more modes.',
-            feature2Title: 'Advanced Filtering',
-            feature2Desc: 'Keyword search, bookmark range, artwork type, resolution — precisely customize what you want.',
-            feature3Title: 'Light & Dark Themes',
-            feature3Desc: 'Theme auto-switches with system time — bright during day, dark at night.',
-            feature4Title: 'Privacy First',
-            feature4Desc: 'Fully open source. All settings stored locally. No data sent to external servers.',
-            feature5Title: 'Multi-language',
-            feature5Desc: 'Available in English, 中文, and 日本語.',
-            feature6Title: 'Lightweight & Fast',
-            feature6Desc: 'No bloat. New tabs open instantly without slowing your browsing.',
-            license: 'Released under MIT License.',
-            designed: 'Designed for Chrome & Edge.',
-            typeText: 'Bring Pixiv artworks to the new tab of your Chromium browser.'
+            license: 'Released under Apache-2.0 License.',
+            designed: 'Designed for Chromium browser.',
+            typeText: 'Pixiv illustrations as your Chromium new tab page'
         },
         ja: {
             description: '新しいタブを開くたびに、Pixiv の厳選イラストを楽しめます。<br>多彩なランキング、キーワード検索、ブックマーク数フィルタで、あなただけの壁紙体験を。',
             download: 'ダウンロード',
-            viewSource: 'ソースを見る',
-            feature1Title: '厳選 Pixiv イラスト',
-            feature1Desc: 'デイリー/ウィークリー/マンスリーランキング、ルーキー、オリジナル、人気順など多彩なモード。',
-            feature2Title: '高度なフィルタリング',
-            feature2Desc: 'キーワード検索、ブックマーク数範囲、作品タイプ、解像度 — 欲しいコンテンツを精密にカスタマイズ。',
-            feature3Title: 'ライト & ダークテーマ',
-            feature3Desc: 'システム時間に合わせてテーマが自動切り替え。昼は明るく、夜は目に優しいダークモード。',
-            feature4Title: 'プライバシー重視',
-            feature4Desc: '完全オープンソース。設定はすべてローカル保存。外部サーバーへのデータ送信なし。',
-            feature5Title: '多言語対応',
-            feature5Desc: 'English、中文、日本語 に対応。',
-            feature6Title: '軽量 & 高速',
-            feature6Desc: '無駄な依存なし。新しいタブが瞬時に開き、ブラウジングを遅くしません。',
-            license: 'MIT License で公開。',
-            designed: 'Chrome & Edge 向けにデザイン。',
-            typeText: 'Chromium ブラウザの新しいタブに Pixiv のイラストを'
+            license: 'Apache-2.0 License で公開。',
+            designed: 'Chromium ブラウザ向けにデザイン。',
+            typeText: 'Pixiv イラストを Chromium の新しいタブページに'
         }
     };
 
+    // 语言显示名称映射
+    const langNames = {
+        zh: '中文',
+        en: 'English',
+        ja: '日本語'
+    };
+
     let currentLang = 'zh';
+    const langCurrent = document.getElementById('langCurrent');
 
     // 翻译函数
     function applyTranslation(lang) {
@@ -77,9 +226,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 更新按钮状态
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.lang === lang);
+        // 更新下拉框当前语言显示
+        if (langCurrent) {
+            langCurrent.textContent = langNames[lang];
+        }
+
+        // 更新选项激活状态
+        document.querySelectorAll('.lang-option').forEach(opt => {
+            opt.classList.toggle('active', opt.dataset.lang === lang);
         });
 
         // 重新启动打字机效果
@@ -89,10 +243,10 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('pixtab-lang', lang);
     }
 
-    // 语言切换按钮事件
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            applyTranslation(btn.dataset.lang);
+    // 语言切换事件
+    document.querySelectorAll('.lang-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            applyTranslation(opt.dataset.lang);
         });
     });
 
@@ -131,7 +285,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 500);
 
-    // 初始化：检查本地存储的语言偏好
-    const savedLang = localStorage.getItem('pixtab-lang') || 'zh';
-    applyTranslation(savedLang);
+    // 初始化：检查浏览器语言偏好，然后检查本地存储
+    function getDefaultLang() {
+        const savedLang = localStorage.getItem('pixtab-lang');
+        if (savedLang && i18n[savedLang]) {
+            return savedLang;
+        }
+        // 检测浏览器语言
+        const browserLang = navigator.language || navigator.userLanguage;
+        if (browserLang.startsWith('zh')) {
+            return 'zh';
+        } else if (browserLang.startsWith('ja')) {
+            return 'ja';
+        } else {
+            return 'en';
+        }
+    }
+    applyTranslation(getDefaultLang());
+
+    // 主题切换功能
+    const themeToggle = document.getElementById('themeToggle');
+
+    function setTheme(isDark) {
+        if (isDark) {
+            document.body.classList.remove('light-theme');
+        } else {
+            document.body.classList.add('light-theme');
+        }
+        localStorage.setItem('pixtab-theme', isDark ? 'dark' : 'light');
+    }
+
+    // 初始化主题
+    const savedTheme = localStorage.getItem('pixtab-theme');
+    if (savedTheme === 'light') {
+        setTheme(false);
+    } else {
+        setTheme(true);
+    }
+
+    // 主题切换按钮事件
+    themeToggle.addEventListener('click', () => {
+        const isDark = !document.body.classList.contains('light-theme');
+        setTheme(!isDark);
+    });
 });
