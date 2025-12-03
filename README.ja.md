@@ -1,6 +1,4 @@
-<img src="icons/icon-128.png" width="128" height="128" align="right" alt="icon">
-
-# PixTab
+# PixTab <img src="icons/icon-128.png" width="36" height="36" align="right" alt="icon">
 
 <a href="README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="README.zh.md"><img src="https://img.shields.io/badge/中文-red?style=for-the-badge" alt="中文"></a> <a href="README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a>
 
