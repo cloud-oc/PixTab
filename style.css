@@ -1,0 +1,345 @@
+:root {
+  --glass-bg-color: rgba(255, 255, 255, 0.28);
+  --glass-border-color: rgba(0, 0, 0, 0.1);
+  --glass-text-color: #1c1b1f;
+  --glass-link-color: #1c1b1f;
+  --avatar-ring-color: rgba(0, 0, 0, 0.12);
+  --glass-blur-strength: 9px;
+  --control-bg: rgba(255, 255, 255, 0.22);
+  --control-hover-bg: rgba(255, 255, 255, 0.3);
+  --control-border: rgba(255, 255, 255, 0.35);
+  --control-shadow-dark: rgba(0, 0, 0, 0.35);
+  --control-shadow-light: rgba(255, 255, 255, 0.35);
+  --icon-color: #111;
+  --spinner-frame-color: #050505;
+  --spinner-core-color: rgba(255, 255, 255, 0.95);
+  --spinner-core-glow: rgba(255, 255, 255, 0.45);
+}
+
+body[data-theme="dark"] {
+  --glass-bg-color: rgba(12, 12, 12, 0.28);
+  --glass-border-color: rgba(255, 255, 255, 0.14);
+  --glass-text-color: #f4f4f4;
+  --glass-link-color: #fdfdfd;
+  --avatar-ring-color: rgba(255, 255, 255, 0.22);
+  --control-bg: rgba(15, 15, 15, 0.4);
+  --control-hover-bg: rgba(15, 15, 15, 0.52);
+  --control-border: rgba(0, 0, 0, 0.55);
+  --control-shadow-dark: rgba(0, 0, 0, 0.5);
+  --control-shadow-light: rgba(255, 255, 255, 0.15);
+  --icon-color: #f4f4f4;
+  --spinner-core-color: rgba(255, 255, 255, 0.9);
+  --spinner-core-glow: rgba(255, 255, 255, 0.3);
+  background-color: #050505;
+  color: #f4f4f4;
+}
+
+body[data-theme="light"] {
+  background-color: #ffffff;
+  color: #1c1b1f;
+}
+
+#illustInfo a:active,
+#illustInfo a:hover,
+#illustInfo a:link,
+#illustInfo a:visited {
+  text-decoration: none;
+  color: var(--glass-link-color);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Default to a light background so the loading indicator stands out */
+body {
+  background-color: #fff;
+}
+
+#container.notReady #wallpaper,
+#container.notReady #illustInfo {
+  visibility: hidden;
+}
+
+#container.notReady #loadingSpinner {
+  visibility: visible;
+}
+
+.maskLayer {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+#container {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+#wallpaper {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+#backgroundImage {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  z-index: inherit;
+  transition: background 0.3s;
+}
+
+#foregroundImage {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  backdrop-filter: blur(18px);
+  z-index: inherit;
+  transition: background 0.3s;
+}
+
+#loadingSpinner {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+}
+
+#loadingSpinner.hidden {
+  display: none;
+}
+
+.pix-spinner {
+  width: 130px;
+  height: 130px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pix-spinner__frame {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.pix-spinner__stem,
+.pix-spinner__loop {
+  fill: var(--spinner-frame-color);
+}
+
+.pix-spinner__core {
+  fill: var(--spinner-core-color);
+  filter: drop-shadow(0 0 30px var(--spinner-core-glow));
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: spinnerPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes spinnerPulse {
+  0% {
+    transform: scale(0.62);
+    opacity: 0.55;
+  }
+
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.62);
+    opacity: 0.55;
+  }
+}
+
+#refreshButton,
+#settingsButton {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  box-shadow:
+    inset 3px 3px 6px var(--control-shadow-dark),
+    inset -3px -3px 6px var(--control-shadow-light);
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+#refreshButton svg,
+#settingsButton .material-symbols-outlined {
+  transition: color 0.2s, fill 0.2s;
+}
+
+#refreshButton svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--icon-color);
+}
+
+#refreshButton:hover,
+#settingsButton:hover {
+  background: var(--control-hover-bg);
+  box-shadow:
+    inset 2px 2px 5px var(--control-shadow-dark),
+    inset -2px -2px 5px var(--control-shadow-light);
+}
+
+#settingsButton .material-symbols-outlined {
+  font-size: 22px;
+  color: var(--icon-color);
+  line-height: 1;
+  pointer-events: none;
+}
+
+#refreshButton.loading {
+  cursor: default;
+  pointer-events: none;
+  background: var(--control-hover-bg);
+}
+
+#refreshButton.loading svg {
+  animation: refreshSpin 1.1s linear infinite;
+}
+
+@keyframes refreshSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#illustInfo {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 280px;
+  padding: 14px;
+  font-family: HiraginoSans-W3, Hiragino Kaku Gothic Pro, Meiryo, Verdana,
+    sans-serif;
+  border-radius: 16px;
+  background-color: var(--glass-bg-color);
+  border: 1px solid var(--glass-border-color);
+  backdrop-filter: blur(var(--glass-blur-strength));
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+  color: var(--glass-text-color);
+  transition: opacity 1s, background-color 0.4s, border-color 0.4s, color 0.4s,
+    backdrop-filter 0.4s;
+}
+
+#illustInfo.unfocused {
+  opacity: 0;
+}
+
+#inllustInfo.focused {
+  opacity: 1;
+}
+
+#avatarImage {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2px solid var(--avatar-ring-color);
+}
+
+.info-card-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+#avatar {
+  display: block;
+  width: 54px;
+  height: 54px;
+}
+
+#description {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+#illustTitle {
+  display: block;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#illustName {
+  display: block;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.settings-open {
+  overflow: hidden;
+}
+
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 1200;
+}
+
+.settings-overlay.visible {
+  display: block;
+}
+
+.settings-overlay-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(960px, 90vw);
+  height: min(90vh, 640px);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--glass-border-color);
+  background: var(--glass-bg-color);
+  backdrop-filter: blur(calc(var(--glass-blur-strength) + 4px));
+}
+
+#settingsFrame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+}

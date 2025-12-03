@@ -1,0 +1,293 @@
+import { defaultConfig, Order, SMode } from "../shared/preferences.js";
+import { buildKeywordQuery } from "../shared/keyword-builder.js";
+
+const THEME_CHECK_INTERVAL_MS = 5 * 60 * 1000;
+
+function applyTimeBasedTheme() {
+  const hour = new Date().getHours();
+  const theme = hour >= 7 && hour < 19 ? "light" : "dark";
+  if (document.body?.dataset?.theme !== theme) {
+    document.body.dataset.theme = theme;
+  }
+}
+
+applyTimeBasedTheme();
+setInterval(applyTimeBasedTheme, THEME_CHECK_INTERVAL_MS);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    applyTimeBasedTheme();
+  }
+});
+
+const AUTO_SAVE_DEBOUNCE_MS = 500;
+let autoSaveTimeoutId = null;
+
+const saveOptions = () => {
+  updateKeywords();
+  const newConfig = {
+    order: document.getElementById('order').value,
+    mode: document.getElementById('mode').value,
+    blt: document.getElementById('blt').value ? Number(document.getElementById('blt').value) : null,
+    bgt: document.getElementById('bgt').value ? Number(document.getElementById('bgt').value) : null,
+    s_mode: document.getElementById('s_mode').value,
+    type: document.getElementById('type').value,
+    aiType: document.getElementById('aiType').value || 'display',
+    minWidthPx: document.getElementById('minWidthPx').value ? Number(document.getElementById('minWidthPx').value) : null,
+    minHeightPx: document.getElementById('minHeightPx').value ? Number(document.getElementById('minHeightPx').value) : null,
+    size: document.getElementById('size').value || 'full',
+    align: document.getElementById('align').value || 'center',
+    tiling: document.getElementById('tiling').value || 'none',
+    orKeywords: document.getElementById('orKeywords').value.trim(),
+    minusKeywords: document.getElementById('minusKeywords').value.trim(),
+    andKeywords: document.getElementById('andKeywords').value.trim(),
+    keywords: document.getElementById('keywords').value.trim()
+  };
+
+  chrome.storage.local.set(
+    newConfig,
+    () => {
+      console.log("Save config");
+      console.log(newConfig);
+    }
+  );
+
+  chrome.runtime.sendMessage({ action: "refreshPreferences" }, (response) => {
+    let lastError = chrome.runtime.lastError;
+    if (lastError) {
+      console.log(lastError.message);
+      return;
+    }
+  });
+};
+
+function scheduleAutoSave() {
+  clearTimeout(autoSaveTimeoutId);
+  autoSaveTimeoutId = window.setTimeout(saveOptions, AUTO_SAVE_DEBOUNCE_MS);
+}
+
+const resetOptions = () => {
+  chrome.storage.local.set(
+    defaultConfig,
+    () => {
+      console.log("Reset config");
+      console.log(defaultConfig);
+      let items = defaultConfig;
+      document.getElementById('order').value = ensureValidOrderValue(items.order);
+      document.getElementById('mode').value = items.mode;
+      document.getElementById('blt').value = items.blt;
+      document.getElementById('bgt').value = items.bgt;
+      document.getElementById('s_mode').value = ensureValidKeywordModeValue(items.s_mode);
+      document.getElementById('type').value = items.type;
+      document.getElementById('minWidthPx').value = items.minWidthPx ?? "";
+      document.getElementById('minHeightPx').value = items.minHeightPx ?? "";
+      document.getElementById('size').value = items.size || 'full';
+      document.getElementById('align').value = items.align || 'center';
+      document.getElementById('tiling').value = items.tiling || 'none';
+      document.getElementById('aiType').value = items.aiType || 'display';
+      document.getElementById('andKeywords').value = items.andKeywords;
+      document.getElementById('orKeywords').value = items.orKeywords;
+      document.getElementById('minusKeywords').value = items.minusKeywords;
+      updateKeywords();
+      enforceBookmarkRange();
+      console.log("Reset config");
+      console.log(items);
+    }
+  );
+};
+
+
+const restoreOptions = () => {
+  chrome.storage.local.get(defaultConfig, (items) => {
+    console.log("Load config");
+    console.log(items);
+    document.getElementById('order').value = ensureValidOrderValue(items.order);
+    document.getElementById('mode').value = items.mode;
+    document.getElementById('blt').value = items.blt;
+    document.getElementById('bgt').value = items.bgt;
+    document.getElementById('s_mode').value = ensureValidKeywordModeValue(items.s_mode);
+    document.getElementById('type').value = items.type;
+    document.getElementById('minWidthPx').value = items.minWidthPx ?? "";
+    document.getElementById('minHeightPx').value = items.minHeightPx ?? "";
+    document.getElementById('size').value = items.size || 'full';
+    document.getElementById('align').value = items.align || 'center';
+    document.getElementById('tiling').value = items.tiling || 'none';
+    document.getElementById('aiType').value = items.aiType || 'display';
+    document.getElementById('andKeywords').value = items.andKeywords;
+    document.getElementById('orKeywords').value = items.orKeywords;
+    document.getElementById('minusKeywords').value = items.minusKeywords;
+    updateKeywords();
+    enforceBookmarkRange();
+  });
+};
+
+function ensureValidOrderValue(orderValue) {
+  const orderSelect = document.getElementById('order');
+  if (!orderSelect) {
+    return orderValue;
+  }
+  const hasOption = Array.from(orderSelect.options).some((opt) => opt.value === orderValue);
+  if (!hasOption) {
+    const fallback = Order.ranking_daily;
+    chrome.storage.local.set({ order: fallback });
+    return fallback;
+  }
+  return orderValue;
+}
+
+function ensureValidKeywordModeValue(modeValue) {
+  const allowed = Object.values(SMode);
+  if (allowed.includes(modeValue)) {
+    return modeValue;
+  }
+  chrome.storage.local.set({ s_mode: SMode.s_tag });
+  return SMode.s_tag;
+}
+
+function parseNullableNumber(value) {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+  const numericValue = Number(value);
+  return Number.isNaN(numericValue) ? null : numericValue;
+}
+
+function enforceBookmarkRange(changedInput) {
+  const minInput = document.getElementById('blt');
+  const maxInput = document.getElementById('bgt');
+  if (!minInput || !maxInput) {
+    return;
+  }
+  const minValue = parseNullableNumber(minInput.value);
+  const maxValue = parseNullableNumber(maxInput.value);
+  if (minValue === null || maxValue === null) {
+    return;
+  }
+  if (minValue > maxValue) {
+    if (changedInput === minInput) {
+      maxInput.value = minValue;
+    } else if (changedInput === maxInput) {
+      minInput.value = maxValue;
+    } else {
+      maxInput.value = minValue;
+    }
+  }
+}
+
+function updateKeywords() {
+  let andKeywords = document.getElementById('andKeywords').value;
+  let orKeywords = document.getElementById('orKeywords').value;
+  let minusKeywords = document.getElementById('minusKeywords').value;
+  let word = buildKeywordQuery(andKeywords, orKeywords, minusKeywords);
+  document.getElementById('keywords').value = word;
+}
+
+function registerAutoSaveListeners() {
+  const autoSaveElements = document.querySelectorAll('input:not([type="hidden"]), select, textarea');
+  autoSaveElements.forEach((element) => {
+    const eventName = element.tagName === 'SELECT' || element.type === 'checkbox' ? 'change' : 'input';
+    element.addEventListener(eventName, scheduleAutoSave);
+  });
+}
+
+document.getElementById('orKeywords').addEventListener('input', updateKeywords);
+document.getElementById('minusKeywords').addEventListener('input', updateKeywords);
+document.getElementById('andKeywords').addEventListener('input', updateKeywords);
+const minBookmarkInput = document.getElementById('blt');
+const maxBookmarkInput = document.getElementById('bgt');
+['input', 'change'].forEach((eventName) => {
+  minBookmarkInput?.addEventListener(eventName, () => enforceBookmarkRange(minBookmarkInput));
+  maxBookmarkInput?.addEventListener(eventName, () => enforceBookmarkRange(maxBookmarkInput));
+});
+const backToNewTabButton = document.getElementById('backToNewTabButton');
+if (backToNewTabButton) {
+  backToNewTabButton.addEventListener('click', () => {
+    if (window.top !== window) {
+      window.parent.postMessage({ type: 'closeOptionsPanel' }, '*');
+    } else {
+      chrome.tabs.create({ url: 'chrome://newtab/' });
+      window.close?.();
+    }
+  });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  restoreOptions();
+  registerAutoSaveListeners();
+});
+document.getElementById('reset').addEventListener('click', resetOptions);
+
+function applyHelperTitles(messages) {
+  if (!messages) {
+    return;
+  }
+  const helperMappings = [
+    { targetId: 'sizeLabel', helperKey: 'sizeHelper' },
+    { targetId: 'alignLabel', helperKey: 'alignHelper' },
+    { targetId: 'tilingLabel', helperKey: 'tilingHelper' },
+    { targetId: 'resolutionLabel', helperKey: 'resolutionHelper' },
+    { targetId: 'aiTypeLabel', helperKey: 'aiTypeHelper' }
+  ];
+  helperMappings.forEach(({ targetId, helperKey }) => {
+    const targetEl = document.getElementById(targetId);
+    if (!targetEl) {
+      return;
+    }
+    const helperMessage = messages[helperKey]?.message || '';
+    targetEl.title = helperMessage;
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const langSelect = document.getElementById("languageSelect");
+  const supportedLanguages = ["en", "zh", "ja"];
+
+  function detectBrowserLanguage() {
+    const browserLangs = navigator.languages || [navigator.language || "en"];
+    for (const lang of browserLangs) {
+      const shortLang = lang.split("-")[0].toLowerCase();
+      if (supportedLanguages.includes(shortLang)) {
+        return shortLang;
+      }
+    }
+    return "en";
+  }
+
+  const savedLang = localStorage.getItem("language");
+  const defaultLang = savedLang || detectBrowserLanguage();
+  if (!savedLang) {
+    localStorage.setItem("language", defaultLang);
+  }
+  langSelect.value = defaultLang;
+
+  function loadTranslations(lang) {
+    fetch(`_locales/${lang}/messages.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        document.querySelectorAll("[id]").forEach((el) => {
+          if (data[el.id]) {
+            el.textContent = data[el.id].message;
+          }
+        });
+        document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+          const key = el.getAttribute("data-i18n-placeholder");
+          if (data[key]) {
+            el.placeholder = data[key].message;
+          }
+        });
+        const backLabel = document.getElementById("backToNewTabLabel");
+        const backButton = document.getElementById("backToNewTabButton");
+        if (backLabel && backButton) {
+          backButton.title = backLabel.textContent;
+        }
+        applyHelperTitles(data);
+      })
+      .catch((error) => console.error("Error loading translations:", error));
+  }
+
+  loadTranslations(defaultLang);
+
+  langSelect.addEventListener("change", (event) => {
+    const selectedLang = event.target.value;
+    localStorage.setItem("language", selectedLang);
+    loadTranslations(selectedLang);
+  });
+});

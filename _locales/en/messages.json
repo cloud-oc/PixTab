@@ -1,0 +1,206 @@
+{
+  "settingsHeading": {
+    "message": "Settings"
+  },
+  "languageLabel": {
+    "message": "Language"
+  },
+  "backToNewTabLabel": {
+    "message": "Back to New Tab"
+  },
+  "keywordsSectionHeading": {
+    "message": "Keyword Settings"
+  },
+  "andKeywordsLabel": {
+    "message": "Must include these keywords"
+  },
+  "orKeywordsLabel": {
+    "message": "Include at least one of these keywords"
+  },
+  "minusKeywordsLabel": {
+    "message": "Exclude these keywords (NOT search)"
+  },
+  "keywordsTip": {
+    "message": "Separate multiple keywords with spaces"
+  },
+  "orderLabel": {
+    "message": "Update Mode"
+  },
+  "popular_dOrder": {
+    "message": "Sort by Popularity"
+  },
+  "popular_male_dOrder": {
+    "message": "Popular Among Males"
+  },
+  "popular_female_dOrder": {
+    "message": "Popular Among Females"
+  },
+  "dailyRankingOrder": {
+    "message": "Daily Ranking"
+  },
+  "weeklyRankingOrder": {
+    "message": "Weekly Ranking"
+  },
+  "monthlyRankingOrder": {
+    "message": "Monthly Ranking"
+  },
+  "rookieRankingOrder": {
+    "message": "Rookie Ranking"
+  },
+  "originalRankingOrder": {
+    "message": "Original Ranking"
+  },
+  "modeLabel": {
+    "message": "NSFW Display"
+  },
+  "allMode": {
+    "message": "All"
+  },
+  "r18Mode": {
+    "message": "R18"
+  },
+  "safeMode": {
+    "message": "All ages"
+  },
+  "bookmarksLabel": {
+    "message": "Bookmarks Range"
+  },
+  "bltLabel": {
+    "message": "Minimum Bookmarks Count"
+  },
+  "bgtLabel": {
+    "message": "Maximum Bookmarks Count"
+  },
+  "s_modeLabel": {
+    "message": "Keyword Matching"
+  },
+  "s_tagOption": {
+    "message": "Partial match"
+  },
+  "s_tag_fullOption": {
+    "message": "Exact match"
+  },
+  "typeLabel": {
+    "message": "Image Type"
+  },
+  "allTypeLabel": {
+    "message": "Illustrations, Manga, Ugoira"
+  },
+  "illust_and_ugoiraTypeLabel": {
+    "message": "Illustrations, Ugoira"
+  },
+  "illustTypeLabel": {
+    "message": "Illustrations"
+  },
+  "mangaTypeLabel": {
+    "message": "Manga"
+  },
+  "ugoiraTypeLabel": {
+    "message": "Ugoira"
+  },
+  "leave_blank_for_unlimited": {
+    "message": "Leave blank for unlimited"
+  },
+  "resolutionLabel": {
+    "message": "Minimum Size"
+  },
+  "resolutionHelper": {
+    "message": "Skip artworks smaller than the minimum width/height (pixels). Leave blank to allow any size."
+  },
+  "minWidthLabel": {
+    "message": "Minimum width (px)"
+  },
+  "minHeightLabel": {
+    "message": "Minimum height (px)"
+  },
+  "displaySettingsLabel": {
+    "message": "Display Settings"
+  },
+  "filterSettingsLabel": {
+    "message": "Image Filter Settings"
+  },
+  "sizeLabel": {
+    "message": "Size"
+  },
+  "sizeHelper": {
+    "message": "Choose how the artwork scales within the browser window."
+  },
+  "sizeOriginalOption": {
+    "message": "Original"
+  },
+  "sizeFullOption": {
+    "message": "Full"
+  },
+  "sizeBestFitOption": {
+    "message": "Best fit"
+  },
+  "alignLabel": {
+    "message": "Align"
+  },
+  "alignHelper": {
+    "message": "Pick the focal point used when positioning the wallpaper."
+  },
+  "alignTopLeftOption": {
+    "message": "Top left"
+  },
+  "alignTopOption": {
+    "message": "Top"
+  },
+  "alignTopRightOption": {
+    "message": "Top right"
+  },
+  "alignLeftOption": {
+    "message": "Left"
+  },
+  "alignCenterOption": {
+    "message": "Center"
+  },
+  "alignRightOption": {
+    "message": "Right"
+  },
+  "alignBottomLeftOption": {
+    "message": "Bottom left"
+  },
+  "alignBottomOption": {
+    "message": "Bottom"
+  },
+  "alignBottomRightOption": {
+    "message": "Bottom right"
+  },
+  "tilingLabel": {
+    "message": "Tiling"
+  },
+  "tilingHelper": {
+    "message": "Specify how the wallpaper should tile."
+  },
+  "tilingTileOption": {
+    "message": "Tile"
+  },
+  "tilingHorizontalOption": {
+    "message": "Horizontal"
+  },
+  "tilingVerticalOption": {
+    "message": "Vertical"
+  },
+  "tilingNoneOption": {
+    "message": "None"
+  },
+  "aiTypeLabel": {
+    "message": "AIGC Display"
+  },
+  "aiTypeHelper": {
+    "message": "Choose whether to display or hide AI-generated works."
+  },
+  "aiTypeDisplayOption": {
+    "message": "Display"
+  },
+  "aiTypeHideOption": {
+    "message": "Hide"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "reset": {
+    "message": "Reset to default settings"
+  }
+}
