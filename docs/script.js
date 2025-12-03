@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
             download: '下载',
             license: 'Released under Apache-2.0 License.',
             designed: 'Designed for Chromium browser.',
-            typeText: '将 Pixiv 插画作为你的 Chromium 浏览器新标签页'
+            typeText: '让 Pixiv 上的插画成为你的 Chromium 浏览器新标签页'
         },
         en: {
             description: 'Enjoy beautiful Pixiv artworks every time you open a new tab.<br>Multiple rankings, keyword search, bookmark filtering — create your own wallpaper experience.',
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
             download: 'ダウンロード',
             license: 'Apache-2.0 License で公開。',
             designed: 'Chromium ブラウザ向けにデザイン。',
-            typeText: 'Pixiv イラストを Chromium の新しいタブページに'
+            typeText: 'Pixiv のイラストを Chromium ブラウザの新しいタブページに'
         }
     };
 
