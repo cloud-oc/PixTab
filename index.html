@@ -10,28 +10,12 @@
 
 <body data-theme="light">
   <!-- 新增：在 GitHub Pages 站点中添加按钮，跳转到网页版新标签页示例 -->
-  <a class="use-newtab-btn" href="newtab/index.html" title="在网页打开 PixTab 新标签页示例">作为新标签页使用（网页版）</a>
   <div id="container" class="notReady">
     <div class="maskLayer"></div>
     <div id="wallpaper">
       <div id="backgroundImage" class="bgImage"></div>
       <div id="foregroundImage" class="fgImage"></div>
-    </div>
-    <div id="loadingSpinner" aria-hidden="true">
-      <div class="pix-spinner" role="img" aria-label="Pix Tab loading">
-        <svg class="pix-spinner__frame" viewBox="-150 -120 260 240" xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true">
-          <rect class="pix-spinner__stem" x="-92" y="-82" width="50" height="174"></rect>
-          <circle class="pix-spinner__loop" cx="0" cy="0" r="92"></circle>
-          <circle class="pix-spinner__core" cx="0" cy="0" r="41"></circle>
-        </svg>
-      </div>
-    </div>
-    <div id="illustInfo">
-      <div class="info-card-body">
-        <a id="avatar" href="">
-          <div id="avatarImage"></div>
-        </a>
+  
         <div id="description">
           <div id="illustTitle"><a href="">Untitled</a></div>
           <div id="illustName"><a href=""></a></div>
@@ -76,9 +60,12 @@
       border-radius: 6px;
       text-decoration: none;
       font-weight: 600;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     }
-    .use-newtab-btn:hover { opacity: 0.95 }
+
+    .use-newtab-btn:hover {
+      opacity: 0.95
+    }
   </style>
 </body>
 
