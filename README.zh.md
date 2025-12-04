@@ -2,11 +2,11 @@
 
 <a href="README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="README.zh.md"><img src="https://img.shields.io/badge/中文-red?style=for-the-badge" alt="中文"></a> <a href="README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a>
 
-在 Chromium 浏览器的新标签页展示 Pixiv 精选插画。
+在浏览器的新标签页展示 Pixiv 精选插画。
 
 ## 简介
 
-PixTab 是一款轻量级 Chrome/Chromium 扩展，可在新标签页显示来自 Pixiv 的作品，支持自定义配置、关键词搜索和本地化设置。
+PixTab 是一款轻量级浏览器扩展，可在新标签页显示来自 Pixiv 的作品，支持自定义配置、关键词搜索和本地化设置，同时支持 Chromium 与 Firefox 内核的浏览器。
 
 ## 主要功能
 
@@ -25,7 +25,7 @@ PixTab 是一款轻量级 Chrome/Chromium 扩展，可在新标签页显示来�
 
 > **注意**：本扩展暂未上架 Chrome Web Store 或 Firefox Add-ons，请按以下步骤手动安装。
 
-### Chrome / Edge / Chromium 浏览器
+### Chromium 内核浏览器
 
 1. 克隆或下载本仓库。
 2. 在浏览器中打开 `chrome://extensions`。
@@ -33,7 +33,7 @@ PixTab 是一款轻量级 Chrome/Chromium 扩展，可在新标签页显示来�
 4. 点击 **加载已解压的扩展程序**，选择项目文件夹。
 5. 打开新标签页，即可体验 PixTab！
 
-### Firefox 浏览器（113+）
+### Firefox 内核浏览器（113+）
 
 1. 克隆或下载本仓库。
 2. 在浏览器中打开 `about:debugging#/runtime/this-firefox`。

@@ -2,11 +2,11 @@
 
 <a href="README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="README.zh.md"><img src="https://img.shields.io/badge/中文-red?style=for-the-badge" alt="中文"></a> <a href="README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a>
 
-Display beautiful Pixiv artworks on the new tab page of your Chromium browser.
+Display beautiful Pixiv artworks on the new tab page of your browser.
 
 ## Overview
 
-PixTab is a lightweight Chrome/Chromium extension that displays Pixiv artworks on your new tab page. It supports custom configuration, keyword search, and localization.
+PixTab is a lightweight browser extension that displays Pixiv artworks on your new tab page. It supports custom configuration, keyword search, localization, and works with both Chromium and Firefox-based browsers.
 
 ## Key Features
 
@@ -25,7 +25,7 @@ PixTab is a lightweight Chrome/Chromium extension that displays Pixiv artworks o
 
 > **Note**: This extension is not listed on the Chrome Web Store or Firefox Add-ons. Please install it manually using the steps below.
 
-### Chrome / Edge / Chromium Browsers
+### Chromium-based Browsers
 
 1. Clone or download this repository.
 2. Open `chrome://extensions` in your browser.
@@ -33,7 +33,7 @@ PixTab is a lightweight Chrome/Chromium extension that displays Pixiv artworks o
 4. Click **Load unpacked** and select the project folder.
 5. Open a new tab to see PixTab in action!
 
-### Firefox Browser (113+)
+### Firefox-based Browsers (113+)
 
 1. Clone or download this repository.
 2. Open `about:debugging#/runtime/this-firefox` in your browser.

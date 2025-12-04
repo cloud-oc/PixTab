@@ -2,11 +2,11 @@
 
 <a href="README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="README.zh.md"><img src="https://img.shields.io/badge/中文-red?style=for-the-badge" alt="中文"></a> <a href="README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a>
 
-Chromium ブラウザの新しいタブに Pixiv の素敵なイラストを表示します。
+ブラウザの新しいタブに Pixiv の素敵なイラストを表示します。
 
 ## 概要
 
-PixTab は新しいタブに Pixiv のイラストを表示する軽量な Chrome/Chromium 拡張機能です。カスタム設定、キーワード検索、多言語対応をサポートしています。
+PixTab は新しいタブに Pixiv のイラストを表示する軽量なブラウザ拡張機能です。カスタム設定、キーワード検索、多言語対応をサポートし、Chromium と Firefox ベースのブラウザ両方で動作します。
 
 ## 主な機能
 
@@ -25,7 +25,7 @@ PixTab は新しいタブに Pixiv のイラストを表示する軽量な Chrom
 
 > **注意**：この拡張機能は Chrome Web Store や Firefox Add-ons には公開されていません。以下の手順で手動インストールしてください。
 
-### Chrome / Edge / Chromium ブラウザ
+### Chromium 系ブラウザ
 
 1. このリポジトリをクローンまたはダウンロードします。
 2. ブラウザで `chrome://extensions` を開きます。
@@ -33,7 +33,7 @@ PixTab は新しいタブに Pixiv のイラストを表示する軽量な Chrom
 4. **パッケージ化されていない拡張機能を読み込む** をクリックし、プロジェクトフォルダを選択します。
 5. 新しいタブを開くと PixTab が表示されます！
 
-### Firefox ブラウザ（113+）
+### Firefox 系ブラウザ（113+）
 
 1. このリポジトリをクローンまたはダウンロードします。
 2. ブラウザで `about:debugging#/runtime/this-firefox` を開きます。
