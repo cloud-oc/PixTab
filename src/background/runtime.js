@@ -1,8 +1,10 @@
 import { Mode, Order, SMode } from "../shared/preferences.js";
 import { buildKeywordQuery } from "../shared/keyword-builder.js";
 import { loadPreferences } from "../shared/storage.js";
+import browserAPI, { getExtensionId, storageSessionGet, storageSessionSet } from "../shared/browser-polyfill.js";
 
-chrome.runtime.onInstalled.addListener((details) => {
+browserAPI.runtime.onInstalled.addListener((details) => {
+  const extensionId = getExtensionId();
   const RULE = [
     {
       "id": 1,
@@ -18,7 +20,7 @@ chrome.runtime.onInstalled.addListener((details) => {
         ]
       },
       "condition": {
-        initiatorDomains: [chrome.runtime.id],
+        "initiatorDomains": [extensionId],
         "urlFilter": "pixiv.net",
         "resourceTypes": [
           "xmlhttprequest",
@@ -39,7 +41,7 @@ chrome.runtime.onInstalled.addListener((details) => {
         ]
       },
       "condition": {
-        initiatorDomains: [chrome.runtime.id],
+        "initiatorDomains": [extensionId],
         "urlFilter": "pximg.net",
         "resourceTypes": [
           "xmlhttprequest",
@@ -47,7 +49,7 @@ chrome.runtime.onInstalled.addListener((details) => {
       }
     }
   ];
-  chrome.declarativeNetRequest.updateDynamicRules({
+  browserAPI.declarativeNetRequest.updateDynamicRules({
     removeRuleIds: RULE.map(o => o.id),
     addRules: RULE,
   });
@@ -237,7 +239,7 @@ function applyConfigNormalization(config) {
     updates.aiType = normalizedAiType;
   }
   if (Object.keys(updates).length > 0) {
-    chrome.storage.local.set(updates);
+    browserAPI.storage.local.set(updates);
   }
   return config;
 }
@@ -634,7 +636,7 @@ function fillQueue() {
       let res = await searchSource.getRandomIllust();
       if (res) {
         artworkQueue.push(res);
-        chrome.storage.session.set({
+        storageSessionSet({
           artworkQueueCache: artworkQueue,
           illustQueue: artworkQueue
         });
@@ -648,7 +650,7 @@ async function start() {
   let config = await loadPreferences();
   config = applyConfigNormalization(config);
   searchSource = new SearchSource(config);
-  const queueCache = await chrome.storage.session.get({
+  const queueCache = await storageSessionGet({
     artworkQueueCache: null,
     illustQueue: null
   });
@@ -665,7 +667,7 @@ async function start() {
 
 let initPromise = start();
 
-chrome.runtime.onMessage.addListener(function (
+browserAPI.runtime.onMessage.addListener(function (
   message,
   sender,
   sendResponse
@@ -692,7 +694,7 @@ chrome.runtime.onMessage.addListener(function (
         config = applyConfigNormalization(config);
         searchSource.updateConfig(config);
         artworkQueue = new ArtworkQueue(2);
-        chrome.storage.session.set({
+        storageSessionSet({
           artworkQueueCache: artworkQueue,
           illustQueue: artworkQueue
         });

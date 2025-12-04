@@ -1,10 +1,11 @@
 import { defaultPreferences } from "./preferences.js";
+import browserAPI from "./browser-polyfill.js";
 
-export async function loadPreferences(storage = chrome.storage?.local) {
+export async function loadPreferences(storage = browserAPI.storage?.local) {
     return getAll(storage, defaultPreferences);
 }
 
-export async function savePreferences(preferences, storage = chrome.storage?.local) {
+export async function savePreferences(preferences, storage = browserAPI.storage?.local) {
     if (!storage) {
         return;
     }

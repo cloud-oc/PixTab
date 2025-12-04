@@ -1,4 +1,5 @@
 import { initThemeSync } from "./theme.js";
+import browserAPI from "../shared/browser-polyfill.js";
 
 (function () {
   const WALLPAPER_PREF_DEFAULTS = Object.freeze({
@@ -46,11 +47,11 @@ import { initThemeSync } from "./theme.js";
   }
 
   function loadWallpaperDisplayPreferences() {
-    if (!(chrome?.storage?.local)) {
+    if (!(browserAPI?.storage?.local)) {
       applyWallpaperDisplayPreferences();
       return;
     }
-    chrome.storage.local.get(WALLPAPER_PREF_DEFAULTS, (items) => {
+    browserAPI.storage.local.get(WALLPAPER_PREF_DEFAULTS, (items) => {
       wallpaperDisplayPrefs = {
         size: items.size || WALLPAPER_PREF_DEFAULTS.size,
         align: items.align || WALLPAPER_PREF_DEFAULTS.align,
@@ -222,9 +223,9 @@ import { initThemeSync } from "./theme.js";
       isRequestInProgress = true;
       setRefreshing(true);
       showSpinnerIfBlank();
-      chrome.runtime.sendMessage({ action: "requestArtwork" }, (res) => {
-        if (chrome.runtime.lastError) {
-          console.warn("Context invalidated, message could not be processed:", chrome.runtime.lastError.message);
+      browserAPI.runtime.sendMessage({ action: "requestArtwork" }, (res) => {
+        if (browserAPI.runtime.lastError) {
+          console.warn("Context invalidated, message could not be processed:", browserAPI.runtime.lastError.message);
           setRefreshing(false);
           isRequestInProgress = false;
           return;
@@ -289,8 +290,8 @@ import { initThemeSync } from "./theme.js";
   }
 
   // when options/config change, refresh image to reflect new filters
-  if (chrome && chrome.storage && chrome.storage.onChanged) {
-    chrome.storage.onChanged.addListener((changes, area) => {
+  if (browserAPI && browserAPI.storage && browserAPI.storage.onChanged) {
+    browserAPI.storage.onChanged.addListener((changes, area) => {
       if (area === 'local') {
         const prefChanged = updateWallpaperPrefsFromChanges(changes);
         const hasOtherChanges = Object.keys(changes).some((key) => !["size", "align", "tiling"].includes(key));

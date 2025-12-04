@@ -1,5 +1,6 @@
 import { defaultConfig, Order, SMode } from "../shared/preferences.js";
 import { buildKeywordQuery } from "../shared/keyword-builder.js";
+import browserAPI from "../shared/browser-polyfill.js";
 
 const THEME_CHECK_INTERVAL_MS = 5 * 60 * 1000;
 
@@ -43,7 +44,7 @@ const saveOptions = () => {
     keywords: document.getElementById('keywords').value.trim()
   };
 
-  chrome.storage.local.set(
+  browserAPI.storage.local.set(
     newConfig,
     () => {
       console.log("Save config");
@@ -51,8 +52,8 @@ const saveOptions = () => {
     }
   );
 
-  chrome.runtime.sendMessage({ action: "refreshPreferences" }, (response) => {
-    let lastError = chrome.runtime.lastError;
+  browserAPI.runtime.sendMessage({ action: "refreshPreferences" }, (response) => {
+    let lastError = browserAPI.runtime.lastError;
     if (lastError) {
       console.log(lastError.message);
       return;
@@ -66,7 +67,7 @@ function scheduleAutoSave() {
 }
 
 const resetOptions = () => {
-  chrome.storage.local.set(
+  browserAPI.storage.local.set(
     defaultConfig,
     () => {
       console.log("Reset config");
@@ -97,7 +98,7 @@ const resetOptions = () => {
 
 
 const restoreOptions = () => {
-  chrome.storage.local.get(defaultConfig, (items) => {
+  browserAPI.storage.local.get(defaultConfig, (items) => {
     console.log("Load config");
     console.log(items);
     document.getElementById('order').value = ensureValidOrderValue(items.order);
@@ -128,7 +129,7 @@ function ensureValidOrderValue(orderValue) {
   const hasOption = Array.from(orderSelect.options).some((opt) => opt.value === orderValue);
   if (!hasOption) {
     const fallback = Order.ranking_daily;
-    chrome.storage.local.set({ order: fallback });
+    browserAPI.storage.local.set({ order: fallback });
     return fallback;
   }
   return orderValue;
@@ -139,7 +140,7 @@ function ensureValidKeywordModeValue(modeValue) {
   if (allowed.includes(modeValue)) {
     return modeValue;
   }
-  chrome.storage.local.set({ s_mode: SMode.s_tag });
+  browserAPI.storage.local.set({ s_mode: SMode.s_tag });
   return SMode.s_tag;
 }
 
@@ -204,7 +205,7 @@ if (backToNewTabButton) {
     if (window.top !== window) {
       window.parent.postMessage({ type: 'closeOptionsPanel' }, '*');
     } else {
-      chrome.tabs.create({ url: 'chrome://newtab/' });
+      browserAPI.tabs.create({ url: 'about:newtab' });
       window.close?.();
     }
   });

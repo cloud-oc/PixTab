@@ -23,13 +23,25 @@ PixTab 是一款轻量级 Chrome/Chromium 扩展，可在新标签页显示来�
 
 ## 安装方法
 
-> **注意**：本扩展暂未上架 Chrome Web Store，请按以下步骤手动安装。
+> **注意**：本扩展暂未上架 Chrome Web Store 或 Firefox Add-ons，请按以下步骤手动安装。
+
+### Chrome / Edge / Chromium 浏览器
 
 1. 克隆或下载本仓库。
 2. 在浏览器中打开 `chrome://extensions`。
 3. 启用 **开发者模式**。
 4. 点击 **加载已解压的扩展程序**，选择项目文件夹。
 5. 打开新标签页，即可体验 PixTab！
+
+### Firefox 浏览器（113+）
+
+1. 克隆或下载本仓库。
+2. 在浏览器中打开 `about:debugging#/runtime/this-firefox`。
+3. 点击 **临时加载附加组件...**。
+4. 选择项目文件夹中的 `manifest.json` 文件。
+5. 打开新标签页，即可体验 PixTab！
+
+> **提示**：Firefox 临时加载的扩展在浏览器重启后会失效，需要重新加载。
 
 ## 网络要求
 
