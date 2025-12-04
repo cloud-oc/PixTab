@@ -30,16 +30,27 @@ PixTab is a lightweight browser extension that displays Pixiv artworks on your n
 1. Clone or download this repository.
 2. Open `chrome://extensions` in your browser.
 3. Enable **Developer mode**.
-4. Click **Load unpacked** and select the project folder.
-5. Open a new tab to see PixTab in action!
+4. Option A — Install from packaged ZIP (quick):
+	- If you downloaded a release from `dist/` (for example `dist/pixtab-0.9-chrome.zip`), some Chromium-based browsers allow you to drag the `.zip` file onto the `chrome://extensions` page to install it directly. If that works, the extension will be installed and ready to use.
+	- If drag-and-drop does not work for your browser, unzip the package and use **Load unpacked** to select the extracted folder.
+
+5. Option B — Install from source (developer):
+	- Click **Load unpacked** and select the project folder.
+
+6. Open a new tab to see PixTab in action!
 
 ### Firefox-based Browsers (113+)
 
 1. Clone or download this repository.
 2. Open `about:debugging#/runtime/this-firefox` in your browser.
 3. Click **Load Temporary Add-on...**
-4. Select the `manifest.json` file in the project folder.
-5. Open a new tab to see PixTab in action!
+4. Option A — Install the packaged XPI (recommended for testing):
+	- If you downloaded a release `dist/*.xpi` (for example `dist/pixtab-0.9-firefox.xpi`), open `about:addons` and use the gear menu → **Install Add-on From File...**, or drag the `.xpi` file onto the Add-ons page to install it.
+
+5. Option B — Load temporary add-on (developer):
+	- Click **Load Temporary Add-on...** and select the `manifest.json` file in the project folder.
+
+6. Open a new tab to see PixTab in action!
 
 > **Note**: Temporarily loaded extensions in Firefox will be removed when the browser restarts.
 
