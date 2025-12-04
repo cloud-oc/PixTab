@@ -654,6 +654,14 @@ h1 {
     color: #22c55e;
 }
 
+.status-offline {
+    color: #ef4444;
+}
+
+.status-checking {
+    color: var(--primary-color);
+}
+
 .status-divider {
     opacity: 0.3;
 }

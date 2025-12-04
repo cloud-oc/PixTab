@@ -328,4 +328,50 @@ document.addEventListener('DOMContentLoaded', () => {
         const isDark = !document.body.classList.contains('light-theme');
         setTheme(!isDark);
     });
+
+    // 检测 Pixiv 连接状态
+    const pixivStatus = document.getElementById('pixivStatus');
+    async function checkPixivConnection() {
+        try {
+            // 尝试访问 Pixiv 的一个小资源来检测连接
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+            const response = await fetch('https://www.pixiv.net/favicon.ico', {
+                method: 'HEAD',
+                mode: 'no-cors',
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            // no-cors 模式下即使请求成功也无法读取响应，但如果没有抛出错误就说明网络可达
+            pixivStatus.textContent = 'ONLINE';
+            pixivStatus.className = 'status-online';
+        } catch (error) {
+            pixivStatus.textContent = 'OFFLINE';
+            pixivStatus.className = 'status-offline';
+        }
+    }
+    checkPixivConnection();
+
+    // 检测 Chromium 内核浏览器
+    const browserStatus = document.getElementById('browserStatus');
+    function checkChromiumBrowser() {
+        // 检测是否是 Chromium 内核浏览器
+        const isChromium = !!window.chrome &&
+            (!!window.chrome.runtime || !!window.chrome.webstore || !!window.chrome.csi);
+        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+        const isEdge = /Edg/.test(navigator.userAgent);
+        const isOpera = /OPR/.test(navigator.userAgent);
+        const isBrave = navigator.brave !== undefined;
+
+        if (isChromium || isChrome || isEdge || isOpera || isBrave) {
+            browserStatus.textContent = 'CHROMIUM ✓';
+            browserStatus.className = 'status-online';
+        } else {
+            browserStatus.textContent = 'NOT CHROMIUM';
+            browserStatus.className = 'status-offline';
+        }
+    }
+    checkChromiumBrowser();
 });
