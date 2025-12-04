@@ -185,22 +185,22 @@ document.addEventListener('DOMContentLoaded', () => {
             description: '每次打开新标签页，都能欣赏来自 Pixiv 的精选插画。<br>支持多种排行榜、关键词搜索、收藏数筛选，打造属于你的壁纸体验。',
             download: '下载',
             license: 'Released under Apache-2.0 License.',
-            designed: 'Designed for Chromium browser.',
-            typeText: '让 Pixiv 上的插画成为你的 Chromium 浏览器新标签页'
+            designed: 'Designed for modern browsers.',
+            typeText: '让 Pixiv 上的插画成为你的浏览器新标签页'
         },
         en: {
             description: 'Enjoy beautiful Pixiv artworks every time you open a new tab.<br>Multiple rankings, keyword search, bookmark filtering — create your own wallpaper experience.',
             download: 'Download',
             license: 'Released under Apache-2.0 License.',
-            designed: 'Designed for Chromium browser.',
-            typeText: 'Pixiv illustrations as your Chromium new tab page'
+            designed: 'Designed for modern browsers.',
+            typeText: "Pixiv illustrations as your browser's new tab page"
         },
         ja: {
             description: '新しいタブを開くたびに、Pixiv の厳選イラストを楽しめます。<br>多彩なランキング、キーワード検索、ブックマーク数フィルタで、あなただけの壁紙体験を。',
             download: 'ダウンロード',
             license: 'Apache-2.0 License で公開。',
-            designed: 'Chromium ブラウザ向けにデザイン。',
-            typeText: 'Pixiv のイラストを Chromium ブラウザの新しいタブページに'
+            designed: 'モダンブラウザ向けにデザイン。',
+            typeText: 'Pixiv のイラストをブラウザの新しいタブページに'
         }
     };
 
@@ -378,30 +378,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     checkPixivConnection();
 
-    // 检测 Chromium 内核浏览器（改进）
-    const browserStatus = document.getElementById('browserStatus');
-    function checkChromiumBrowser() {
-        if (!browserStatus) return;
-        browserStatus.textContent = 'CHECKING';
-        browserStatus.className = 'status-checking';
-
-        const ua = navigator.userAgent || '';
-        const vendor = navigator.vendor || '';
-
-        // 常见 Chromium 标识
-        const isChrome = /Chrome\//i.test(ua) && /Google Inc/.test(vendor);
-        const isEdge = /Edg\//i.test(ua);
-        const isOpera = /OPR\//i.test(ua);
-        const isBrave = !!navigator.brave || /Brave\//i.test(ua);
-        const isChromiumBased = isChrome || isEdge || isOpera || isBrave || /Chromium\//i.test(ua);
-
-        if (isChromiumBased) {
-            browserStatus.textContent = 'CHROMIUM ✓';
-            browserStatus.className = 'status-online';
-        } else {
-            browserStatus.textContent = 'NOT CHROMIUM';
-            browserStatus.className = 'status-offline';
-        }
-    }
-    checkChromiumBrowser();
+    // Chromium 检测已移除：不再显示特定浏览器内核信息
 });
