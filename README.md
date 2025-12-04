@@ -31,6 +31,12 @@ PixTab is a lightweight Chrome/Chromium extension that displays Pixiv artworks o
 4. Click **Load unpacked** and select the project folder.
 5. Open a new tab to see PixTab in action!
 
+## Network Requirements
+
+This extension requires access to Pixiv (`pixiv.net` and `pximg.net`).
+
+If the new tab page stays on the loading animation, it means your network cannot access Pixiv. Please resolve the network issue on your own. This extension does not provide any proxy functionality.
+
 ## License
 
 See the [LICENSE](LICENSE) file for details.
