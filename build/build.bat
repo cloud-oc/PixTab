@@ -18,8 +18,9 @@ for /f "tokens=2 delims=:," %%a in ('findstr /c:"\"version\"" manifest.json') do
 )
 echo 📋 版本号: %VERSION%
 
-REM 创建 dist 目录
-if not exist dist mkdir dist
+REM 清空并重建 dist 目录
+if exist dist rmdir /s /q dist
+mkdir dist
 
 REM Chrome/Edge 打包
 echo 📦 打包 Chrome/Edge 版本...
@@ -29,9 +30,8 @@ REM Firefox 打包（临时修改 manifest）
 echo 📦 打包 Firefox 版本...
 copy manifest.json manifest.backup.json >nul
 
-REM 替换 service_worker 为 scripts
-powershell -Command "(Get-Content manifest.json) -replace '\"service_worker\": \"src/background/runtime.js\",', '\"scripts\": [\"src/background/runtime.js\"]' | Set-Content manifest.json"
-powershell -Command "(Get-Content manifest.json) | Where-Object { $_ -notmatch '\"type\": \"module\"' } | Set-Content manifest.json"
+REM 使用 PowerShell 解析并更新 JSON（更稳健）
+powershell -Command "$m = Get-Content manifest.json | ConvertFrom-Json; if ($m.background.service_worker) { $m.background.scripts = @($m.background.service_worker); $m.background.PSObject.Properties.Remove('service_worker'); $m.background.PSObject.Properties.Remove('type') } ; if ($m.action -and $m.action.default_icon -is [System.Collections.Hashtable]) { $icon = $m.action.default_icon.'48' -or $m.action.default_icon.'32' -or $m.action.default_icon.'16' -or $m.action.default_icon.'128'; if (-not $icon) { $icon = 'icons/icon-48.png' }; $m.action.default_icon = $icon }; if (-not $m.browser_specific_settings) { $m.browser_specific_settings = @{ } }; if (-not $m.browser_specific_settings.gecko) { $m.browser_specific_settings.gecko = @{ } }; $m.browser_specific_settings.gecko.strict_min_version = '142.0'; $m.browser_specific_settings.gecko_android = @{ strict_min_version = '142.0' }; if (-not $m.browser_specific_settings.gecko.data_collection_permissions) { $m.browser_specific_settings.gecko.data_collection_permissions = @{ collects = $false ; required = @('none') ; optional = @() } } ; $m | ConvertTo-Json -Depth 10 | Set-Content manifest.json"
 
 powershell -Command "Compress-Archive -Force -Path 'manifest.json','LICENSE','index.html','options.html','style.css','_locales','icons','src' -DestinationPath 'dist\pixtab-%VERSION%-firefox.zip'"
 
