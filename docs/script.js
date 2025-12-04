@@ -329,43 +329,73 @@ document.addEventListener('DOMContentLoaded', () => {
         setTheme(!isDark);
     });
 
-    // 检测 Pixiv 连接状态
+    // 检测 Pixiv 连接状态（更可靠的实现：使用 Image 的 onload/onerror）
     const pixivStatus = document.getElementById('pixivStatus');
     async function checkPixivConnection() {
-        try {
-            // 尝试访问 Pixiv 的一个小资源来检测连接
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000);
+        if (!pixivStatus) return;
+        pixivStatus.textContent = 'CHECKING';
+        pixivStatus.className = 'status-checking';
 
-            const response = await fetch('https://www.pixiv.net/favicon.ico', {
-                method: 'HEAD',
-                mode: 'no-cors',
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
+        return new Promise((resolve) => {
+            const img = new Image();
+            let settled = false;
+            const timeout = setTimeout(() => {
+                if (settled) return;
+                settled = true;
+                pixivStatus.textContent = 'OFFLINE';
+                pixivStatus.className = 'status-offline';
+                resolve(false);
+            }, 5000);
 
-            // no-cors 模式下即使请求成功也无法读取响应，但如果没有抛出错误就说明网络可达
-            pixivStatus.textContent = 'ONLINE';
-            pixivStatus.className = 'status-online';
-        } catch (error) {
-            pixivStatus.textContent = 'OFFLINE';
-            pixivStatus.className = 'status-offline';
-        }
+            img.onload = () => {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timeout);
+                pixivStatus.textContent = 'ONLINE';
+                pixivStatus.className = 'status-online';
+                resolve(true);
+            };
+
+            img.onerror = () => {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timeout);
+                pixivStatus.textContent = 'OFFLINE';
+                pixivStatus.className = 'status-offline';
+                resolve(false);
+            };
+
+            // 通过请求 Pixiv 的 favicon 来检测连通性，追加时间戳以避免缓存
+            try {
+                img.src = 'https://www.pixiv.net/favicon.ico?cache=' + Date.now();
+            } catch (e) {
+                clearTimeout(timeout);
+                pixivStatus.textContent = 'OFFLINE';
+                pixivStatus.className = 'status-offline';
+                resolve(false);
+            }
+        });
     }
     checkPixivConnection();
 
-    // 检测 Chromium 内核浏览器
+    // 检测 Chromium 内核浏览器（改进）
     const browserStatus = document.getElementById('browserStatus');
     function checkChromiumBrowser() {
-        // 检测是否是 Chromium 内核浏览器
-        const isChromium = !!window.chrome &&
-            (!!window.chrome.runtime || !!window.chrome.webstore || !!window.chrome.csi);
-        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-        const isEdge = /Edg/.test(navigator.userAgent);
-        const isOpera = /OPR/.test(navigator.userAgent);
-        const isBrave = navigator.brave !== undefined;
+        if (!browserStatus) return;
+        browserStatus.textContent = 'CHECKING';
+        browserStatus.className = 'status-checking';
 
-        if (isChromium || isChrome || isEdge || isOpera || isBrave) {
+        const ua = navigator.userAgent || '';
+        const vendor = navigator.vendor || '';
+
+        // 常见 Chromium 标识
+        const isChrome = /Chrome\//i.test(ua) && /Google Inc/.test(vendor);
+        const isEdge = /Edg\//i.test(ua);
+        const isOpera = /OPR\//i.test(ua);
+        const isBrave = !!navigator.brave || /Brave\//i.test(ua);
+        const isChromiumBased = isChrome || isEdge || isOpera || isBrave || /Chromium\//i.test(ua);
+
+        if (isChromiumBased) {
             browserStatus.textContent = 'CHROMIUM ✓';
             browserStatus.className = 'status-online';
         } else {
