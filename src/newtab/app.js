@@ -1,3 +1,4 @@
+  // (restoreWebQueue will be called during startup sequence below so we don't block top-level execution)
 import { initThemeSync } from "./theme.js";
 import browserAPI from "../shared/browser-polyfill.js";
 
@@ -253,6 +254,113 @@ import browserAPI from "../shared/browser-polyfill.js";
     }
   }
 
+  /* ---------- Web Artwork Queue for demo (mimic extension background) ---------- */
+  class WebArtworkQueue {
+    constructor(maxSize = 2) {
+      this.maxSize = maxSize;
+      this.array = [];
+      this.loading = 0; // concurrent loads
+    }
+    size() { return this.array.length; }
+    capacity() { return this.maxSize; }
+    full() { return this.array.length >= this.maxSize; }
+    empty() { return this.array.length === 0; }
+    push(item) { if (!this.full()) { this.array.push(item); return true; } return false; }
+    pop() { if (!this.empty()) return this.array.shift(); }
+  }
+
+  function blobToDataUrl(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  async function prefetchArtwork(artwork) {
+    try {
+      // ensure image is loaded as data url if it's a remote url
+      if (artwork.imageObjectUrl && !artwork.imageObjectUrl.startsWith('data:')) {
+        // load image as blob then to data url for consistent rendering
+        const res = await fetch(artwork.imageObjectUrl);
+        if (res.ok) {
+          const blob = await res.blob();
+          artwork.imageObjectUrl = await blobToDataUrl(blob);
+        }
+      }
+      if (artwork.profileImageUrl && !artwork.profileImageUrl.startsWith('data:') && artwork.profileImageUrl !== '') {
+        try {
+          const pr = await fetch(artwork.profileImageUrl);
+          if (pr.ok) {
+            const pblob = await pr.blob();
+            artwork.profileImageUrl = await blobToDataUrl(pblob);
+          }
+        } catch (e) { /* ignore profile fetch errors */ }
+      }
+    } catch (e) {
+      console.warn('prefetchArtwork failed', e);
+    }
+    return artwork;
+  }
+
+  // session-based persisted queue for the web demo
+  const webQueue = new WebArtworkQueue(2);
+
+  async function persistWebQueue() {
+    try {
+      if (browserAPI?.storage?.session) {
+        await browserAPI.storage.session.set({ webArtworkQueue: webQueue.array });
+      } else {
+        sessionStorage.setItem('webArtworkQueue', JSON.stringify(webQueue.array));
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  async function restoreWebQueue() {
+    try {
+      let queue = null;
+      if (browserAPI?.storage?.session && browserAPI.storage.session.get) {
+        queue = (await browserAPI.storage.session.get({ webArtworkQueue: null })).webArtworkQueue;
+      } else {
+        const s = sessionStorage.getItem('webArtworkQueue');
+        if (s) queue = JSON.parse(s);
+      }
+      if (Array.isArray(queue) && queue.length > 0) {
+        webQueue.array = queue;
+        // ensure data url conversion if needed
+        for (let i = 0; i < webQueue.array.length; i++) {
+          const art = webQueue.array[i];
+          if (art && art.imageObjectUrl && !art.imageObjectUrl.startsWith('data:')) {
+            try {
+              const r = await fetch(art.imageObjectUrl);
+              if (r.ok) {
+                const b = await r.blob();
+                webQueue.array[i].imageObjectUrl = await blobToDataUrl(b);
+              }
+            } catch (e) { /* ignore */ }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('restoreWebQueue failed', e);
+    }
+  }
+
+  async function fillWebQueue() {
+    try {
+      while (!webQueue.full()) {
+        const art = await fetchArtworkFallback();
+        if (!art) break;
+        const prefetched = await prefetchArtwork(art);
+        webQueue.push(prefetched);
+        await persistWebQueue();
+      }
+    } catch (e) {
+      console.warn('fillWebQueue failed', e);
+    }
+  }
+
   const sendRefreshMessage = (() => {
     let isRequestInProgress = false;
     const setRefreshing = (state) => {
@@ -285,22 +393,42 @@ import browserAPI from "../shared/browser-polyfill.js";
           });
         });
       } else {
-        // web fallback
-        fetchArtworkFallback().then((res) => {
-          Promise.resolve(changeElement(res)).finally(() => {
-            setRefreshing(false);
-            isRequestInProgress = false;
-          });
-        }).catch((e) => {
-          console.warn('Fallback fetch failed', e);
-          setRefreshing(false);
-          isRequestInProgress = false;
-        });
+          // web fallback: try to serve from webQueue if available
+          (async () => {
+            try {
+              let res = null;
+              if (webQueue && !webQueue.empty()) {
+                res = webQueue.pop();
+                await persistWebQueue();
+                // ensure queue refill
+                fillWebQueue();
+              } else {
+                res = await fetchArtworkFallback();
+              }
+              await Promise.resolve(changeElement(res));
+            } catch (e) {
+              console.warn('Fallback fetch failed', e);
+            } finally {
+              setRefreshing(false);
+              isRequestInProgress = false;
+            }
+          })();
       }
     };
   })();
 
-  initApplication();
+  // startup sequence for web demo: restore queue, then init UI and fetch first artwork
+  restoreWebQueue().then(() => {
+    fillWebQueue();
+    initApplication();
+    sendRefreshMessage();
+  }).catch((e) => {
+    // fallback to init regardless of restore errors
+    console.warn('restoreWebQueue failed', e);
+    initApplication();
+    fillWebQueue();
+    sendRefreshMessage();
+  });
   // settings button: open extension options when clicked
   const settingsElement = document.body.querySelector("#settingsButton");
   const settingsOverlay = document.getElementById("settingsOverlay");
