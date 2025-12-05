@@ -95,18 +95,21 @@ async function fetchPixivJson(url) {
   try {
     let res = await throttledFetch(url);
     if (!res.ok) {
-      console.error(`Fetch pixiv json failed: ${res.status} ${res.statusText}`);
+      // Network or HTTP error — keep quiet in production (avoid showing errors to users).
+      dbg(`Fetch pixiv json failed: ${res.status} ${res.statusText}`);
       return null;
     }
     let res_json = await res.json();
     if (res_json.error) {
-      console.error(`Pixiv API error: ${res_json.message}`);
+      // API returned an error — log at debug level to avoid user-visible noise.
+      dbg(`Pixiv API error: ${res_json.message}`);
       return null;
     }
     return res_json;
   } catch (e) {
+    // Suppress noisy fetch errors (network down / proxy off). Rate-limit errors are thrown upstream.
     if (e?.message !== "PIXIV_RATE_LIMITED") {
-      console.error(`Fetch pixiv json error:`, e);
+      dbg(`Fetch pixiv json error:`, e);
     }
     return null;
   }
@@ -144,6 +147,13 @@ const RATE_LIMIT_BACKOFF_MS = 15000;
 const MAX_RATE_LIMIT_RETRIES = 3;
 let nextAllowedRequestTime = 0;
 let requestChain = Promise.resolve();
+let debugLoggingEnabled = false;
+
+function dbg(...args) {
+  if (debugLoggingEnabled) {
+    console.debug(...args);
+  }
+}
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -324,7 +334,7 @@ class SearchSource {
         headers: { "referer": baseUrl }
       });
       if (!res.ok) {
-        console.error(`Fetch ranking json failed: ${res.status}`);
+        dbg(`Fetch ranking json failed: ${res.status}`);
         return null;
       }
       let json = await res.json();
@@ -388,7 +398,7 @@ class SearchSource {
         if (!filtered) continue;
         return filtered;
       } catch (e) {
-        console.error("Error in getRandomIllust loop:", e);
+        dbg("Error in getRandomIllust loop:", e);
         continue;
       }
     }
@@ -426,7 +436,7 @@ class SearchSource {
         if (!filtered) continue;
         return filtered;
       } catch (e) {
-        console.error("Error in getRandomRankingIllust loop:", e);
+        dbg("Error in getRandomRankingIllust loop:", e);
         continue;
       }
     }
@@ -456,7 +466,7 @@ class SearchSource {
         headers: { "referer": baseUrl }
       });
       if (!res.ok) {
-        console.error(`Ranking fetch failed: ${res.status} ${res.statusText}`);
+        dbg(`Ranking fetch failed: ${res.status} ${res.statusText}`);
         return null;
       }
       let json = await res.json();
@@ -484,7 +494,7 @@ class SearchSource {
       this.rankingPages[page] = filteredContents;
       return this.rankingPages[page];
     } catch (e) {
-      console.error("Ranking fetch error", e);
+      dbg("Ranking fetch error", e);
       return null;
     }
   }
@@ -649,6 +659,7 @@ function fillQueue() {
 async function start() {
   let config = await loadPreferences();
   config = applyConfigNormalization(config);
+  debugLoggingEnabled = !!config.debugLogging;
   searchSource = new SearchSource(config);
   const queueCache = await storageSessionGet({
     artworkQueueCache: null,
@@ -685,7 +696,19 @@ browserAPI.runtime.onMessage.addListener(function (
           sendResponse(res);
           let { profileImageUrl, imageObjectUrl, ...filteredRes } = res;
           console.log(filteredRes);
+          // Notify UI that artwork loaded successfully (clear failure indicator)
+          try {
+            browserAPI.runtime.sendMessage({ action: 'artworkLoadSucceeded' });
+          } catch (e) {
+            dbg('Failed to send artworkLoadSucceeded message', e);
+          }
         } else {
+          // Notify UI that artwork failed to load (keep spinner, but indicate failure)
+          try {
+            browserAPI.runtime.sendMessage({ action: 'artworkLoadFailed' });
+          } catch (e) {
+            dbg('Failed to send artworkLoadFailed message', e);
+          }
           sendResponse(null);
         }
         fillQueue();
@@ -693,6 +716,8 @@ browserAPI.runtime.onMessage.addListener(function (
         let config = await loadPreferences();
         config = applyConfigNormalization(config);
         searchSource.updateConfig(config);
+        // update debug logging flag when preferences change
+        debugLoggingEnabled = !!config.debugLogging;
         artworkQueue = new ArtworkQueue(2);
         storageSessionSet({
           artworkQueueCache: artworkQueue,

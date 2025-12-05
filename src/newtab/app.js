@@ -166,6 +166,46 @@ import browserAPI from "../shared/browser-polyfill.js";
     binding = new Binding();
   }
 
+  function setLoadFailedState(isFailed) {
+    try {
+      const container = binding?.containerElement;
+      if (!container) return;
+      container.classList.toggle('load-failed', !!isFailed);
+      const core = document.querySelector('.pix-spinner__core');
+      if (!core) return;
+      // Read computed styles from the nearest themed container (fall back to body).
+      const styleSource = container || document.body;
+      const rootStyle = getComputedStyle(styleSource);
+      if (isFailed) {
+        // Prefer a single shared RGB variable so hue is identical between the
+        // loading background tint and the breathing core. Construct RGBA values
+        // from the theme-aware --fail-red-rgb and alpha variables. Fall back
+        // to pre-existing variables if the new ones are not present.
+        const failRgb = rootStyle.getPropertyValue('--fail-red-rgb').trim();
+        if (failRgb) {
+          // Use opaque rgb() constructed from --fail-red-rgb so hue matches
+          // the background tint exactly and there is no transparency.
+          const fillColor = `rgb(${failRgb})`;
+          const glowColor = `rgb(${failRgb})`;
+          core.style.fill = fillColor;
+          core.style.filter = `drop-shadow(0 0 30px ${glowColor})`;
+        } else {
+          // compatibility fallback: use the older dedicated variables
+          const fill = rootStyle.getPropertyValue('--spinner-core-color-fail').trim() || '';
+          const glow = rootStyle.getPropertyValue('--spinner-core-glow-fail').trim() || '';
+          core.style.fill = fill;
+          core.style.filter = `drop-shadow(0 0 30px ${glow})`;
+        }
+      } else {
+        // remove inline overrides so CSS rules apply
+        core.style.fill = '';
+        core.style.filter = '';
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
   const toggleSpinnerVisibility = (shouldShow) => {
     const spinner = binding?.loadingSpinnerElement;
     if (!spinner) {
@@ -230,6 +270,13 @@ import browserAPI from "../shared/browser-polyfill.js";
           isRequestInProgress = false;
           return;
         }
+        // Update failure indicator based on response (null indicates failure)
+        try {
+          setLoadFailedState(!res);
+        } catch (e) {
+          // ignore if binding not ready
+        }
+
         Promise.resolve(changeElement(res)).finally(() => {
           setRefreshing(false);
           isRequestInProgress = false;
@@ -239,6 +286,22 @@ import browserAPI from "../shared/browser-polyfill.js";
   })();
 
   initApplication();
+  // Listen for background load success/failure notifications to update UI state
+  if (browserAPI && browserAPI.runtime && browserAPI.runtime.onMessage) {
+    browserAPI.runtime.onMessage.addListener((msg) => {
+      try {
+        if (!binding) return;
+        if (msg && msg.action === 'artworkLoadFailed') {
+          setLoadFailedState(true);
+        } else if (msg && msg.action === 'artworkLoadSucceeded') {
+          setLoadFailedState(false);
+        }
+      } catch (e) {
+        // swallowing errors to avoid UI disruption
+        console.warn('Failed to handle artwork load status message', e);
+      }
+    });
+  }
   // settings button: open extension options when clicked
   const settingsElement = document.body.querySelector("#settingsButton");
   const settingsOverlay = document.getElementById("settingsOverlay");

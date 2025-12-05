@@ -14,6 +14,17 @@
   --spinner-frame-color: #050505;
   --spinner-core-color: rgba(255, 255, 255, 0.95);
   --spinner-core-glow: rgba(255, 255, 255, 0.45);
+  /* Loading background (default/light theme)
+     Use a shared RGB base so hue is identical between background tint
+     and spinner core, while alpha values allow background to be subtle
+     and the core to remain vivid. */
+  /* Lighter red for daytime: still visible but less harsh */
+  --fail-red-rgb: 255, 130, 130;
+  /* Use solid (opaque) fail colors — no alpha/transparency */
+  --loading-bg: rgba(255, 255, 255, 0);
+  --loading-bg-fail: rgb(var(--fail-red-rgb));
+  --spinner-core-color-fail: rgb(var(--fail-red-rgb));
+  --spinner-core-glow-fail: rgb(var(--fail-red-rgb));
 }
 
 body[data-theme="dark"] {
@@ -34,6 +45,15 @@ body[data-theme="dark"] {
   --spinner-core-glow: rgba(5, 5, 5, 0.45);
   background-color: #050505;
   color: #f4f4f4;
+  /* Loading background (dark theme overrides)
+     Use a deeper red hue for dark theme so the fail tint feels heavier. */
+  /* Deeper/darker red for night to feel heavier on dark backgrounds */
+  --fail-red-rgb: 120, 30, 30;
+  /* Dark theme uses a deeper solid red (opaque) */
+  --loading-bg: rgba(0, 0, 0, 0);
+  --loading-bg-fail: rgb(var(--fail-red-rgb));
+  --spinner-core-color-fail: rgb(var(--fail-red-rgb));
+  --spinner-core-glow-fail: rgb(var(--fail-red-rgb));
 }
 
 body[data-theme="light"] {
@@ -121,6 +141,21 @@ body {
   justify-content: center;
   z-index: 5;
   pointer-events: none;
+  background-color: var(--loading-bg);
+  transition: background-color 0.6s ease;
+}
+
+/* When artwork loading fails, tint the spinner background using theme-aware variable.
+   Spinner animation continues, only the background color changes to indicate failure. */
+#container.load-failed #loadingSpinner {
+  background-color: var(--loading-bg-fail);
+}
+
+/* When failed, tint the spinner core to a red variant so the breathing core and
+   the background color transition together. */
+#container.load-failed .pix-spinner__core {
+  fill: var(--spinner-core-color-fail) !important;
+  filter: drop-shadow(0 0 30px var(--spinner-core-glow-fail)) !important;
 }
 
 #loadingSpinner.hidden {
@@ -147,6 +182,7 @@ body {
 }
 
 .pix-spinner__core {
+  transition: fill 0.6s ease, filter 0.6s ease, opacity 0.6s ease;
   fill: var(--spinner-core-color);
   filter: drop-shadow(0 0 30px var(--spinner-core-glow));
   transform-origin: center;
