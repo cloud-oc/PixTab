@@ -181,12 +181,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 多语言翻译数据
     const i18n = {
-        zh: {
+        'zh-CN': {
             description: '每次打开新标签页，都能欣赏来自 Pixiv 的精选插画。<br>支持多种排行榜、关键词搜索、收藏数筛选，打造属于你的壁纸体验。',
             download: '下载',
             license: 'Released under Apache-2.0 License.',
             designed: 'Designed for modern browsers.',
             typeText: '让 Pixiv 上的插画成为你的浏览器新标签页'
+        },
+        'zh-TW': {
+            description: '每次打開新分頁，都能欣賞來自 Pixiv 的精選插畫。<br>支援多種排行榜、關鍵字搜尋、收藏數篩選，打造專屬你的桌布體驗。',
+            download: '下載',
+            license: 'Released under Apache-2.0 License.',
+            designed: 'Designed for modern browsers.',
+            typeText: '讓 Pixiv 的插畫成為你的瀏覽器新分頁'
         },
         en: {
             description: 'Enjoy beautiful Pixiv artworks every time you open a new tab.<br>Multiple rankings, keyword search, bookmark filtering — create your own wallpaper experience.',
@@ -198,20 +205,30 @@ document.addEventListener('DOMContentLoaded', () => {
         ja: {
             description: '新しいタブを開くたびに、Pixiv の厳選イラストを楽しめます。<br>多彩なランキング、キーワード検索、ブックマーク数フィルタで、あなただけの壁紙体験を。',
             download: 'ダウンロード',
-            license: 'Apache-2.0 License で公開。',
-            designed: 'モダンブラウザ向けにデザイン。',
+            license: 'Released under Apache-2.0 License.',
+            designed: 'Designed for modern browsers.',
             typeText: 'Pixiv のイラストをブラウザの新しいタブページに'
+        }
+        ,
+        ko: {
+            description: '새 탭을 열 때마다 Pixiv에서 엄선한 일러스트를 감상하세요.<br>다양한 랭킹, 키워드 검색, 즐겨찾기 필터를 지원해 나만의 배경화면을 만듭니다.',
+            download: '다운로드',
+            license: 'Released under Apache-2.0 License.',
+            designed: 'Designed for modern browsers.',
+            typeText: '브라우저의 새 탭에서 즐기는 Pixiv 일러스트'
         }
     };
 
     // 语言显示名称映射
     const langNames = {
-        zh: '中文',
+        'zh-CN': '简体中文',
+        'zh-TW': '繁體中文',
         en: 'English',
-        ja: '日本語'
+        ja: '日本語',
+        ko: '한국어'
     };
 
-    let currentLang = 'zh';
+    let currentLang = 'zh-CN';
     const langCurrent = document.getElementById('langCurrent');
 
     // 翻译函数
@@ -231,6 +248,9 @@ document.addEventListener('DOMContentLoaded', () => {
             langCurrent.textContent = langNames[lang];
         }
 
+        // 更新页面的 lang 属性以反映当前选择（便于辅助功能与搜索引擎）
+        try { document.documentElement.lang = lang; } catch (e) { /* ignore */ }
+
         // 更新选项激活状态
         document.querySelectorAll('.lang-option').forEach(opt => {
             opt.classList.toggle('active', opt.dataset.lang === lang);
@@ -249,6 +269,20 @@ document.addEventListener('DOMContentLoaded', () => {
             applyTranslation(opt.dataset.lang);
         });
     });
+
+    // Ensure the language menu correctly highlights the current language
+    // This synchronizes `.lang-option.active` and the visible `langCurrent`
+    // in case the DOM was updated or styles need an explicit refresh.
+    function syncLanguageUI() {
+        // update current label
+        if (langCurrent) {
+            langCurrent.textContent = langNames[currentLang] || langCurrent.textContent;
+        }
+        // ensure active class on options
+        document.querySelectorAll('.lang-option').forEach(opt => {
+            opt.classList.toggle('active', opt.dataset.lang === currentLang);
+        });
+    }
 
     // 打字机效果
     const subtitleElement = document.querySelector('.subtitle');
@@ -293,15 +327,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // 检测浏览器语言
         const browserLang = navigator.language || navigator.userLanguage;
-        if (browserLang.startsWith('zh')) {
-            return 'zh';
-        } else if (browserLang.startsWith('ja')) {
-            return 'ja';
-        } else {
-            return 'en';
+        // Prefer explicit Traditional Chinese locales
+        if (browserLang.startsWith('zh-TW') || browserLang.startsWith('zh-HK') || browserLang.includes('Hant')) {
+            return 'zh-TW';
         }
+        // Simplified Chinese variants
+        if (browserLang.startsWith('zh')) {
+            return 'zh-CN';
+        }
+        // Korean
+        if (browserLang.startsWith('ko')) {
+            return 'ko';
+        }
+        // Japanese
+        if (browserLang.startsWith('ja')) {
+            return 'ja';
+        }
+        // Fallback to English
+        return 'en';
     }
     applyTranslation(getDefaultLang());
+    // Ensure UI is synced (highlight the active language option)
+    try { syncLanguageUI(); } catch (e) { /* ignore */ }
 
     // 主题切换功能
     const themeToggle = document.getElementById('themeToggle');
