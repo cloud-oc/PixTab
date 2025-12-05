@@ -3,7 +3,7 @@ import browserAPI from "../shared/browser-polyfill.js";
 
 (function () {
   const WALLPAPER_PREF_DEFAULTS = Object.freeze({
-    size: "full",
+    size: "best_fit",
     align: "center",
     tiling: "none"
   });
