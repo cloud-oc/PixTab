@@ -1,0 +1,215 @@
+{
+    "extensionName": {
+        "message": "PixTab — 新标签页"
+    },
+    "extensionDescription": {
+        "message": "在新标签页展示精美Pixiv插画"
+    },
+    "actionTitle": {
+        "message": "Pix Tab"
+    },
+    "settingsHeading": {
+        "message": "设置"
+    },
+    "languageLabel": {
+        "message": "语言"
+    },
+    "backToNewTabLabel": {
+        "message": "返回新标签页"
+    },
+    "keywordsSectionHeading": {
+        "message": "关键词设置"
+    },
+    "andKeywordsLabel": {
+        "message": "必须包含以下关键词"
+    },
+    "orKeywordsLabel": {
+        "message": "至少包含以下任意一个关键词"
+    },
+    "minusKeywordsLabel": {
+        "message": "不含有关键词(排除搜索)"
+    },
+    "keywordsTip": {
+        "message": "多个关键词用空格隔开"
+    },
+    "orderLabel": {
+        "message": "更新模式"
+    },
+    "popular_dOrder": {
+        "message": "按热门度排序"
+    },
+    "popular_male_dOrder": {
+        "message": "受男性欢迎"
+    },
+    "popular_female_dOrder": {
+        "message": "受女性欢迎"
+    },
+    "dailyRankingOrder": {
+        "message": "每日排行榜"
+    },
+    "weeklyRankingOrder": {
+        "message": "每周排行榜"
+    },
+    "monthlyRankingOrder": {
+        "message": "每月排行榜"
+    },
+    "rookieRankingOrder": {
+        "message": "新人排行榜"
+    },
+    "originalRankingOrder": {
+        "message": "原创排行榜"
+    },
+    "modeLabel": {
+        "message": "NSFW展示"
+    },
+    "allMode": {
+        "message": "全部"
+    },
+    "r18Mode": {
+        "message": "R18"
+    },
+    "safeMode": {
+        "message": "全年龄"
+    },
+    "bookmarksLabel": {
+        "message": "收藏数范围"
+    },
+    "bltLabel": {
+        "message": "最低收藏数"
+    },
+    "bgtLabel": {
+        "message": "最高收藏数"
+    },
+    "s_modeLabel": {
+        "message": "关键词匹配方式"
+    },
+    "s_tagOption": {
+        "message": "部分一致"
+    },
+    "s_tag_fullOption": {
+        "message": "完全一致"
+    },
+    "typeLabel": {
+        "message": "图片类型"
+    },
+    "allTypeLabel": {
+        "message": "插画、漫画、动图"
+    },
+    "illust_and_ugoiraTypeLabel": {
+        "message": "插画、动图"
+    },
+    "illustTypeLabel": {
+        "message": "插画"
+    },
+    "mangaTypeLabel": {
+        "message": "漫画"
+    },
+    "ugoiraTypeLabel": {
+        "message": "动图"
+    },
+    "leave_blank_for_unlimited": {
+        "message": "留空表示不限"
+    },
+    "resolutionLabel": {
+        "message": "最小尺寸"
+    },
+    "resolutionHelper": {
+        "message": "设置最小像素宽度和高度，低于该尺寸的作品会被跳过。留空表示不限。"
+    },
+    "minWidthLabel": {
+        "message": "最小宽度 (像素)"
+    },
+    "minHeightLabel": {
+        "message": "最小高度 (像素)"
+    },
+    "displaySettingsLabel": {
+        "message": "显示设置"
+    },
+    "filterSettingsLabel": {
+        "message": "图片过滤设置"
+    },
+    "sizeLabel": {
+        "message": "尺寸"
+    },
+    "sizeHelper": {
+        "message": "控制图片在浏览器窗口中的缩放方式。"
+    },
+    "sizeOriginalOption": {
+        "message": "原始"
+    },
+    "sizeFullOption": {
+        "message": "铺满"
+    },
+    "sizeBestFitOption": {
+        "message": "最佳适应"
+    },
+    "alignLabel": {
+        "message": "对齐"
+    },
+    "alignHelper": {
+        "message": "选择图片对齐的锚点位置。"
+    },
+    "alignTopLeftOption": {
+        "message": "左上"
+    },
+    "alignTopOption": {
+        "message": "居上"
+    },
+    "alignTopRightOption": {
+        "message": "右上"
+    },
+    "alignLeftOption": {
+        "message": "居左"
+    },
+    "alignCenterOption": {
+        "message": "居中"
+    },
+    "alignRightOption": {
+        "message": "居右"
+    },
+    "alignBottomLeftOption": {
+        "message": "左下"
+    },
+    "alignBottomOption": {
+        "message": "居下"
+    },
+    "alignBottomRightOption": {
+        "message": "右下"
+    },
+    "tilingLabel": {
+        "message": "平铺"
+    },
+    "tilingHelper": {
+        "message": "指定图片的平铺方向。"
+    },
+    "tilingTileOption": {
+        "message": "平铺"
+    },
+    "tilingHorizontalOption": {
+        "message": "横向"
+    },
+    "tilingVerticalOption": {
+        "message": "纵向"
+    },
+    "tilingNoneOption": {
+        "message": "不平铺"
+    },
+    "aiTypeLabel": {
+        "message": "AIGC 展示"
+    },
+    "aiTypeHelper": {
+        "message": "选择是否展示 AI 生成作品。"
+    },
+    "aiTypeDisplayOption": {
+        "message": "展示"
+    },
+    "aiTypeHideOption": {
+        "message": "隐藏"
+    },
+    "save": {
+        "message": "保存"
+    },
+    "reset": {
+        "message": "重置默认设置"
+    }
+}

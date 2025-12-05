@@ -1,4 +1,13 @@
 {
+  "extensionName": {
+    "message": "PixTab — 新しいタブ"
+  },
+  "extensionDescription": {
+    "message": "新しいタブで Pixiv の美しいイラストを表示する軽量拡張機能"
+  },
+  "actionTitle": {
+    "message": "Pix Tab"
+  },
   "settingsHeading": {
     "message": "設定"
   },

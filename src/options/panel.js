@@ -239,12 +239,31 @@ function applyHelperTitles(messages) {
 
 document.addEventListener("DOMContentLoaded", function () {
   const langSelect = document.getElementById("languageSelect");
-  const supportedLanguages = ["en", "zh", "ja"];
+  // Backwards compatibility: older saved preferences might contain "zh".
+  // The extension ships region-specific Chinese locales (zh-CN, zh-TW) and
+  // the legacy `_locales/zh` folder has been removed from the repository.
+  // We therefore map saved 'zh' to 'zh-CN' and intentionally avoid listing
+  // 'zh' among supported languages to prevent any runtime lookup for it.
+  const supportedLanguages = ["en", "zh-CN", "zh-TW", "ja"];
 
   function detectBrowserLanguage() {
     const browserLangs = navigator.languages || [navigator.language || "en"];
     for (const lang of browserLangs) {
-      const shortLang = lang.split("-")[0].toLowerCase();
+      const normalized = (lang || "").replace('_', '-');
+      // direct match (e.g., zh-CN, zh-TW)
+      if (supportedLanguages.includes(normalized)) {
+        return normalized;
+      }
+      const parts = normalized.split('-');
+      const shortLang = parts[0]?.toLowerCase();
+      if (shortLang === 'zh') {
+        // If region explicitly indicates TW/HK/MO, map to zh-TW; otherwise default to zh-CN
+        const region = parts[1]?.toLowerCase() || '';
+        if (region === 'tw' || region === 'hk' || region === 'mo') {
+          return 'zh-TW';
+        }
+        return 'zh-CN';
+      }
       if (supportedLanguages.includes(shortLang)) {
         return shortLang;
       }
@@ -252,12 +271,26 @@ document.addEventListener("DOMContentLoaded", function () {
     return "en";
   }
 
-  const savedLang = localStorage.getItem("language");
+  const rawSavedLang = localStorage.getItem("language");
+  // Backwards compatibility: older versions may have used 'zh' as value
+  let savedLang = rawSavedLang;
+  if (savedLang === 'zh') {
+    savedLang = 'zh-CN';
+  }
+  // Validate savedLang
+  if (!savedLang || !supportedLanguages.includes(savedLang)) {
+    savedLang = null;
+  }
   const defaultLang = savedLang || detectBrowserLanguage();
-  if (!savedLang) {
+  if (!rawSavedLang) {
     localStorage.setItem("language", defaultLang);
   }
-  langSelect.value = defaultLang;
+  // If the saved/default lang isn't available as an option in the select, fallback to 'en'
+  if (!Array.from(langSelect.options).some((o) => o.value === defaultLang)) {
+    langSelect.value = 'en';
+  } else {
+    langSelect.value = defaultLang;
+  }
 
   function loadTranslations(lang) {
     fetch(`_locales/${lang}/messages.json`)

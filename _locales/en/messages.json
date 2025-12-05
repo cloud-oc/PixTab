@@ -1,4 +1,13 @@
 {
+  "extensionName": {
+    "message": "PixTab"
+  },
+  "extensionDescription": {
+    "message": "Display beautiful Pixiv illustrations on your new tab"
+  },
+  "actionTitle": {
+    "message": "Pix Tab"
+  },
   "settingsHeading": {
     "message": "Settings"
   },

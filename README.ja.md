@@ -1,6 +1,6 @@
 # PixTab <img src="icons/icon-128.png" width="36" height="36" align="right" alt="icon">
 
-<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh.md"><img src="https://img.shields.io/badge/中文-red?style=for-the-badge" alt="中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a>
+<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh-CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh-TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a>
 
 ブラウザの新しいタブに Pixiv の素敵なイラストを表示します。
 
@@ -18,7 +18,7 @@ PixTab は新しいタブに Pixiv のイラストを表示する軽量なブラ
 - **解像度設定** — 最小幅/高さを設定して画質を確保。
 - **表示カスタマイズ** — 画像サイズ、配置、タイリングモードをカスタマイズ。
 - **ライト & ダークテーマ** — システム時間に合わせてテーマが自動切り替え。
-- **多言語対応** — English、中文、日本語 に対応。
+- **多言語対応** — English、簡体中文、繁體中文、日本語 に対応。
 - **プライバシー重視** — すべての設定はローカルに保存、外部サーバーへのデータ送信なし。
 
 ## インストール方法
