@@ -244,7 +244,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // the legacy `_locales/zh` folder has been removed from the repository.
   // We therefore map saved 'zh' to 'zh-CN' and intentionally avoid listing
   // 'zh' among supported languages to prevent any runtime lookup for it.
-  const supportedLanguages = ["en", "zh-CN", "zh-TW", "ja"];
+  const supportedLanguages = ["en", "zh-CN", "zh-TW", "ja", "ko"];
 
   function detectBrowserLanguage() {
     const browserLangs = navigator.languages || [navigator.language || "en"];

@@ -1,0 +1,215 @@
+{
+    "extensionName": {
+        "message": "PixTab"
+    },
+    "extensionDescription": {
+        "message": "새 탭에서 아름다운 Pixiv 일러스트를 표시합니다"
+    },
+    "actionTitle": {
+        "message": "Pix Tab"
+    },
+    "settingsHeading": {
+        "message": "설정"
+    },
+    "languageLabel": {
+        "message": "언어"
+    },
+    "backToNewTabLabel": {
+        "message": "새 탭으로 돌아가기"
+    },
+    "keywordsSectionHeading": {
+        "message": "키워드 설정"
+    },
+    "andKeywordsLabel": {
+        "message": "다음 키워드를 반드시 포함"
+    },
+    "orKeywordsLabel": {
+        "message": "다음 중 하나 이상 포함"
+    },
+    "minusKeywordsLabel": {
+        "message": "다음 키워드 제외 (검색 아님)"
+    },
+    "keywordsTip": {
+        "message": "여러 키워드는 공백으로 구분하세요"
+    },
+    "orderLabel": {
+        "message": "업데이트 모드"
+    },
+    "popular_dOrder": {
+        "message": "인기순 정렬"
+    },
+    "popular_male_dOrder": {
+        "message": "남성에게 인기"
+    },
+    "popular_female_dOrder": {
+        "message": "여성에게 인기"
+    },
+    "dailyRankingOrder": {
+        "message": "일간 랭킹"
+    },
+    "weeklyRankingOrder": {
+        "message": "주간 랭킹"
+    },
+    "monthlyRankingOrder": {
+        "message": "월간 랭킹"
+    },
+    "rookieRankingOrder": {
+        "message": "루키 랭킹"
+    },
+    "originalRankingOrder": {
+        "message": "오리지널 랭킹"
+    },
+    "modeLabel": {
+        "message": "NSFW 표시"
+    },
+    "allMode": {
+        "message": "전체"
+    },
+    "r18Mode": {
+        "message": "R18"
+    },
+    "safeMode": {
+        "message": "전체 연령"
+    },
+    "bookmarksLabel": {
+        "message": "북마크 범위"
+    },
+    "bltLabel": {
+        "message": "최소 북마크 수"
+    },
+    "bgtLabel": {
+        "message": "최대 북마크 수"
+    },
+    "s_modeLabel": {
+        "message": "키워드 매칭"
+    },
+    "s_tagOption": {
+        "message": "부분 일치"
+    },
+    "s_tag_fullOption": {
+        "message": "정확히 일치"
+    },
+    "typeLabel": {
+        "message": "이미지 유형"
+    },
+    "allTypeLabel": {
+        "message": "일러스트, 만화, 우고이라"
+    },
+    "illust_and_ugoiraTypeLabel": {
+        "message": "일러스트, 우고이라"
+    },
+    "illustTypeLabel": {
+        "message": "일러스트"
+    },
+    "mangaTypeLabel": {
+        "message": "만화"
+    },
+    "ugoiraTypeLabel": {
+        "message": "우고이라"
+    },
+    "leave_blank_for_unlimited": {
+        "message": "제한 없음으로 비워두세요"
+    },
+    "resolutionLabel": {
+        "message": "최소 크기"
+    },
+    "resolutionHelper": {
+        "message": "최소 너비/높이(px)보다 작은 작품은 제외됩니다. 아무 크기나 허용하려면 비워두세요."
+    },
+    "minWidthLabel": {
+        "message": "최소 너비 (px)"
+    },
+    "minHeightLabel": {
+        "message": "최소 높이 (px)"
+    },
+    "displaySettingsLabel": {
+        "message": "표시 설정"
+    },
+    "filterSettingsLabel": {
+        "message": "이미지 필터 설정"
+    },
+    "sizeLabel": {
+        "message": "크기"
+    },
+    "sizeHelper": {
+        "message": "작품이 브라우저 창 내에서 어떻게 스케일되는지 선택하세요."
+    },
+    "sizeOriginalOption": {
+        "message": "원본"
+    },
+    "sizeFullOption": {
+        "message": "전체"
+    },
+    "sizeBestFitOption": {
+        "message": "최적 맞춤"
+    },
+    "alignLabel": {
+        "message": "정렬"
+    },
+    "alignHelper": {
+        "message": "배경 이미지를 배치할 때 사용할 초점 포인트를 선택하세요."
+    },
+    "alignTopLeftOption": {
+        "message": "왼쪽 상단"
+    },
+    "alignTopOption": {
+        "message": "상단"
+    },
+    "alignTopRightOption": {
+        "message": "오른쪽 상단"
+    },
+    "alignLeftOption": {
+        "message": "왼쪽"
+    },
+    "alignCenterOption": {
+        "message": "중앙"
+    },
+    "alignRightOption": {
+        "message": "오른쪽"
+    },
+    "alignBottomLeftOption": {
+        "message": "왼쪽 하단"
+    },
+    "alignBottomOption": {
+        "message": "하단"
+    },
+    "alignBottomRightOption": {
+        "message": "오른쪽 하단"
+    },
+    "tilingLabel": {
+        "message": "타일링"
+    },
+    "tilingHelper": {
+        "message": "배경 이미지의 타일링 방식을 지정하세요."
+    },
+    "tilingTileOption": {
+        "message": "타일"
+    },
+    "tilingHorizontalOption": {
+        "message": "수평"
+    },
+    "tilingVerticalOption": {
+        "message": "수직"
+    },
+    "tilingNoneOption": {
+        "message": "없음"
+    },
+    "aiTypeLabel": {
+        "message": "AIGC 표시"
+    },
+    "aiTypeHelper": {
+        "message": "AI 생성 작품을 표시할지 숨길지 선택하세요."
+    },
+    "aiTypeDisplayOption": {
+        "message": "표시"
+    },
+    "aiTypeHideOption": {
+        "message": "숨기기"
+    },
+    "save": {
+        "message": "저장"
+    },
+    "reset": {
+        "message": "기본 설정으로 재설정"
+    }
+}

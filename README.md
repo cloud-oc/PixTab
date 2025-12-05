@@ -1,6 +1,6 @@
 # PixTab <img src="icons/icon-128.png" width="36" height="36" align="right" alt="icon">
 
-<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh-CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh-TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a>
+<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh-CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh-TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ko.md"><img src="https://img.shields.io/badge/한국어-brightgreen?style=for-the-badge" alt="한국어"></a>
 
 Display beautiful Pixiv artworks on the new tab page of your browser.
 
@@ -18,7 +18,7 @@ PixTab is a lightweight browser extension that displays Pixiv artworks on your n
 - **Resolution requirements** — Set minimum width/height to ensure image quality.
 - **Display customization** — Customize image size, alignment, and tiling mode.
 - **Light & Dark themes** — Interface theme automatically switches with system time.
-- **Multi-language support** — Available in English, 简体中文, 繁體中文, and 日本語.
+- **Multi-language support** — Available in English, Simplified Chinese, Traditional Chinese, Japanese, and Korean.
 - **Privacy-friendly** — All settings stored locally, no data sent to external servers.
 
 ## Installation
