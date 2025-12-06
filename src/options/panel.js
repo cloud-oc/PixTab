@@ -293,28 +293,44 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function loadTranslations(lang) {
-    fetch(`_locales/${lang}/messages.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        document.querySelectorAll("[id]").forEach((el) => {
-          if (data[el.id]) {
-            el.textContent = data[el.id].message;
+    // 兼容中划线和下划线
+    const tryPaths = [
+      `_locales/${lang}/messages.json`,
+      `_locales/${lang.replace('-', '_')}/messages.json`
+    ];
+    (function tryFetch(i) {
+      fetch(tryPaths[i])
+        .then((response) => {
+          if (!response.ok) throw new Error("Not found");
+          return response.json();
+        })
+        .then((data) => {
+          document.querySelectorAll("[id]").forEach((el) => {
+            if (data[el.id]) {
+              el.textContent = data[el.id].message;
+            }
+          });
+          document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+            const key = el.getAttribute("data-i18n-placeholder");
+            if (data[key]) {
+              el.placeholder = data[key].message;
+            }
+          });
+          const backLabel = document.getElementById("backToNewTabLabel");
+          const backButton = document.getElementById("backToNewTabButton");
+          if (backLabel && backButton) {
+            backButton.title = backLabel.textContent;
+          }
+          applyHelperTitles(data);
+        })
+        .catch((error) => {
+          if (i + 1 < tryPaths.length) {
+            tryFetch(i + 1);
+          } else {
+            console.error("Error loading translations:", error);
           }
         });
-        document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
-          const key = el.getAttribute("data-i18n-placeholder");
-          if (data[key]) {
-            el.placeholder = data[key].message;
-          }
-        });
-        const backLabel = document.getElementById("backToNewTabLabel");
-        const backButton = document.getElementById("backToNewTabButton");
-        if (backLabel && backButton) {
-          backButton.title = backLabel.textContent;
-        }
-        applyHelperTitles(data);
-      })
-      .catch((error) => console.error("Error loading translations:", error));
+    })(0);
   }
 
   loadTranslations(defaultLang);
