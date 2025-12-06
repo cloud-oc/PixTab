@@ -1,29 +1,31 @@
 # PixTab <img src="icons/icon-128.png" width="36" height="36" align="right" alt="icon">
 
-<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh-CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh-TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a>
+<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ko.md"><img src="https://img.shields.io/badge/한국어-brightgreen?style=for-the-badge" alt="한국어"></a> <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj"><img src="https://img.shields.io/badge/Edge%20Addons-Install-blueviolet?style=for-the-badge" alt="Edge Add-ons"></a>
 
-在瀏覽器的新分頁顯示 Pixiv 精選插畫。
+在瀏覽器的新分頁展示 Pixiv 精選插畫。
 
 ## 簡介
 
-PixTab 是一款輕量級的瀏覽器擴充功能，可在新分頁顯示來自 Pixiv 的作品，支援自訂設定、關鍵字搜尋與本地化設定，同時支援 Chromium 與 Firefox 內核的瀏覽器。
+PixTab 是一款輕量級瀏覽器擴充功能，可在新分頁顯示 Pixiv 的作品，支援自訂設定、關鍵字搜尋與本地化，並支援 Chromium 與 Firefox 內核的瀏覽器。
 
 ## 主要功能
 
 - **精美 Pixiv 插畫** — 每次打開新分頁都能欣賞 Pixiv 上的作品。
 - **多種排序方式** — 支援每日/每週/每月排行榜、新人榜、原創榜、人氣榜等。
-- **關鍵字搜尋** — 支援 AND、OR、NOT 組合關鍵字，按標籤精準篩選作品。
-- **收藏數篩選** — 設定最低/最高收藏數範圍，依收藏數篩選作品。
+- **關鍵字搜尋** — 支援 AND、OR、NOT 組合關鍵字，按標籤精確篩選作品。
+- **收藏數篩選** — 設定最低/最高收藏數範圍，透過收藏數篩選作品。
 - **作品類型過濾** — 可選插畫、漫畫、動圖，或僅看非 AI 生成作品。
 - **解析度要求** — 設定最小寬高，確保圖片清晰度。
-- **顯示樣式** — 自訂圖片尺寸、對齊方式與平鋪模式。
-- **淺色 & 深色主題** — 介面主題會隨系統時間自動切換。
+- **顯示樣式** — 自訂圖片尺寸、對齊方式和平鋪模式。
+- **明亮 & 暗黑主題** — 介面主題自動隨系統時間切換。
 - **多語言支援** — 提供 英語、簡體中文、繁體中文、日語、韓語 五種介面語言。
-- **隱私友好** — 所有設定保存在本地，不會傳送任何資料到外部伺服器。
+- **隱私友好** — 所有設定保存在本地，不向外部伺服器發送任何資料。
 
 ## 安裝方法
 
-> **注意**：本擴充暫未上架 Chrome Web Store 與 Firefox Add-ons，請按照以下步驟手動安裝。
+> **Edge 使用者可直接在 [Microsoft Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj) 安裝本擴充功能。**
+
+> **注意**：本擴充功能暫未上架 Chrome Web Store 或 Firefox Add-ons，請按以下步驟手動安裝。
 
 ### Chromium 內核瀏覽器
 

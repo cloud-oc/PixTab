@@ -1,29 +1,31 @@
 # PixTab <img src="icons/icon-128.png" width="36" height="36" align="right" alt="icon">
 
-<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh-CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh-TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a>
+<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ko.md"><img src="https://img.shields.io/badge/한국어-brightgreen?style=for-the-badge" alt="한국어"></a> <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj"><img src="https://img.shields.io/badge/Edge%20Addons-Install-blueviolet?style=for-the-badge" alt="Edge Add-ons"></a>
 
-ブラウザの新しいタブに Pixiv の素敵なイラストを表示します。
+ブラウザの新しいタブページに美しいPixivイラストを表示します。
 
 ## 概要
 
-PixTab は新しいタブに Pixiv のイラストを表示する軽量なブラウザ拡張機能です。カスタム設定、キーワード検索、多言語対応をサポートし、Chromium と Firefox ベースのブラウザ両方で動作します。
+PixTabは新しいタブページにPixivの作品を表示する軽量なブラウザ拡張機能です。カスタム設定、キーワード検索、多言語対応を備え、Chromium系・Firefox系ブラウザで動作します。
 
 ## 主な機能
 
-- **美しい Pixiv イラスト** — 新しいタブを開くたびに Pixiv の作品を楽しめます。
-- **多彩なソート** — デイリー/ウィークリー/マンスリーランキング、ルーキー、オリジナル、人気順など。
-- **キーワード検索** — AND、OR、NOT を組み合わせてタグで作品をフィルタリング。
-- **ブックマーク数フィルター** — 最小/最大ブックマーク数を設定して人気度で絞り込み。
-- **作品タイプフィルター** — イラスト、マンガ、うごイラを選択、または AI 生成作品を非表示。
-- **解像度設定** — 最小幅/高さを設定して画質を確保。
-- **表示カスタマイズ** — 画像サイズ、配置、タイリングモードをカスタマイズ。
-- **ライト & ダークテーマ** — システム時間に合わせてテーマが自動切り替え。
-- **多言語対応** — 英語、簡体中国語、繁体中国語、日本語、韓国語に対応。
-- **プライバシー重視** — すべての設定はローカルに保存、外部サーバーへのデータ送信なし。
+- **美しいPixivイラスト** — 新しいタブを開くたびにPixivの作品を楽しめます。
+- **多彩な並び替え** — 日/週/月ランキング、新人、オリジナル、人気など多様な並び替えに対応。
+- **キーワード検索** — AND/OR/NOT組み合わせでタグを精密にフィルタリング。
+- **ブックマーク数フィルタ** — 最低/最高ブックマーク数で作品を絞り込み。
+- **作品タイプフィルタ** — イラスト、マンガ、動くイラスト（ugoira）、AI生成作品の非表示も可能。
+- **解像度要件** — 最小幅・高さを設定し画像品質を確保。
+- **表示スタイル** — 画像サイズ、配置、タイル表示をカスタマイズ。
+- **ライト＆ダークテーマ** — インターフェースはシステム時間に応じて自動切替。
+- **多言語対応** — 英語、簡体字中国語、繁体字中国語、日本語、韓国語に対応。
+- **プライバシー重視** — 設定はすべてローカル保存、外部サーバーへデータ送信なし。
 
 ## インストール方法
 
-> **注意**：この拡張機能は Chrome Web Store や Firefox Add-ons には公開されていません。以下の手順で手動インストールしてください。
+> **Edgeユーザーは [Microsoft Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj) から直接インストールできます。**
+
+> **注意**：本拡張機能はChrome Web StoreやFirefox Add-onsには未掲載です。以下の手順で手動インストールしてください。
 
 ### Chromium 系ブラウザ
 
