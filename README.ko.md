@@ -1,8 +1,9 @@
 # PixTab <img src="icons/icon-128.png" width="36" height="36" align="right" alt="icon">
 
-<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ko.md"><img src="https://img.shields.io/badge/한국어-brightgreen?style=for-the-badge" alt="한국어"></a> <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj"><img src="https://img.shields.io/badge/Edge%20Addons-Install-blueviolet?style=for-the-badge" alt="Edge Add-ons"></a>
+<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ko.md"><img src="https://img.shields.io/badge/한국어-brightgreen?style=for-the-badge" alt="한국어"></a>
 
-브라우저의 새 탭 페이지에 아름다운 Pixiv 작품을 표시합니다.
+<a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj"><img src="https://img.shields.io/badge/Edge%20Addons-Install-blueviolet?style=for-the-badge&logo=microsoftedge&logoColor=white" alt="Edge Add-ons"></a> <a href="https://addons.mozilla.org/firefox/addon/pixtab/"><img src="https://img.shields.io/badge/Firefox%20Addons-Install-orange?style=for-the-badge&logo=firefox&logoColor=white" alt="Firefox Add-ons"></a>
+
 
 ## 개요
 
@@ -21,11 +22,14 @@ PixTab은 새 탭 페이지에 Pixiv의 작품을 표시하는 가벼운 브라�
 - **다국어 지원** — 영어, 간체중문(简体中文), 번체중문(繁體中文), 일본어, 한국어를 지원합니다。
 - **개인정보 보호 중심** — 모든 설정은 로컬에만 저장되며 외부 서버로 전송되지 않습니다。
 
+
 ## 설치 방법
 
-> **Edge 사용자는 [Microsoft Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj) 에서 바로 설치할 수 있습니다.**
+> **Edge 사용자는 [Microsoft Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj)에서 바로 설치할 수 있습니다.**
+>
+> **Firefox 사용자는 [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/pixtab/)에서 바로 설치할 수 있습니다.**
 
-> **참고**: 이 확장 기능은 아직 Chrome 웹 스토어나 Firefox 애드온에 정식으로 등록되어 있지 않습니다. 아래 지침에 따라 수동으로 설치하세요。
+> **참고**: 이 확장 기능은 아직 Chrome 웹 스토어에 공식 등록되어 있지 않습니다. Chrome 사용자는 아래 안내에 따라 수동으로 설치해 주세요.
 
 ### Chromium 기반 브라우저
 
