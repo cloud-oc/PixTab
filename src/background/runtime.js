@@ -696,27 +696,23 @@ browserAPI.runtime.onMessage.addListener(function (
           sendResponse(res);
           let { profileImageUrl, imageObjectUrl, ...filteredRes } = res;
           console.log(filteredRes);
-          // Notify UI that artwork loaded successfully (clear failure indicator)
-          try {
-            browserAPI.runtime.sendMessage({ action: 'artworkLoadSucceeded' });
-          } catch (e) {
-            if (e && e.message && e.message.includes('Could not establish connection')) {
-              // 静默忽略 Manifest V3 service worker 休眠导致的错误
-            } else {
-              dbg('Background sendMessage error:', e);
-            }
-          }
+          browserAPI.runtime.sendMessage({ action: 'artworkLoadSucceeded' })
+            .catch(e => {
+              if (e && e.message && e.message.includes('Could not establish connection')) {
+                // 静默忽略 Manifest V3 service worker 休眠导致的错误
+              } else {
+                dbg('Background sendMessage error:', e);
+              }
+            });
         } else {
-          // Notify UI that artwork failed to load (keep spinner, but indicate failure)
-          try {
-            browserAPI.runtime.sendMessage({ action: 'artworkLoadFailed' });
-          } catch (e) {
-            if (e && e.message && e.message.includes('Could not establish connection')) {
-              // 静默忽略 Manifest V3 service worker 休眠导致的错误
-            } else {
-              dbg('Background sendMessage error:', e);
-            }
-          }
+          browserAPI.runtime.sendMessage({ action: 'artworkLoadFailed' })
+            .catch(e => {
+              if (e && e.message && e.message.includes('Could not establish connection')) {
+                // 静默忽略 Manifest V3 service worker 休眠导致的错误
+              } else {
+                dbg('Background sendMessage error:', e);
+              }
+            });
           sendResponse(null);
         }
         fillQueue();
@@ -724,7 +720,6 @@ browserAPI.runtime.onMessage.addListener(function (
         let config = await loadPreferences();
         config = applyConfigNormalization(config);
         searchSource.updateConfig(config);
-        // update debug logging flag when preferences change
         debugLoggingEnabled = !!config.debugLogging;
         artworkQueue = new ArtworkQueue(2);
         storageSessionSet({
@@ -732,6 +727,10 @@ browserAPI.runtime.onMessage.addListener(function (
           illustQueue: artworkQueue
         });
         fillQueue();
+        sendResponse();
+      } else {
+        // 其他分支，确保 sendResponse 被调用
+        sendResponse();
       }
     }
   )();
