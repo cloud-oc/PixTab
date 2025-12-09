@@ -53,11 +53,17 @@ const saveOptions = () => {
   );
 
   browserAPI.runtime.sendMessage({ action: "refreshPreferences" }, (response) => {
-    let lastError = browserAPI.runtime.lastError;
+    const lastError = browserAPI.runtime.lastError;
     if (lastError) {
-      console.log(lastError.message);
+      // 仅在调试时输出，生产环境可静默处理
+      if (lastError.message && lastError.message.includes('Could not establish connection')) {
+        // 静默忽略 Manifest V3 service worker 休眠导致的错误
+        return;
+      }
+      console.warn('Extension messaging error:', lastError.message);
       return;
     }
+    // 可根据需要处理 response
   });
 };
 

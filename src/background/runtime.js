@@ -700,14 +700,22 @@ browserAPI.runtime.onMessage.addListener(function (
           try {
             browserAPI.runtime.sendMessage({ action: 'artworkLoadSucceeded' });
           } catch (e) {
-            dbg('Failed to send artworkLoadSucceeded message', e);
+            if (e && e.message && e.message.includes('Could not establish connection')) {
+              // 静默忽略 Manifest V3 service worker 休眠导致的错误
+            } else {
+              dbg('Background sendMessage error:', e);
+            }
           }
         } else {
           // Notify UI that artwork failed to load (keep spinner, but indicate failure)
           try {
             browserAPI.runtime.sendMessage({ action: 'artworkLoadFailed' });
           } catch (e) {
-            dbg('Failed to send artworkLoadFailed message', e);
+            if (e && e.message && e.message.includes('Could not establish connection')) {
+              // 静默忽略 Manifest V3 service worker 休眠导致的错误
+            } else {
+              dbg('Background sendMessage error:', e);
+            }
           }
           sendResponse(null);
         }

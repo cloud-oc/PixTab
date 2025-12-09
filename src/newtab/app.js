@@ -264,8 +264,15 @@ import browserAPI from "../shared/browser-polyfill.js";
       setRefreshing(true);
       showSpinnerIfBlank();
       browserAPI.runtime.sendMessage({ action: "requestArtwork" }, (res) => {
-        if (browserAPI.runtime.lastError) {
-          console.warn("Context invalidated, message could not be processed:", browserAPI.runtime.lastError.message);
+        const lastError = browserAPI.runtime.lastError;
+        if (lastError) {
+          if (lastError.message && lastError.message.includes('Could not establish connection')) {
+            // 静默忽略 Manifest V3 service worker 休眠导致的错误
+            setRefreshing(false);
+            isRequestInProgress = false;
+            return;
+          }
+          console.warn("Extension messaging error:", lastError.message);
           setRefreshing(false);
           isRequestInProgress = false;
           return;
