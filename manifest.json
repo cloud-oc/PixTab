@@ -7,14 +7,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "pixtab@pixtab.extension",
-      "strict_min_version": "113.0",
-      "data_collection_permissions": {
-        "collects": false,
-        "required": [
-          "none"
-        ],
-        "optional": []
-      }
+      "strict_min_version": "113.0"
     }
   },
   "icons": {

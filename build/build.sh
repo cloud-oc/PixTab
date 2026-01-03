@@ -27,10 +27,7 @@ const fs = require('fs');
 const manifestPath = 'manifest.json';
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 if (manifest.background && manifest.background.service_worker) {
-    const swPath = manifest.background.service_worker;
-    manifest.background.scripts = [swPath];
-    delete manifest.background.service_worker;
-    if (manifest.background.type) delete manifest.background.type;
+    if (!manifest.background.type) manifest.background.type = 'module';
 }
 if (manifest.action && manifest.action.default_icon && typeof manifest.action.default_icon === 'object') {
     const sizes = ['48', '32', '16', '128'];

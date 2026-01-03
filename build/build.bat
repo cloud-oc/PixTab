@@ -24,16 +24,17 @@ mkdir dist
 
 REM Chrome/Edge 打包
 echo 📦 打包 Chrome/Edge 版本...
-powershell -Command "Compress-Archive -Force -Path 'manifest.json','LICENSE','index.html','options.html','style.css','_locales','icons','src' -DestinationPath 'dist\pixtab-%VERSION%-chrome.zip'"
+REM 使用 tar 生成 zip，确保内部路径使用正斜杠，避免 Firefox AMO 报 Invalid file name
+tar -a -cf "dist\pixtab-%VERSION%-chrome.zip" manifest.json LICENSE index.html options.html style.css _locales icons src
 
 REM Firefox 打包（临时修改 manifest）
 echo 📦 打包 Firefox 版本...
 copy manifest.json manifest.backup.json >nul
 
 REM 使用 PowerShell 解析并更新 JSON（更稳健）
-powershell -Command "$m = Get-Content manifest.json | ConvertFrom-Json; if ($m.background.service_worker) { $m.background.scripts = @($m.background.service_worker); $m.background.PSObject.Properties.Remove('service_worker'); $m.background.PSObject.Properties.Remove('type') } ; if ($m.action -and $m.action.default_icon -is [System.Collections.Hashtable]) { $icon = $m.action.default_icon.'48' -or $m.action.default_icon.'32' -or $m.action.default_icon.'16' -or $m.action.default_icon.'128'; if (-not $icon) { $icon = 'icons/icon-48.png' }; $m.action.default_icon = $icon }; if (-not $m.browser_specific_settings) { $m.browser_specific_settings = @{ } }; if (-not $m.browser_specific_settings.gecko) { $m.browser_specific_settings.gecko = @{ } }; $m.browser_specific_settings.gecko.strict_min_version = '142.0'; $m.browser_specific_settings.gecko_android = @{ strict_min_version = '142.0' }; if (-not $m.browser_specific_settings.gecko.data_collection_permissions) { $m.browser_specific_settings.gecko.data_collection_permissions = @{ collects = $false ; required = @('none') ; optional = @() } } ; $m | ConvertTo-Json -Depth 10 | Set-Content manifest.json"
+powershell -Command "$m = Get-Content manifest.json -Raw | ConvertFrom-Json; if ($m.background -and $m.background.service_worker) { if (-not $m.background.type) { $m.background.type = 'module' } }; if ($m.action -and $m.action.default_icon -is [System.Collections.Hashtable]) { $icon = $m.action.default_icon.'48' -or $m.action.default_icon.'32' -or $m.action.default_icon.'16' -or $m.action.default_icon.'128'; if (-not $icon) { $icon = 'icons/icon-48.png' }; $m.action.default_icon = $icon }; if (-not $m.browser_specific_settings) { $m.browser_specific_settings = New-Object PSObject }; if (-not $m.browser_specific_settings.gecko) { $m.browser_specific_settings | Add-Member gecko (New-Object PSObject) }; $m.browser_specific_settings.gecko.strict_min_version = '142.0'; $m.browser_specific_settings | Add-Member gecko_android (New-Object PSObject -Property @{ strict_min_version = '142.0' }) -Force; $m | ConvertTo-Json -Depth 10 | Set-Content manifest.json"
 
-powershell -Command "Compress-Archive -Force -Path 'manifest.json','LICENSE','index.html','options.html','style.css','_locales','icons','src' -DestinationPath 'dist\pixtab-%VERSION%-firefox.zip'"
+tar -a -cf "dist\pixtab-%VERSION%-firefox.zip" manifest.json LICENSE index.html options.html style.css _locales icons src
 
 REM 重命名为 .xpi
 if exist "dist\pixtab-%VERSION%-firefox.xpi" del "dist\pixtab-%VERSION%-firefox.xpi"
