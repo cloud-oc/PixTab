@@ -45,10 +45,10 @@ PixTabは新しいタブページにPixivの作品を表示する軽量なブラ
 
 6. 新しいタブを開くと PixTab が表示されます！
 
-### Firefox 系ブラウザ（113+）
+### Firefox 系ブラウザ（140+）
 
 1. このリポジトリをクローンまたはダウンロードします。
-2. ブラウザで `about:debugging#/runtime/this-firefox` を開きます。
+2. Firefox 140 以降を使用し、ブラウザで `about:debugging#/runtime/this-firefox` を開きます。
 4. オプション A — 配布用 XPI を使ってインストール（テスト向け）:
 	- `dist/*.xpi`（例: `dist/pixtab-0.9-firefox.xpi`）をダウンロードした場合、`about:addons` を開き、歯車メニューから **Install Add-on From File...** を選ぶか、`.xpi` ファイルをアドオンページへドラッグしてインストールできます。
 

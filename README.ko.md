@@ -45,10 +45,10 @@ PixTab은 새 탭 페이지에 Pixiv의 작품을 표시하는 가벼운 브라�
 
 6. 새 탭을 열어 PixTab이 정상 작동하는지 확인하세요。
 
-### Firefox 기반 브라우저 (113+)
+### Firefox 기반 브라우저 (140+)
 
 1. 저장소를 클론하거나 다운로드합니다。
-2. 브라우저에서 `about:debugging#/runtime/this-firefox`를 엽니다。
+2. Firefox 140 이상을 사용하고, 브라우저에서 `about:debugging#/runtime/this-firefox`를 엽니다。
 3. **Load Temporary Add-on...**을 클릭합니다。
 4. 방법 A — 패키지된 XPI 사용(테스트 권장):
    - `dist/*.xpi` 파일(예: `dist/pixtab-0.9-firefox.xpi`)을 다운로드한 경우, `about:addons`의 설정(톱니) 메뉴에서 **Install Add-on From File...**을 선택하거나 `.xpi` 파일을 드래그하여 설치할 수 있습니다。

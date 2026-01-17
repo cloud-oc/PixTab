@@ -45,10 +45,10 @@ PixTab 是一款輕量級瀏覽器擴充功能，可在新分頁顯示 Pixiv 的
 
 6. 開啟新分頁，即可體驗 PixTab！
 
-### Firefox 內核瀏覽器（113+）
+### Firefox 內核瀏覽器（140+）
 
 1. 克隆或下載本倉庫。
-2. 在瀏覽器中打開 `about:debugging#/runtime/this-firefox`。
+2. 使用 Firefox 140 或更高版本，在瀏覽器中打開 `about:debugging#/runtime/this-firefox`。
 3. 點選 **臨時載入附加元件（Load Temporary Add-on）**。
 4. 方案 A — 使用打包的 XPI（便於測試）：
 	- 若你下載了 `dist/*.xpi`（例如 `dist/pixtab-0.9-firefox.xpi`），可以打開 `about:addons`，透過齒輪選單選擇 **從檔案安裝附加元件（Install Add-on From File...）**，或將 `.xpi` 檔拖曳到擴充管理頁來安裝。

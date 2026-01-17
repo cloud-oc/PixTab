@@ -45,10 +45,10 @@ PixTab is a lightweight browser extension that displays Pixiv artworks on your n
 
 6. Open a new tab to see PixTab in action!
 
-### Firefox-based Browsers (113+)
+### Firefox-based Browsers (140+)
 
 1. Clone or download this repository.
-2. Open `about:debugging#/runtime/this-firefox` in your browser.
+2. Use Firefox 140 or later, and open `about:debugging#/runtime/this-firefox` in your browser.
 3. Click **Load Temporary Add-on...**
 4. Option A — Install the packaged XPI (recommended for testing):
 	- If you downloaded a release `dist/*.xpi` (for example `dist/pixtab-0.9-firefox.xpi`), open `about:addons` and use the gear menu → **Install Add-on From File...**, or drag the `.xpi` file onto the Add-ons page to install it.
