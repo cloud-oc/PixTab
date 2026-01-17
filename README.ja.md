@@ -1,6 +1,6 @@
 # PixTab <img src="icons/icon-128.png" width="36" height="36" align="right" alt="icon">
 
-<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ko.md"><img src="https://img.shields.io/badge/한국어-brightgreen?style=for-the-badge" alt="한국어"></a>
+<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ko.md"><img src="https://img.shields.io/badge/한국어-brightgreen?style=for-the-badge" alt="한국어"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ru.md"><img src="https://img.shields.io/badge/Русский-purple?style=for-the-badge" alt="Русский"></a>
 
 <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj"><img src="https://img.shields.io/badge/Edge%20Addons-Install-blueviolet?style=for-the-badge&logo=microsoftedge&logoColor=white" alt="Edge Add-ons"></a> <a href="https://addons.mozilla.org/firefox/addon/pixtab/"><img src="https://img.shields.io/badge/Firefox%20Addons-Install-orange?style=for-the-badge&logo=firefox&logoColor=white" alt="Firefox Add-ons"></a>
 
@@ -19,7 +19,7 @@ PixTabは新しいタブページにPixivの作品を表示する軽量なブラ
 - **解像度要件** — 最小幅・高さを設定し画像品質を確保。
 - **表示スタイル** — 画像サイズ、配置、タイル表示をカスタマイズ。
 - **ライト＆ダークテーマ** — インターフェースはシステム時間に応じて自動切替。
-- **多言語対応** — 英語、簡体字中国語、繁体字中国語、日本語、韓国語に対応。
+- **多言語対応** — 英語、簡体字中国語、繁体字中国語、日本語、韓国語、ロシア語に対応。
 - **プライバシー重視** — 設定はすべてローカル保存、外部サーバーへデータ送信なし。
 
 
@@ -68,6 +68,17 @@ PixTabは新しいタブページにPixivの作品を表示する軽量なブラ
 ## ライセンス
 
 詳細は [LICENSE](LICENSE) ファイルをご覧ください。
+
+## 貢献ガイド
+
+貢献方法については [CONTRIBUTING.md](CONTRIBUTING.md) をご覧ください。
+
+## 支援・寄付
+
+もし PixTab がお役に立てましたら、ご支援・ご寄付いただけると大変嬉しいです。皆様からの温かい応援が、私の開発の原動力になっています。心より感謝いたします！(╹▽╹)
+
+- [Afdian (愛発電)](https://afdian.com/a/cloud09)
+- [Patreon](https://www.patreon.com/cloud09_official)
 
 ## 謝辞
 
