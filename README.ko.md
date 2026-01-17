@@ -19,8 +19,6 @@
     <strong>◎ Pixiv의 일러스트가 브라우저의 새 탭 페이지가 되게 하세요!◎</strong>
   </p>
 
-
-
   <p>
     <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration:none;">
       <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/edge/edge_48x48.png" width="24" height="24" alt="Edge" style="vertical-align: middle; margin-bottom: 2px;"> Edge
@@ -44,7 +42,7 @@
 
 <!-- (Skipping lines) -->
 
-## 📡 네트워크 요구사항
+
 - 📊 **다양한 랭킹** — 일간, 주간, 월간, 신인, 오리지널, 인기 순위 등 다양한 랭킹 지원!
 - 🔍 **키워드 검색** — AND, OR, NOT 조합을 통해 원하는 태그의 작품을 정확하게 검색합니다.
 - 🔖 **북마크 필터** — 최소/최대 북마크 수를 설정하여 인기 작품만 골라보세요.
@@ -88,7 +86,7 @@
 > *팁*: Firefox에서 임시로 로드된 확장 프로그램은 브라우저를 재시작하면 제거됩니다.
 </details>
 
-## 📡 네트워크 요구사항
+## 🎐 네트워크 요구사항
 
 이 확장 프로그램은 Pixiv(`pixiv.net` 및 `pximg.net`)에 접속하여 데이터를 가져옵니다.
 > 만약 로딩 애니메이션이 멈추지 않는다면 Pixiv에 접속할 수 없는 네트워크 환경일 가능성이 높습니다. 인터넷 연결이나 프록시 설정을 확인해주세요. 이 확장 프로그램은 프록시 기능을 **제공하지 않습니다**.
@@ -97,7 +95,7 @@
 
 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
 
-## 🤝 기여하기
+## 🤝 기여와 참여
 
 이슈 제보나 PR 제출은 언제나 환영입니다! 기여 가이드는 [CONTRIBUTING.md](CONTRIBUTING.md)를 확인해주세요.
 

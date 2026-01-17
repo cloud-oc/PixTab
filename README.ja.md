@@ -19,8 +19,6 @@
     <strong>◎ Pixivのイラストをブラウザの新しいタブページに！◎</strong>
   </p>
 
-
-
   <p>
     <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration:none;">
       <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/edge/edge_48x48.png" width="24" height="24" alt="Edge" style="vertical-align: middle; margin-bottom: 2px;"> Edge
@@ -44,7 +42,7 @@
 
 <!-- (Skipping lines) -->
 
-## 📡 ネットワーク要件
+
 - 📊 **多彩なランキング** — デイリー、ウィークリー、マンスリー、ルーキー、オリジナル、人気順などに対応！
 - 🔍 **キーワード検索** — AND、OR、NOT 検索を組み合わせて、好みの作品をピンポイントで見つけます。
 - 🔖 **ブックマーク数フィルタ** — ブックマーク数の最小/最大値を設定して、人気作品のみを表示。
@@ -88,7 +86,7 @@
 > *ヒント*: Firefox で一時的に読み込まれた拡張機能は、ブラウザを再起動すると削除されます。
 </details>
 
-## 📡 ネットワーク要件
+## 🎐 ネットワーク要件
 
 この拡張機能は、Pixiv (`pixiv.net` および `pximg.net`) にアクセスしてデータを取得する必要があります。
 > 新しいタブページでロードアニメーションが止まらない場合、ネットワークが Pixiv に接続できていない可能性があります。ネットワーク接続やプロキシ設定をご確認ください。この拡張機能はプロキシ機能を**提供しません**。
@@ -97,7 +95,7 @@
 
 詳細は [LICENSE](LICENSE) ファイルをご覧ください。
 
-## 🤝 貢献
+## 🤝 貢献と参加
 
 Issue や PR の送信は大歓迎です！貢献ガイドラインについては [CONTRIBUTING.md](CONTRIBUTING.md) をご覧ください。
 

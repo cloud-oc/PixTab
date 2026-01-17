@@ -19,6 +19,10 @@
     <strong>◎ Пусть иллюстрации Pixiv станут вашей новой вкладкой браузера!◎</strong>
   </p>
 
+  <p>
+    <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration:none;">
+      <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/edge/edge_48x48.png" width="24" height="24" alt="Edge" style="vertical-align: middle; margin-bottom: 2px;"> Edge
+    </a>
     &nbsp;&nbsp;&nbsp;
     <a href="https://addons.mozilla.org/firefox/addon/pixtab/" style="text-decoration:none;">
       <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox_48x48.png" width="24" height="24" alt="Firefox" style="vertical-align: middle; margin-bottom: 2px;"> Firefox
