@@ -1,10 +1,29 @@
 import { Mode, Order, SMode } from "../shared/preferences.js";
 import { buildKeywordQuery } from "../shared/keyword-builder.js";
 import { loadPreferences } from "../shared/storage.js";
-import browserAPI, { getExtensionId, storageSessionGet, storageSessionSet } from "../shared/browser-polyfill.js";
+import browserAPI, { getExtensionId, storageSessionGet, storageSessionSet, IS_FIREFOX } from "../shared/browser-polyfill.js";
 
 browserAPI.runtime.onInstalled.addListener((details) => {
-  const extensionId = getExtensionId();
+  // Firefox doesn't support extension IDs (e.g. "pixtab@pixtab.extension") in initiatorDomains.
+  // For Firefox, we omit initiatorDomains entirely - the extension context is scoped by default.
+  // For Chrome, we use the extension ID to restrict the rule to only requests from this extension.
+  const baseCondition = {
+    "urlFilter": "*://*.pixiv.net/*",
+    "resourceTypes": ["xmlhttprequest"]
+  };
+  
+  const pximgCondition = {
+    "urlFilter": "*://*.pximg.net/*",
+    "resourceTypes": ["xmlhttprequest"]
+  };
+
+  // Only add initiatorDomains for Chrome (where extension ID format is valid)
+  if (!IS_FIREFOX) {
+    const extensionId = getExtensionId();
+    baseCondition.initiatorDomains = [extensionId];
+    pximgCondition.initiatorDomains = [extensionId];
+  }
+
   const RULE = [
     {
       "id": 1,
@@ -19,13 +38,7 @@ browserAPI.runtime.onInstalled.addListener((details) => {
           }
         ]
       },
-      "condition": {
-        "initiatorDomains": [extensionId],
-        "urlFilter": "pixiv.net",
-        "resourceTypes": [
-          "xmlhttprequest",
-        ]
-      }
+      "condition": baseCondition
     },
     {
       "id": 2,
@@ -40,13 +53,7 @@ browserAPI.runtime.onInstalled.addListener((details) => {
           }
         ]
       },
-      "condition": {
-        "initiatorDomains": [extensionId],
-        "urlFilter": "pximg.net",
-        "resourceTypes": [
-          "xmlhttprequest",
-        ]
-      }
+      "condition": pximgCondition
     }
   ];
   browserAPI.declarativeNetRequest.updateDynamicRules({

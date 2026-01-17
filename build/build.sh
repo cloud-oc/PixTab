@@ -22,12 +22,17 @@ echo "📦 打包 Firefox 版本..."
 cp manifest.json manifest.backup.json
 
 # 用 Node.js 处理 manifest 字段，兼容 Firefox
+# Firefox 不支持 service_worker，需要转换为 scripts 数组格式
 node -e "
 const fs = require('fs');
 const manifestPath = 'manifest.json';
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+// Firefox 需要 scripts 数组而不是 service_worker
 if (manifest.background && manifest.background.service_worker) {
-    if (!manifest.background.type) manifest.background.type = 'module';
+    const sw = manifest.background.service_worker;
+    const type = manifest.background.type;
+    manifest.background = { scripts: [sw] };
+    if (type) manifest.background.type = type;
 }
 if (manifest.action && manifest.action.default_icon && typeof manifest.action.default_icon === 'object') {
     const sizes = ['48', '32', '16', '128'];
@@ -38,8 +43,8 @@ if (manifest.action && manifest.action.default_icon && typeof manifest.action.de
 }
 if (!manifest.browser_specific_settings) manifest.browser_specific_settings = {};
 if (!manifest.browser_specific_settings.gecko) manifest.browser_specific_settings.gecko = {};
-manifest.browser_specific_settings.gecko.strict_min_version = '142.0';
-manifest.browser_specific_settings.gecko_android = { strict_min_version: '142.0' };
+manifest.browser_specific_settings.gecko.strict_min_version = '113.0';
+manifest.browser_specific_settings.gecko_android = { strict_min_version: '113.0' };
 manifest.browser_specific_settings.gecko.data_collection_permissions = manifest.browser_specific_settings.gecko.data_collection_permissions || { collects: false, required: ['none'], optional: [] };
 fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 "

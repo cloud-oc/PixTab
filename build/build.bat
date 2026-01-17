@@ -1,51 +1,51 @@
 @echo off
-chcp 65001 >nul
 setlocal enabledelayedexpansion
 
-REM PixTab 打包脚本 (Windows)
-REM 生成 Chrome/Edge 和 Firefox 两个版本的扩展包
+REM PixTab Build Script (Windows)
+REM Generates Chrome/Edge and Firefox extension packages
 
-echo 🔨 开始打包 PixTab...
+echo [BUILD] Starting PixTab packaging...
 
-REM 切换到项目根目录
+REM Switch to project root directory
 cd /d "%~dp0.."
 
-REM 从 manifest.json 读取版本号
+REM Read version from manifest.json
 for /f "tokens=2 delims=:," %%a in ('findstr /c:"\"version\"" manifest.json') do (
     set VERSION=%%~a
     set VERSION=!VERSION:"=!
     set VERSION=!VERSION: =!
 )
-echo 📋 版本号: %VERSION%
+echo [INFO] Version: %VERSION%
 
-REM 清空并重建 dist 目录
+REM Clean and recreate dist directory
 if exist dist rmdir /s /q dist
 mkdir dist
 
-REM Chrome/Edge 打包
-echo 📦 打包 Chrome/Edge 版本...
-REM 使用 tar 生成 zip，确保内部路径使用正斜杠，避免 Firefox AMO 报 Invalid file name
+REM Chrome/Edge packaging
+echo [PACK] Building Chrome/Edge version...
+REM Use tar to create zip with forward slashes to avoid Firefox AMO "Invalid file name" error
 tar -a -cf "dist\pixtab-%VERSION%-chrome.zip" manifest.json LICENSE index.html options.html style.css _locales icons src
 
-REM Firefox 打包（临时修改 manifest）
-echo 📦 打包 Firefox 版本...
+REM Firefox packaging (temporarily modify manifest)
+echo [PACK] Building Firefox version...
 copy manifest.json manifest.backup.json >nul
 
-REM 使用 PowerShell 解析并更新 JSON（更稳健）
-powershell -Command "$m = Get-Content manifest.json -Raw | ConvertFrom-Json; if ($m.background -and $m.background.service_worker) { if (-not $m.background.type) { $m.background.type = 'module' } }; if ($m.action -and $m.action.default_icon -is [System.Collections.Hashtable]) { $icon = $m.action.default_icon.'48' -or $m.action.default_icon.'32' -or $m.action.default_icon.'16' -or $m.action.default_icon.'128'; if (-not $icon) { $icon = 'icons/icon-48.png' }; $m.action.default_icon = $icon }; if (-not $m.browser_specific_settings) { $m.browser_specific_settings = New-Object PSObject }; if (-not $m.browser_specific_settings.gecko) { $m.browser_specific_settings | Add-Member gecko (New-Object PSObject) }; $m.browser_specific_settings.gecko.strict_min_version = '142.0'; $m.browser_specific_settings | Add-Member gecko_android (New-Object PSObject -Property @{ strict_min_version = '142.0' }) -Force; $m | ConvertTo-Json -Depth 10 | Set-Content manifest.json"
+REM Use PowerShell to parse and update JSON (more robust)
+REM Firefox does not support service_worker, convert to scripts array format
+powershell -Command "$m = Get-Content manifest.json -Raw | ConvertFrom-Json; if ($m.background -and $m.background.service_worker) { $sw = $m.background.service_worker; $type = $m.background.type; $m.background = New-Object PSObject; $m.background | Add-Member scripts @($sw); if ($type) { $m.background | Add-Member type $type } }; if ($m.action -and $m.action.default_icon -is [System.Collections.Hashtable]) { $icon = $m.action.default_icon.'48' -or $m.action.default_icon.'32' -or $m.action.default_icon.'16' -or $m.action.default_icon.'128'; if (-not $icon) { $icon = 'icons/icon-48.png' }; $m.action.default_icon = $icon }; if (-not $m.browser_specific_settings) { $m.browser_specific_settings = New-Object PSObject }; if (-not $m.browser_specific_settings.gecko) { $m.browser_specific_settings | Add-Member gecko (New-Object PSObject) }; $m.browser_specific_settings.gecko.strict_min_version = '113.0'; $m.browser_specific_settings | Add-Member gecko_android (New-Object PSObject -Property @{ strict_min_version = '113.0' }) -Force; $m | ConvertTo-Json -Depth 10 | Set-Content manifest.json"
 
 tar -a -cf "dist\pixtab-%VERSION%-firefox.zip" manifest.json LICENSE index.html options.html style.css _locales icons src
 
-REM 重命名为 .xpi
+REM Rename to .xpi
 if exist "dist\pixtab-%VERSION%-firefox.xpi" del "dist\pixtab-%VERSION%-firefox.xpi"
 ren "dist\pixtab-%VERSION%-firefox.zip" "pixtab-%VERSION%-firefox.xpi"
 
-REM 恢复原始 manifest
+REM Restore original manifest
 move /y manifest.backup.json manifest.json >nul
 
 echo.
-echo ✅ 打包完成!
-echo    - dist\pixtab-%VERSION%-chrome.zip  → Chrome Web Store / Edge Add-ons
-echo    - dist\pixtab-%VERSION%-firefox.xpi → Firefox AMO
+echo [DONE] Packaging complete!
+echo    - dist\pixtab-%VERSION%-chrome.zip  -^> Chrome Web Store / Edge Add-ons
+echo    - dist\pixtab-%VERSION%-firefox.xpi -^> Firefox AMO
 
 pause
