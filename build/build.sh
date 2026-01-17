@@ -1,60 +1,37 @@
 #!/bin/bash
-# PixTab 一键打包脚本 (macOS/Linux)
+# PixTab Build Script (macOS/Linux)
+# Generates Chrome/Edge and Firefox extension packages
 set -e
 
-cd "$(dirname "$0")/.."
+SCRIPT_DIR="$(dirname "$0")"
+cd "$SCRIPT_DIR/.."
 
-echo "🔨 开始打包 PixTab..."
+echo "🔨 [BUILD] Starting PixTab packaging..."
 
-# 读取版本号
+# Read version from manifest.json
 VERSION=$(node -e "console.log(require('./manifest.json').version)")
-echo "📋 版本号: $VERSION"
+echo "📋 [INFO] Version: $VERSION"
 
 rm -rf dist
 mkdir -p dist
 
-# 打包 Chrome/Edge 版本
-echo "📦 打包 Chrome/Edge 版本..."
+# Chrome/Edge packaging
+echo "📦 [PACK] Building Chrome/Edge version..."
 zip -r "dist/pixtab-${VERSION}-chrome.zip" manifest.json LICENSE index.html options.html style.css _locales icons src -x "*.git*" -x "*.DS_Store"
 
-# 打包 Firefox 版本（临时修改 manifest）
-echo "📦 打包 Firefox 版本..."
+# Firefox packaging (temporarily modify manifest)
+echo "📦 [PACK] Building Firefox version..."
 cp manifest.json manifest.backup.json
 
-# 用 Node.js 处理 manifest 字段，兼容 Firefox
-# Firefox 不支持 service_worker，需要转换为 scripts 数组格式
-node -e "
-const fs = require('fs');
-const manifestPath = 'manifest.json';
-const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-// Firefox 需要 scripts 数组而不是 service_worker
-if (manifest.background && manifest.background.service_worker) {
-    const sw = manifest.background.service_worker;
-    const type = manifest.background.type;
-    manifest.background = { scripts: [sw] };
-    if (type) manifest.background.type = type;
-}
-if (manifest.action && manifest.action.default_icon && typeof manifest.action.default_icon === 'object') {
-    const sizes = ['48', '32', '16', '128'];
-    let selected = null;
-    for (const s of sizes) { if (manifest.action.default_icon[s]) { selected = manifest.action.default_icon[s]; break; } }
-    if (!selected) selected = 'icons/icon-48.png';
-    manifest.action.default_icon = selected;
-}
-if (!manifest.browser_specific_settings) manifest.browser_specific_settings = {};
-if (!manifest.browser_specific_settings.gecko) manifest.browser_specific_settings.gecko = {};
-manifest.browser_specific_settings.gecko.strict_min_version = '113.0';
-if (!manifest.browser_specific_settings.gecko_android) manifest.browser_specific_settings.gecko_android = {};
-manifest.browser_specific_settings.gecko_android.strict_min_version = '113.0';
-manifest.browser_specific_settings.gecko.data_collection_permissions = manifest.browser_specific_settings.gecko.data_collection_permissions || { collects: false, required: ['none'], optional: [] };
-fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-"
+# Use external Node.js script for manifest conversion (more reliable)
+node "$SCRIPT_DIR/convert-manifest-firefox.js"
 
 zip -r "dist/pixtab-${VERSION}-firefox.xpi" manifest.json LICENSE index.html options.html style.css _locales icons src -x "*.git*" -x "*.DS_Store"
 
+# Restore original manifest
 mv manifest.backup.json manifest.json
 
 echo ""
-echo "✅ 打包完成!"
-echo " - dist/pixtab-${VERSION}-chrome.zip"
-echo " - dist/pixtab-${VERSION}-firefox.xpi"
+echo "✅ [DONE] Packaging complete!"
+echo "   - dist/pixtab-${VERSION}-chrome.zip  -> Chrome Web Store / Edge Add-ons"
+echo "   - dist/pixtab-${VERSION}-firefox.xpi -> Firefox AMO"
