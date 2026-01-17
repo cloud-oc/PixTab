@@ -180,44 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     // 多语言翻译数据
-    const i18n = {
-        'zh-CN': {
-            description: '每次打开新标签页，都能欣赏来自 Pixiv 的精选插画。<br>支持多种排行榜、关键词搜索、收藏数筛选，打造属于你的壁纸体验。',
-            download: '下载',
-            license: 'Released under Apache-2.0 License.',
-            designed: 'Designed for modern browsers.',
-            typeText: '让 Pixiv 上的插画成为你的浏览器新标签页'
-        },
-        'zh-TW': {
-            description: '每次打開新分頁，都能欣賞來自 Pixiv 的精選插畫。<br>支援多種排行榜、關鍵字搜尋、收藏數篩選，打造專屬你的桌布體驗。',
-            download: '下載',
-            license: 'Released under Apache-2.0 License.',
-            designed: 'Designed for modern browsers.',
-            typeText: '讓 Pixiv 的插畫成為你的瀏覽器新分頁'
-        },
-        en: {
-            description: 'Enjoy beautiful Pixiv artworks every time you open a new tab.<br>Multiple rankings, keyword search, bookmark filtering — create your own wallpaper experience.',
-            download: 'Download',
-            license: 'Released under Apache-2.0 License.',
-            designed: 'Designed for modern browsers.',
-            typeText: "Pixiv illustrations as your browser's new tab page"
-        },
-        ja: {
-            description: '新しいタブを開くたびに、Pixiv の厳選イラストを楽しめます。<br>多彩なランキング、キーワード検索、ブックマーク数フィルタで、あなただけの壁紙体験を。',
-            download: 'ダウンロード',
-            license: 'Released under Apache-2.0 License.',
-            designed: 'Designed for modern browsers.',
-            typeText: 'Pixiv のイラストをブラウザの新しいタブページに'
-        }
-        ,
-        ko: {
-            description: '새 탭을 열 때마다 Pixiv에서 엄선한 일러스트를 감상하세요.<br>다양한 랭킹, 키워드 검색, 즐겨찾기 필터를 지원해 나만의 배경화면을 만듭니다.',
-            download: '다운로드',
-            license: 'Released under Apache-2.0 License.',
-            designed: 'Designed for modern browsers.',
-            typeText: '브라우저의 새 탭에서 즐기는 Pixiv 일러스트'
-        }
-    };
+    // Data is loaded from ./locales/*.js files and stored in window.i18n
+    const i18n = window.i18n || {};
 
     // 语言显示名称映射
     const langNames = {
@@ -225,7 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
         'zh-TW': '繁體中文',
         en: 'English',
         ja: '日本語',
-        ko: '한국어'
+        ko: '한국어',
+        ru: 'Русский'
     };
 
     let currentLang = 'zh-CN';
@@ -342,6 +307,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Japanese
         if (browserLang.startsWith('ja')) {
             return 'ja';
+        }
+        // Russian
+        if (browserLang.startsWith('ru')) {
+            return 'ru';
         }
         // Fallback to English
         return 'en';

@@ -8,8 +8,8 @@
     <meta name="description" content="PixTab - 在 Chrome 新标签页展示 Pixiv 精选插画，支持多种排行榜、关键词搜索和自定义筛选。">
     <link rel="icon" type="image/png" href="./PixTab.png">
     <link rel="stylesheet" href="./style.css">
-    <!-- Font Awesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- RemixIcon CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap"
@@ -69,6 +69,7 @@
                     <button class="lang-option" data-lang="en">English</button>
                     <button class="lang-option" data-lang="ja">日本語</button>
                     <button class="lang-option" data-lang="ko">한국어</button>
+                    <button class="lang-option" data-lang="ru">Русский</button>
                 </div>
             </div>
         </div>
@@ -106,7 +107,7 @@
                     <span class="btn-corner btn-corner-tl"></span>
                     <span class="btn-corner btn-corner-br"></span>
                     <span class="btn-text">
-                        <i class="fa-brands fa-github icon"
+                        <i class="ri-github-fill icon"
                             style="color:#0096fa;vertical-align:middle;margin-right:4px;font-size:20px;"></i>
                         GitHub
                     </span>
@@ -116,7 +117,7 @@
                     <span class="btn-corner btn-corner-tl"></span>
                     <span class="btn-corner btn-corner-br"></span>
                     <span class="btn-text">
-                        <i class="fa-brands fa-edge icon"
+                        <i class="ri-edge-new-fill icon"
                             style="color:#0096fa;vertical-align:middle;margin-right:4px;font-size:20px;"></i>
                         Edge
                     </span>
@@ -125,7 +126,7 @@
                     <span class="btn-corner btn-corner-tl"></span>
                     <span class="btn-corner btn-corner-br"></span>
                     <span class="btn-text">
-                        <i class="fa-brands fa-firefox-browser icon"
+                        <i class="ri-firefox-fill icon"
                             style="color:#0096fa;vertical-align:middle;margin-right:4px;font-size:20px;"></i>
                         Firefox
                     </span>
@@ -141,6 +142,14 @@
         <p>&copy; 2025 PixTab Project. <span data-i18n="license">Released under Apache-2.0 License.</span></p>
         <p class="small" data-i18n="designed">Designed for modern browsers.</p>
     </footer>
+
+    <!-- Locales -->
+    <script src="./locales/zh-CN.js"></script>
+    <script src="./locales/zh-TW.js"></script>
+    <script src="./locales/en.js"></script>
+    <script src="./locales/ja.js"></script>
+    <script src="./locales/ko.js"></script>
+    <script src="./locales/ru.js"></script>
 
     <script src="./script.js"></script>
 </body>
