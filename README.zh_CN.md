@@ -1,89 +1,109 @@
-# PixTab <img src="icons/icon-128.png" width="36" height="36" align="right" alt="icon">
+<div align="center">
+  <p>
+    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-555555?style=flat-square" alt="English"></a>
+    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_CN.md"><img src="https://img.shields.io/badge/简体中文-D0021B?style=flat-square" alt="简体中文"></a>
+    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_TW.md"><img src="https://img.shields.io/badge/繁體中文-E67E22?style=flat-square" alt="繁體中文"></a>
+    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-F48FB1?style=flat-square" alt="日本語"></a>
+    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ko.md"><img src="https://img.shields.io/badge/한국어-03C75A?style=flat-square" alt="한국어"></a>
+    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ru.md"><img src="https://img.shields.io/badge/Русский-0057B8?style=flat-square" alt="Русский"></a>
+  </p>
+</div>
 
-<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ko.md"><img src="https://img.shields.io/badge/한국어-brightgreen?style=for-the-badge" alt="한국어"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ru.md"><img src="https://img.shields.io/badge/Русский-purple?style=for-the-badge" alt="Русский"></a>
+<hr>
 
-<a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj"><img src="https://img.shields.io/badge/Edge%20Addons-Install-blueviolet?style=for-the-badge&logo=microsoftedge&logoColor=white" alt="Edge Add-ons"></a> <a href="https://addons.mozilla.org/firefox/addon/pixtab/"><img src="https://img.shields.io/badge/Firefox%20Addons-Install-orange?style=for-the-badge&logo=firefox&logoColor=white" alt="Firefox Add-ons"></a>
+<div align="center">
+  <img src="icons/icon-128.png" width="100" height="100" alt="PixTab Icon">
+  <br>
+  <b style="font-size: 36px;">PixTab</b>
+  <p>
+    <strong>✨ 让 Pixiv 上的插画成为你的浏览器新标签页！✨</strong>
+  </p>
 
+  <p>
+    <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration:none;">
+      <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/edge/edge_48x48.png" width="24" height="24" alt="Edge" style="vertical-align: middle; margin-bottom: 2px;"> Edge
+    </a>
+    &nbsp;&nbsp;&nbsp;
+    <a href="https://addons.mozilla.org/firefox/addon/pixtab/" style="text-decoration:none;">
+      <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox_48x48.png" width="24" height="24" alt="Firefox" style="vertical-align: middle; margin-bottom: 2px;"> Firefox
+    </a>
+  </p>
+</div>
 
-## 简介
+<br>
 
-PixTab 是一款轻量级浏览器扩展，可在新标签页显示来自 Pixiv 的作品，支持自定义配置、关键词搜索和本地化设置，同时支持 Chromium 与 Firefox 内核的浏览器。
+## ✨ 简介
 
-## 主要功能
+**PixTab** 是一款轻量级、高颜值的浏览器扩展，它能让你每次打开新标签页时都欣赏到来自 Pixiv 的精选插画。支持自定义配置、关键词搜索、本地化，并且完美支持 Chromium 和 Firefox 系列浏览器。(✿◡‿◡)
 
-- **精美 Pixiv 插画** — 每次打开新标签页都能欣赏 Pixiv 上的作品。
-- **多种排序方式** — 支持每日/每周/每月排行榜、新人榜、原创榜、人气榜等。
-- **关键词搜索** — 支持 AND、OR、NOT 组合关键词，按标签精准筛选作品。
-- **收藏数筛选** — 设置最低/最高收藏数范围，通过收藏数筛选作品。
-- **作品类型过滤** — 可选插画、漫画、动图，或仅看非 AI 生成作品。
-- **分辨率要求** — 设置最小宽高，确保图片清晰度。
-- **显示样式** — 自定义图片尺寸、对齐方式和平铺模式。
-- **明亮 & 暗黑主题** — 界面主题自动随系统时间切换。
-- **多语言支持** — 提供 英语、简体中文、繁體中文、日语、韩语、俄语 六种界面语言。
-- **隐私友好** — 所有设置保存在本地，不向外部服务器发送任何数据。
+## 💎 主要功能
 
+- 🎨 **精美插画** — 每次打开新标签页，邂逅高质量的 Pixiv 画作。
+- 📊 **多榜单支持** — 日榜、周榜、月榜、新人榜、原创榜、受男性/女性欢迎榜等！
+- 🔍 **关键词搜索** — 支持 AND、OR、NOT 组合查询，精准定位你的喜好。
+- 🔖 **收藏数过滤** — 设置最小/最大收藏数，只看热门作品。
+- 🖼️ **类型筛选** — 选择插画、漫画、动图 (Ugoira)，或屏蔽 AI 生成作品。
+- 📏 **画质控制** — 设置最小宽/高，拒绝模糊图。
+- 🛠️ **个性化定制** — 自由调整图片大小、对齐方式和平铺模式。
+- 🌓 **主题同步** — 界面主题随系统时间自动切换深色/浅色模式。
+- 🌍 **多语言支持** — 提供简体中文、繁體中文、英语、日语、韩语、俄语。
+- 🛡️ **隐私优先** — 所有设置仅保存在本地，绝不向外部服务器上传任何数据。
 
-## 安装方法
+## 🚀 安装指南
 
-> **Edge 用户可直接在 [Microsoft Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj) 安装本扩展。**
->
-> **Firefox 用户可直接在 [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/pixtab/) 官方商店安装本扩展。**
+> **注意**：本扩展未上架 Chrome 应用商店。Chrome 用户请按照以下步骤手动安装。
 
-> **注意**：本扩展暂未上架 Chrome Web Store，Chrome 用户请按以下步骤手动安装。
-
-### Chromium 内核浏览器
+<details>
+<summary><strong>📥 Chromium 内核浏览器 (Chrome, Edge, Brave...)</strong></summary>
 
 1. 克隆或下载本仓库。
-2. 在浏览器中打开 `chrome://extensions`。
-3. 启用 **开发者模式**。
-4. 方案 A — 使用打包文件（更便捷）：
-	- 如果你从 Releases 下载了 `dist/` 下的打包文件（例如 `dist/pixtab-0.9-chrome.zip`），部分 Chromium 浏览器支持将该 `.zip` 文件直接拖拽到 `chrome://extensions` 页面进行安装。如果拖拽生效，扩展会直接安装并可使用。
-	- 若你的浏览器不支持直接拖拽安装，请先解压 `.zip`，然后使用 **加载已解压的扩展程序（Load unpacked）** 选择解压后的文件夹进行安装。
+2. 在浏览器地址栏输入 `chrome://extensions` 并打开。
+3. 开启右上角的 **开发者模式** (Developer mode)。
+4. **方法 A — 安装打包好的 ZIP (推荐):**
+    - 如果你下载了 `dist/` 目录下的发布包 (如 `dist/pixtab-0.9-chrome.zip`)，尝试直接将 `.zip` 文件拖入扩展管理页面。
+    - 如果拖拽无效，请解压该压缩包，然后点击 **加载已解压的扩展程序** (Load unpacked)，选择解压后的文件夹。
+5. **方法 B — 源码安装 (开发者):**
+    - 点击 **加载已解压的扩展程序**，直接选择项目根目录。
+6. 打开新标签页，开始体验吧！✨
+</details>
 
-5. 方案 B — 从源码安装（开发者模式）：
-	- 点击 **加载已解压的扩展程序（Load unpacked）** 并选择项目文件夹。
-
-6. 打开新标签页，即可体验 PixTab！
-
-### Firefox 内核浏览器（140+）
+<details>
+<summary><strong>🦊 Firefox 内核浏览器 (140+)</strong></summary>
 
 1. 克隆或下载本仓库。
-2. 使用 Firefox 140 或更高版本，在浏览器中打开 `about:debugging#/runtime/this-firefox`。
-3. 点击 **临时加载附加组件...**。
-4. 方案 A — 使用打包的 XPI（便于测试）：
-	- 如果你下载了 `dist/*.xpi`（例如 `dist/pixtab-0.9-firefox.xpi`），可以打开 `about:addons`，通过齿轮菜单选择 **从文件安装附加组件...（Install Add-on From File...）**，或将 `.xpi` 拖拽到扩展管理页面进行安装。
+2. 使用 Firefox 140 或更高版本，访问 `about:debugging#/runtime/this-firefox`。
+3. 点击 **临时载入附加组件...** (Load Temporary Add-on)。
+4. **方法 A — 安装 XPI 包 (测试用):**
+    - 如果你下载了 `dist/*.xpi` (如 `dist/pixtab-0.9-firefox.xpi`)，打开 `about:addons`，点击齿轮图标 ⚙️ → **从文件安装附加组件...**，或直接将 `.xpi` 文件拖入页面。
+5. **方法 B — 临时载入 (开发者):**
+    - 点击 **临时载入附加组件...**，选择项目目录下的 `manifest.json` 文件。
+6. 打开新标签页，开始体验吧！✨
 
-5. 方案 B — 临时加载（开发者）：
-	- 点击 **临时加载附加组件...** 并选择项目文件夹中的 `manifest.json` 文件。
+> *提示*: 在 Firefox 中临时载入的扩展会在浏览器重启后移除。
+</details>
 
-6. 打开新标签页，即可体验 PixTab！
+## 🎐 网络与连接
 
-> **提示**：Firefox 临时加载的扩展在浏览器重启后会失效，需要重新加载。
+本扩展需要访问 Pixiv (`pixiv.net` 和 `pximg.net`) 获取数据。
+> 如果新标签页一直停留在加载动画，说明你的网络无法连接 Pixiv。请自行检查网络连接或代理设置。本扩展**不提供**任何代理功能。
 
-## 网络要求
+## 📜 许可证
 
-本扩展需要能够正常访问 Pixiv（`pixiv.net` 和 `pximg.net`）。
+详情请参阅 [LICENSE](LICENSE) 文件。
 
-如果新标签页一直停留在加载动画，说明当前网络无法访问 Pixiv，请自行解决网络问题。本扩展不提供任何代理功能。
+## 🤝 贡献与参与
 
-## 许可证
+欢迎提交 Issue 或 PR！贡献指南请参阅 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
-详见 [LICENSE](LICENSE) 文件。
+## 💖 支持与赞赏
 
-## 贡献指南
+如果你喜欢 PixTab，欢迎支持与赞赏！你的鼓励就是我前进的动力。(╹▽╹)
 
-请参阅 [CONTRIBUTING.md](CONTRIBUTING.md) 了解如何参与贡献。
-
-## 支持与捐助
-
-如果您感觉 PixTab 帮到了您，您可以对我进行支持和捐助。您的每一份鼓励都是我继续前行的动力，不胜感激！(╹▽╹)
-
-- [爱发电](https://afdian.com/a/cloud09)
+- [爱发电 (Afdian)](https://afdian.com/a/cloud09)
 - [Patreon](https://www.patreon.com/cloud09_official)
 
-## 致谢
+## 🌟 致谢
 
-本项目的灵感来源于：
-
+本项目的灵感来源于以下项目：
 - [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
 - [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)

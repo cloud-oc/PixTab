@@ -1,88 +1,109 @@
-# PixTab <img src="icons/icon-128.png" width="36" height="36" align="right" alt="icon">
+<div align="center">
+  <p>
+    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-555555?style=flat-square" alt="English"></a>
+    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_CN.md"><img src="https://img.shields.io/badge/简体中文-D0021B?style=flat-square" alt="简体中文"></a>
+    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_TW.md"><img src="https://img.shields.io/badge/繁體中文-E67E22?style=flat-square" alt="繁體中文"></a>
+    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-F48FB1?style=flat-square" alt="日本語"></a>
+    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ko.md"><img src="https://img.shields.io/badge/한국어-03C75A?style=flat-square" alt="한국어"></a>
+    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ru.md"><img src="https://img.shields.io/badge/Русский-0057B8?style=flat-square" alt="Русский"></a>
+  </p>
+</div>
 
-<a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_CN.md"><img src="https://img.shields.io/badge/简体中文-red?style=for-the-badge" alt="简体中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_TW.md"><img src="https://img.shields.io/badge/繁體中文-orange?style=for-the-badge" alt="繁體中文"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-green?style=for-the-badge" alt="日本語"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ko.md"><img src="https://img.shields.io/badge/한국어-brightgreen?style=for-the-badge" alt="한국어"></a> <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ru.md"><img src="https://img.shields.io/badge/Русский-purple?style=for-the-badge" alt="Русский"></a>
+<hr>
 
-<a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj"><img src="https://img.shields.io/badge/Edge%20Addons-Install-blueviolet?style=for-the-badge&logo=microsoftedge&logoColor=white" alt="Edge Add-ons"></a> <a href="https://addons.mozilla.org/firefox/addon/pixtab/"><img src="https://img.shields.io/badge/Firefox%20Addons-Install-orange?style=for-the-badge&logo=firefox&logoColor=white" alt="Firefox Add-ons"></a>
+<div align="center">
+  <img src="icons/icon-128.png" width="100" height="100" alt="PixTab Icon">
+  <br>
+  <b style="font-size: 36px;">PixTab</b>
+  <p>
+    <strong>✨ Pixivのイラストをブラウザの新しいタブページに！✨</strong>
+  </p>
 
+  <p>
+    <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration:none;">
+      <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/edge/edge_48x48.png" width="24" height="24" alt="Edge" style="vertical-align: middle; margin-bottom: 2px;"> Edge
+    </a>
+    &nbsp;&nbsp;&nbsp;
+    <a href="https://addons.mozilla.org/firefox/addon/pixtab/" style="text-decoration:none;">
+      <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox_48x48.png" width="24" height="24" alt="Firefox" style="vertical-align: middle; margin-bottom: 2px;"> Firefox
+    </a>
+  </p>
+</div>
 
-## 概要
+<br>
 
-PixTabは新しいタブページにPixivの作品を表示する軽量なブラウザ拡張機能です。カスタム設定、キーワード検索、多言語対応を備え、Chromium系・Firefox系ブラウザで動作します。
+## ✨ 概要
 
-## 主な機能
+**PixTab** は、新しいタブページに Pixiv のイラストを表示する軽量で美しいブラウザ拡張機能です。カスタム設定、キーワード検索、ローカリゼーションをサポートし、Chromium 系および Firefox 系ブラウザで快適に動作します。(✿◡‿◡)
 
-- **美しいPixivイラスト** — 新しいタブを開くたびにPixivの作品を楽しめます。
-- **多彩な並び替え** — 日/週/月ランキング、新人、オリジナル、人気など多様な並び替えに対応。
-- **キーワード検索** — AND/OR/NOT組み合わせでタグを精密にフィルタリング。
-- **ブックマーク数フィルタ** — 最低/最高ブックマーク数で作品を絞り込み。
-- **作品タイプフィルタ** — イラスト、マンガ、動くイラスト（ugoira）、AI生成作品の非表示も可能。
-- **解像度要件** — 最小幅・高さを設定し画像品質を確保。
-- **表示スタイル** — 画像サイズ、配置、タイル表示をカスタマイズ。
-- **ライト＆ダークテーマ** — インターフェースはシステム時間に応じて自動切替。
-- **多言語対応** — 英語、簡体字中国語、繁体字中国語、日本語、韓国語、ロシア語に対応。
-- **プライバシー重視** — 設定はすべてローカル保存、外部サーバーへデータ送信なし。
+## 💎 主な機能
 
+- 🎨 **美しいイラスト** — 新しいタブを開くたびに、厳選された Pixiv のアートワークに出会えます。
+- 📊 **多彩なランキング** — デイリー、ウィークリー、マンスリー、ルーキー、オリジナル、人気順などに対応！
+- 🔍 **キーワード検索** — AND、OR、NOT 検索を組み合わせて、好みの作品をピンポイントで見つけます。
+- 🔖 **ブックマーク数フィルタ** — ブックマーク数の最小/最大値を設定して、人気作品のみを表示。
+- 🖼️ **タイプフィルタ** — イラスト、マンガ、うごイラ (Ugoira) の選択、または AI 生成作品の非表示が可能。
+- 📏 **画質管理** — 最小幅/高さを設定して、高画質な画像のみを表示。
+- 🛠️ **カスタマイズ** — 画像サイズ、配置、タイルモードを自由に調整可能。
+- 🌓 **テーマ同期** — システム時間に合わせて、ダーク/ライトテーマを自動的に切り替えます。
+- 🌍 **多言語対応** — 英語、簡体字中国語、繁体字中国語、日本語、韓国語、ロシア語に対応。
+- 🛡️ **プライバシー優先** — すべての設定はローカルに保存され、外部サーバーへデータを送信することはありません。
 
-## インストール方法
+## 🚀 インストール
 
-> **Edgeユーザーは [Microsoft Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj) から直接インストールできます。**
->
-> **Firefoxユーザーは [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/pixtab/) から直接インストールできます。**
+> **注意**：この拡張機能は Chrome ウェブストアには掲載されていません。Chrome ユーザーは以下の手順で手動インストールしてください。
 
-> **注意**：本拡張機能はChrome Web Storeには未掲載です。Chromeユーザーは以下の手順で手動インストールしてください。
-
-### Chromium 系ブラウザ
+<details>
+<summary><strong>📥 Chromium 系ブラウザ (Chrome, Edge, Brave...)</strong></summary>
 
 1. このリポジトリをクローンまたはダウンロードします。
-2. ブラウザで `chrome://extensions` を開きます。
-3. **デベロッパーモード** を有効にします。
-4. オプション A — 配布パッケージからインストール（手早く）：
-	- `dist/` にあるパッケージ（例: `dist/pixtab-0.9-chrome.zip`）をダウンロードした場合、一部の Chromium 系ブラウザではその `.zip` ファイルを `chrome://extensions` ページへドラッグ&ドロップすることで直接インストールできます。動作すれば拡張がインストールされ、そのまま使用可能です。
-	- ドラッグでのインストールが動作しない場合は、`.zip` を解凍してから **Load unpacked（パッケージ化されていない拡張機能を読み込む）** で解凍フォルダを選択してください。
+2. ブラウザのアドレスバーに `chrome://extensions` と入力して開きます。
+3. 右上の **デベロッパーモード** (Developer mode) を有効にします。
+4. **方法 A — パッケージ版 (ZIP) をインストール (推奨):**
+    - `dist/` ディレクトリ内のリリースパッケージ (例: `dist/pixtab-0.9-chrome.zip`) をダウンロードした場合、その `.zip` ファイルを拡張機能管理ページにドラッグ＆ドロップしてみてください。
+    - ドラッグ＆ドロップが機能しない場合は、ZIP を解凍し、**パッケージ化されていない拡張機能を読み込む** (Load unpacked) をクリックして、解凍したフォルダを選択します。
+5. **方法 B — ソースからインストール (開発者向け):**
+    - **パッケージ化されていない拡張機能を読み込む** をクリックし、プロジェクトのルートディレクトリを選択します。
+6. 新しいタブを開いて、PixTab をお楽しみください！✨
+</details>
 
-5. オプション B — ソースからインストール（開発者向け）:
-	- **Load unpacked** をクリックしてプロジェクトフォルダを選択します。
-
-6. 新しいタブを開くと PixTab が表示されます！
-
-### Firefox 系ブラウザ（140+）
+<details>
+<summary><strong>🦊 Firefox 系ブラウザ (140+)</strong></summary>
 
 1. このリポジトリをクローンまたはダウンロードします。
-2. Firefox 140 以降を使用し、ブラウザで `about:debugging#/runtime/this-firefox` を開きます。
-4. オプション A — 配布用 XPI を使ってインストール（テスト向け）:
-	- `dist/*.xpi`（例: `dist/pixtab-0.9-firefox.xpi`）をダウンロードした場合、`about:addons` を開き、歯車メニューから **Install Add-on From File...** を選ぶか、`.xpi` ファイルをアドオンページへドラッグしてインストールできます。
+2. Firefox 140 以降を使用し、`about:debugging#/runtime/this-firefox` にアクセスします。
+3. **一時的なアドオンを読み込む...** (Load Temporary Add-on) をクリックします。
+4. **方法 A — XPI パッケージをインストール (テスト用):**
+    - リリースパッケージ `dist/*.xpi` (例: `dist/pixtab-0.9-firefox.xpi`) をダウンロードした場合、`about:addons` を開き、歯車アイコン ⚙️ → **ファイルからアドオンをインストール...** を選択するか、`.xpi` ファイルをページにドラッグします。
+5. **方法 B — 一時的な読み込み (開発者向け):**
+    - **一時的なアドオンを読み込む...** をクリックし、プロジェクトディレクトリ内の `manifest.json` ファイルを選択します。
+6. 新しいタブを開いて、PixTab をお楽しみください！✨
 
-5. オプション B — 一時的に読み込む（開発者向け）:
-	- **一時的なアドオンを読み込む...** をクリックし、プロジェクトフォルダ内の `manifest.json` を選択します。
+> *ヒント*: Firefox で一時的に読み込まれた拡張機能は、ブラウザを再起動すると削除されます。
+</details>
 
-6. 新しいタブを開くと PixTab が表示されます！
+## 🎐 ネットワーク要件
 
-> **注意**：Firefox で一時的に読み込んだ拡張機能は、ブラウザの再起動時に削除されます。
+この拡張機能は、Pixiv (`pixiv.net` および `pximg.net`) にアクセスしてデータを取得する必要があります。
+> 新しいタブページでロードアニメーションが止まらない場合、ネットワークが Pixiv に接続できていない可能性があります。ネットワーク接続やプロキシ設定をご確認ください。この拡張機能はプロキシ機能を**提供しません**。
 
-## ネットワーク要件
-
-この拡張機能は Pixiv（`pixiv.net` および `pximg.net`）へのアクセスが必要です。
-
-新しいタブがローディングアニメーションのまま止まっている場合、ネットワークが Pixiv にアクセスできないことを意味します。ネットワークの問題はご自身で解決してください。この拡張機能はプロキシ機能を提供していません。
-
-## ライセンス
+## 📜 ライセンス
 
 詳細は [LICENSE](LICENSE) ファイルをご覧ください。
 
-## 貢献ガイド
+## 🤝 貢献
 
-貢献方法については [CONTRIBUTING.md](CONTRIBUTING.md) をご覧ください。
+Issue や PR の送信は大歓迎です！貢献ガイドラインについては [CONTRIBUTING.md](CONTRIBUTING.md) をご覧ください。
 
-## 支援・寄付
+## 💖 サポート & 寄付
 
-もし PixTab がお役に立てましたら、ご支援・ご寄付いただけると大変嬉しいです。皆様からの温かい応援が、私の開発の原動力になっています。心より感謝いたします！(╹▽╹)
+PixTab を気に入っていただけたら、サポートや寄付をいただけると大変励みになります。あなたの応援が開発の原動力です！(╹▽╹)
 
-- [Afdian (愛発電)](https://afdian.com/a/cloud09)
+- [Afdian (爱发电)](https://afdian.com/a/cloud09)
 - [Patreon](https://www.patreon.com/cloud09_official)
 
-## 謝辞
+## 🌟 謝辞
 
-このプロジェクトは以下からインスピレーションを受けました：
-
+このプロジェクトは以下のプロジェクトにインスパイアされました：
 - [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
 - [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)
