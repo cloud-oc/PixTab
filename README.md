@@ -17,13 +17,9 @@
   <br>
   <b style="font-size: 36px;">PixTab</b>
   <p>
-    <strong>✨ Let Pixiv artworks become your browser's new tab page! ✨</strong>
+    <strong>◎ Let Pixiv artworks become your browser's new tab page! ◎</strong>
   </p>
 
-  <p>
-    <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration:none;">
-      <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/edge/edge_48x48.png" width="24" height="24" alt="Edge" style="vertical-align: middle; margin-bottom: 2px;"> Edge
-    </a>
     &nbsp;&nbsp;&nbsp;
     <a href="https://addons.mozilla.org/firefox/addon/pixtab/" style="text-decoration:none;">
       <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox_48x48.png" width="24" height="24" alt="Firefox" style="vertical-align: middle; margin-bottom: 2px;"> Firefox
@@ -33,11 +29,11 @@
 
 <br>
 
-## ✨ Overview
+## 📖 Overview
 
 **PixTab** is a lightweight, aesthetic browser extension that displays Pixiv artworks on your new tab page. It supports custom configuration, keyword search, localization, and works beautifully with both Chromium and Firefox-based browsers. (✿◡‿◡)
 
-## 💎 Key Features
+## ✨ Key Features
 
 - 🎨 **Beautiful Artworks** — Enjoy high-quality Pixiv illustrations every time you open a new tab.
 - 📊 **Multiple Rankings** — Daily, Weekly, Monthly, Rookie, Original, Popular, and more!
@@ -50,7 +46,7 @@
 - 🌍 **Multi-language** — Available in English, Simplified Chinese, Traditional Chinese, Japanese, Korean, and Russian.
 - 🛡️ **Privacy First** — All settings are stored locally. No data is sent to external servers.
 
-## 🚀 Installation
+## 📦 Offline Installation
 
 > **Note**: This extension is not listed on the Chrome Web Store. Chrome users, please install it manually using the steps below.
 
@@ -83,7 +79,7 @@
 > *Note*: Temporarily loaded extensions in Firefox will be removed when the browser restarts.
 </details>
 
-## 🎐 Network Requirements
+## 📡 Network Requirements
 
 This extension requires access to Pixiv (`pixiv.net` and `pximg.net`).
 > If the loading animation spins forever, it means your network cannot access Pixiv. Please check your network connection or proxy settings. This extension **does not** provide proxy functionality.

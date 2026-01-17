@@ -16,13 +16,8 @@
   <br>
   <b style="font-size: 36px;">PixTab</b>
   <p>
-    <strong>✨ 讓 Pixiv 上的插畫成為你的瀏覽器新分頁！✨</strong>
+    <strong>◎ 讓 Pixiv 上的插畫成為你的瀏覽器新分頁！◎</strong>
   </p>
-
-  <p>
-    <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration:none;">
-      <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/edge/edge_48x48.png" width="24" height="24" alt="Edge" style="vertical-align: middle; margin-bottom: 2px;"> Edge
-    </a>
     &nbsp;&nbsp;&nbsp;
     <a href="https://addons.mozilla.org/firefox/addon/pixtab/" style="text-decoration:none;">
       <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox_48x48.png" width="24" height="24" alt="Firefox" style="vertical-align: middle; margin-bottom: 2px;"> Firefox
@@ -32,11 +27,11 @@
 
 <br>
 
-## ✨ 簡介
+## 📖 簡介
 
 **PixTab** 是一款輕量級、高顏值的瀏覽器擴充功能，它能讓你每次打開新分頁時都欣賞到來自 Pixiv 的精選插畫。支援自訂配置、關鍵字搜尋、本地化，並且完美支援 Chromium 和 Firefox 系列瀏覽器。(✿◡‿◡)
 
-## 💎 主要功能
+## ✨ 主要功能
 
 - 🎨 **精美插畫** — 每次打開新分頁，邂逅高質量的 Pixiv 畫作。
 - 📊 **多榜單支援** — 日榜、週榜、月榜、新人榜、原創榜、受男性/女性歡迎榜等！
@@ -49,7 +44,7 @@
 - 🌍 **多語言支援** — 提供簡體中文、繁體中文、英語、日語、韓語、俄語。
 - 🛡️ **隱私優先** — 所有設定僅保存在本地，絕不向外部伺服器上傳任何數據。
 
-## 🚀 安裝指南
+## 📦 離線安裝
 
 > **注意**：本擴充功能未上架 Chrome 應用商店。Chrome 用戶請按照以下步驟手動安裝。
 
