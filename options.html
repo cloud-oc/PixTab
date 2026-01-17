@@ -28,6 +28,12 @@
       --button-hover-bg: rgba(255, 255, 255, 0.88);
       --button-text-color: #15161a;
       --button-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      --select-option-bg: #2a2a2a;
+      --select-option-text: #f4f4f4;
+    }
+
+    body[data-theme="dark"] {
+      color-scheme: dark;
     }
 
     body[data-theme="light"] {
@@ -45,6 +51,9 @@
       --button-hover-bg: rgba(5, 5, 5, 0.8);
       --button-text-color: #fefefe;
       --button-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      --select-option-bg: #ffffff;
+      --select-option-text: #1c1b1f;
+      color-scheme: light;
     }
 
     body {
@@ -54,6 +63,7 @@
       padding: 32px;
       min-height: 100vh;
       position: relative;
+      color-scheme: dark; /* Default fallback */
     }
 
 
@@ -163,6 +173,12 @@
         calc(100% - 13px) 55%;
       background-size: 6px 6px, 6px 6px;
       background-repeat: no-repeat;
+    }
+
+    /* Style for select options - fallback for browsers that don't fully support color-scheme */
+    select option {
+      background-color: var(--select-option-bg);
+      color: var(--select-option-text);
     }
 
     input[readonly] {
@@ -514,25 +530,23 @@
       margin-top: 0;
     }
 
-    .bookmarks-range-row {
+    .bookmarks-row .field-body {
       display: flex;
       align-items: center;
-      gap: 16px;
+      width: 100%;
+    }
+
+    .bookmarks-field-body {
+      flex: 1;
+    }
+
+    .bookmarks-inputs {
+      display: flex;
+      gap: 10px;
       flex-wrap: wrap;
-      margin-top: 0;
-      min-height: 40px;
-    }
-
-    .bookmarks-label-block {
-      flex: 0 0 200px;
-      display: flex;
+      width: 100%;
       align-items: center;
       min-height: 40px;
-    }
-
-    .bookmarks-label-block label {
-      margin-bottom: 0;
-      flex: 0 0 auto;
     }
 
     .bookmarks-input {
@@ -549,8 +563,6 @@
       font-size: 20px;
       color: var(--panel-text-color);
       line-height: 1;
-      margin: 0 4px;
-      align-self: center;
     }
 
     ::placeholder {
@@ -566,6 +578,168 @@
       overflow: hidden;
       clip: rect(0, 0, 0, 0);
       border: 0;
+    }
+
+    /* Responsive styles for narrow screens */
+    @media screen and (max-width: 600px) {
+      body {
+        padding: 16px;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      /* Stack inline fields vertically */
+      .group.inline-field,
+      .group-inline-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .group.inline-field label,
+      .group-inline-row label {
+        flex: none;
+        width: 100%;
+      }
+
+      /* Stack display settings grid vertically */
+      .display-settings-grid {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .display-settings-grid .control-block {
+        flex: none;
+        width: 100%;
+        padding: 12px 0;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+
+      .display-settings-grid .control-block:not(:first-child)::before {
+        display: none;
+      }
+
+      .display-settings-grid .control-block:not(:last-child) {
+        border-bottom: 1px solid var(--panel-border-color);
+      }
+
+      .display-settings-grid .control-block select {
+        flex: 1;
+        max-width: 180px;
+      }
+
+      /* Language block */
+      .language-block {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .language-block label {
+        flex: none;
+        width: 100%;
+      }
+
+      /* Field rows */
+      .field-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .field-row label {
+        flex: none;
+        width: 100%;
+      }
+
+      .field-row input[type="text"],
+      .field-row input[type="number"],
+      .field-row select {
+        min-width: 100%;
+      }
+
+      /* Bookmarks inputs */
+      .bookmarks-inputs {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .bookmarks-range-separator {
+        display: none;
+      }
+
+      .bookmarks-input {
+        width: 100%;
+      }
+
+      /* Resolution inputs */
+      .resolution-inputs {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .resolution-multiply {
+        display: none;
+      }
+
+      .resolution-input {
+        width: 100%;
+      }
+
+      /* Action buttons */
+      .action-buttons {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .action-buttons button {
+        width: 100%;
+      }
+
+      /* Control block min-width override */
+      .control-block {
+        min-width: 0;
+      }
+
+      /* Panel base for narrow screens */
+      .panel-base {
+        top: 20px;
+        width: calc(100% - 32px);
+        min-height: calc(100% - 40px);
+        border-radius: 18px;
+      }
+    }
+
+    /* Medium screens */
+    @media screen and (min-width: 601px) and (max-width: 800px) {
+      .display-settings-grid {
+        flex-wrap: wrap;
+      }
+
+      .display-settings-grid .control-block {
+        flex: 1 1 45%;
+        min-width: 200px;
+      }
+
+      .group.inline-field label,
+      .group-inline-row label {
+        flex: 0 0 150px;
+      }
+
+      .field-row label {
+        flex: 0 0 150px;
+      }
+
+      .language-block label {
+        flex: 0 0 150px;
+      }
     }
   </style>
 </head>
@@ -685,19 +859,19 @@
           </select>
         </div>
 
-        <div class="group group-inline-row">
-          <div class="field-row bookmarks-range-row">
-            <div class="bookmarks-label-block">
-              <label id="bookmarksLabel" for="blt"></label>
-            </div>
-            <div class="bookmarks-input">
-              <label id="bltLabel" class="sr-only" for="blt"></label>
-              <input type="number" id="blt" name="blt" data-i18n-placeholder="bltLabel" />
-            </div>
-            <span class="bookmarks-range-separator" aria-hidden="true">~</span>
-            <div class="bookmarks-input">
-              <label id="bgtLabel" class="sr-only" for="bgt"></label>
-              <input type="number" id="bgt" name="bgt" data-i18n-placeholder="bgtLabel" />
+        <div class="group group-inline-row inline-field bookmarks-row">
+          <label id="bookmarksLabel" for="blt"></label>
+          <div class="field-body bookmarks-field-body">
+            <div class="bookmarks-inputs">
+              <div class="bookmarks-input">
+                <label id="bltLabel" class="sr-only" for="blt"></label>
+                <input type="number" id="blt" name="blt" data-i18n-placeholder="bltLabel" />
+              </div>
+              <span class="bookmarks-range-separator" aria-hidden="true">~</span>
+              <div class="bookmarks-input">
+                <label id="bgtLabel" class="sr-only" for="bgt"></label>
+                <input type="number" id="bgt" name="bgt" data-i18n-placeholder="bgtLabel" />
+              </div>
             </div>
           </div>
         </div>

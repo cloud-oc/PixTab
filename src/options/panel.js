@@ -2,21 +2,23 @@ import { defaultConfig, Order, SMode } from "../shared/preferences.js";
 import { buildKeywordQuery } from "../shared/keyword-builder.js";
 import browserAPI from "../shared/browser-polyfill.js";
 
-const THEME_CHECK_INTERVAL_MS = 5 * 60 * 1000;
+const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
-function applyTimeBasedTheme() {
-  const hour = new Date().getHours();
-  const theme = hour >= 7 && hour < 19 ? "light" : "dark";
+function applySystemTheme() {
+  const theme = darkModeMediaQuery.matches ? "dark" : "light";
   if (document.body?.dataset?.theme !== theme) {
     document.body.dataset.theme = theme;
   }
 }
 
-applyTimeBasedTheme();
-setInterval(applyTimeBasedTheme, THEME_CHECK_INTERVAL_MS);
+applySystemTheme();
+
+// Listen for system theme changes
+darkModeMediaQuery.addEventListener("change", applySystemTheme);
+
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) {
-    applyTimeBasedTheme();
+    applySystemTheme();
   }
 });
 

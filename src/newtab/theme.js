@@ -1,25 +1,30 @@
-const THEME_CHECK_INTERVAL_MS = 5 * 60 * 1000;
-
 export function initThemeSync(doc = document) {
-    const applyTimeBasedTheme = () => {
-        const hour = new Date().getHours();
-        const nextTheme = hour >= 7 && hour < 19 ? "light" : "dark";
+    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const applySystemTheme = () => {
+        const nextTheme = darkModeMediaQuery.matches ? "dark" : "light";
         if (doc.body?.dataset?.theme !== nextTheme) {
             doc.body.dataset.theme = nextTheme;
         }
     };
 
-    applyTimeBasedTheme();
-    const timerId = setInterval(applyTimeBasedTheme, THEME_CHECK_INTERVAL_MS);
+    applySystemTheme();
+
+    // Listen for system theme changes
+    const mediaChangeHandler = () => {
+        applySystemTheme();
+    };
+    darkModeMediaQuery.addEventListener("change", mediaChangeHandler);
+
     const visibilityHandler = () => {
         if (!doc.hidden) {
-            applyTimeBasedTheme();
+            applySystemTheme();
         }
     };
     doc.addEventListener("visibilitychange", visibilityHandler);
 
     return () => {
-        clearInterval(timerId);
+        darkModeMediaQuery.removeEventListener("change", mediaChangeHandler);
         doc.removeEventListener("visibilitychange", visibilityHandler);
     };
 }

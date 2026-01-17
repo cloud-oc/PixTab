@@ -44,7 +44,8 @@ if (manifest.action && manifest.action.default_icon && typeof manifest.action.de
 if (!manifest.browser_specific_settings) manifest.browser_specific_settings = {};
 if (!manifest.browser_specific_settings.gecko) manifest.browser_specific_settings.gecko = {};
 manifest.browser_specific_settings.gecko.strict_min_version = '113.0';
-manifest.browser_specific_settings.gecko_android = { strict_min_version: '113.0' };
+if (!manifest.browser_specific_settings.gecko_android) manifest.browser_specific_settings.gecko_android = {};
+manifest.browser_specific_settings.gecko_android.strict_min_version = '113.0';
 manifest.browser_specific_settings.gecko.data_collection_permissions = manifest.browser_specific_settings.gecko.data_collection_permissions || { collects: false, required: ['none'], optional: [] };
 fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 "
