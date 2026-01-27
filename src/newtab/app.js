@@ -479,32 +479,58 @@ import { unzipSync } from "../shared/fflate.module.js";
     updateButtonState() {
       const btn = document.getElementById('playPauseButton');
       if (!btn) return;
-      const icon = btn.querySelector('.material-symbols-outlined');
-      if (icon) {
-        icon.textContent = this.isPlaying ? 'pause' : 'play_arrow';
+      
+      // Video player style: 
+      // Playing -> Hide button
+      // Paused -> Show play button
+      if (this.isPlaying) {
+        btn.classList.add('hidden');
+      } else {
+        btn.classList.remove('hidden');
+        const icon = btn.querySelector('.material-symbols-outlined');
+        if (icon) icon.textContent = 'play_arrow';
       }
     },
 
     showButton(show) {
-      const btn = document.getElementById('playPauseButton');
-      if (!btn) return;
       if (show) {
-        btn.classList.remove('hidden');
+        // If showing generally permitted (has ugoira), update state based on play/pause
         this.updateButtonState();
       } else {
-        btn.classList.add('hidden');
+        // Force hide
+        const btn = document.getElementById('playPauseButton');
+        if (btn) btn.classList.add('hidden');
       }
     }
   };
 
-  // Setup button listener
+  // Setup listener
   document.addEventListener('DOMContentLoaded', () => {
+    // Button click (if visible)
     const btn = document.getElementById('playPauseButton');
     if (btn) {
       btn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent clicking through to wallpaper logic if any
+        e.stopPropagation();
         ugoiraController.toggle();
       });
+    }
+    
+    // Background click to toggle
+    // Listen on container because wallpaper is behind maskLayer/others
+    const container = document.getElementById('container');
+    if (container) {
+      container.addEventListener('click', (e) => {
+        // Only toggle if ugoira is loaded (frames exist)
+        if (ugoiraController.frames && ugoiraController.frames.length > 0) {
+           ugoiraController.toggle();
+        }
+      });
+    }
+    
+    // Prevent info card clicks from bubbling to wallpaper
+    const infoCard = document.getElementById('illustInfo');
+    if (infoCard) {
+      infoCard.addEventListener('click', (e) => e.stopPropagation());
     }
   });
 

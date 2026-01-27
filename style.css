@@ -25,6 +25,10 @@
   --loading-bg-fail: rgb(var(--fail-red-rgb));
   --spinner-core-color-fail: rgb(var(--fail-red-rgb));
   --spinner-core-glow-fail: rgb(var(--fail-red-rgb));
+  
+  /* Light theme: Dark transparent text with white highlight below = Letterpress/Recessed */
+  --icon-recessed-color: rgba(0, 0, 0, 0.25);
+  --icon-text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.7);
 }
 
 body[data-theme="dark"] {
@@ -54,6 +58,10 @@ body[data-theme="dark"] {
   --loading-bg-fail: rgb(var(--fail-red-rgb));
   --spinner-core-color-fail: rgb(var(--fail-red-rgb));
   --spinner-core-glow-fail: rgb(var(--fail-red-rgb));
+  
+  /* Dark theme: Black transparent text with faint light highlight below = Recessed */
+  --icon-recessed-color: rgba(0, 0, 0, 0.4);
+  --icon-text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1), -1px -1px 1px rgba(0, 0, 0, 0.3);
 }
 
 body[data-theme="light"] {
@@ -388,51 +396,42 @@ body.settings-open {
   background: transparent;
 }
 
-/* Play/Pause Button - Hover to show with blur background */
+/* Play/Pause Button - Minimal Center Icon */
 .play-pause-btn {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: rgba(128, 128, 128, 0.25);
-  backdrop-filter: blur(12px);
+  width: 96px;
+  height: 96px;
   border: none;
-  color: #fff;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
   padding: 0;
-  opacity: 0;
-  transition: opacity 0.25s ease, transform 0.2s ease;
-  pointer-events: none;
+  pointer-events: none; /* Let clicks pass through to container for toggle */
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .play-pause-btn .material-symbols-outlined {
-  font-size: 36px;
-  /* Inset/recessed effect - dark top-left, light bottom-right */
-  color: rgba(255, 255, 255, 0.85);
-  text-shadow: 
-    inset 1px 1px 2px rgba(0, 0, 0, 0.5),
-    -1px -1px 1px rgba(0, 0, 0, 0.4),
-    1px 1px 1px rgba(255, 255, 255, 0.15);
-}
-
-/* Show on hover over the wallpaper area */
-#container:hover .play-pause-btn:not(.hidden) {
+  font-size: 84px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  /* Reset complex shadows/colors */
+  color: inherit;
   opacity: 1;
-  pointer-events: auto;
 }
 
-.play-pause-btn:hover {
-  transform: translate(-50%, -50%) scale(1.08);
-  background: rgba(128, 128, 128, 0.4);
-}
-
+/* Hidden during playback */
 .play-pause-btn.hidden {
   display: none;
+}
+
+/* Optional: slight scale effect when visible (paused) */
+.play-pause-btn:not(.hidden) {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }

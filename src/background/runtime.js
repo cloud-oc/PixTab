@@ -1016,7 +1016,8 @@ async function fetchImage(url, attempt = 0) {
 }
 
 function fillQueue() {
-  while (running < artworkQueue.capacity() - artworkQueue.size()) {
+  const CONCURRENT_FILLS = 3; // aggressively fill queue
+  while (running < CONCURRENT_FILLS && !artworkQueue.full()) {
     ++running;
     setTimeout(async () => {
       const localVersion = configVersion;
@@ -1055,7 +1056,7 @@ async function reloadConfig() {
   debugLoggingEnabled = !!config.debugLogging;
   
   // WIPE existing queue to force new config usage
-  artworkQueue = new ArtworkQueue(5);
+  artworkQueue = new ArtworkQueue(8); // Increased buffer size
   storageSessionSet({
     artworkQueueCache: artworkQueue,
     illustQueue: artworkQueue
@@ -1082,11 +1083,11 @@ async function start() {
   });
   const restoredQueue = queueCache.artworkQueueCache || queueCache.illustQueue || null;
   if (!restoredQueue) {
-    artworkQueue = new ArtworkQueue(5);
+    artworkQueue = new ArtworkQueue(8); // Increased buffer size
   } else {
     artworkQueue = Object.setPrototypeOf(restoredQueue, ArtworkQueue.prototype);
     // Upgrade capacity if needed (though existing queue will keep its buffer until popped)
-    artworkQueue.maxsize = 5; 
+    artworkQueue.maxsize = 8; 
   }
 
   fillQueue();
