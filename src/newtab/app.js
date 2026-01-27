@@ -422,13 +422,30 @@ import { unzipSync } from "../shared/fflate.module.js";
         // Progressive: Start decoding in background, but don't wait
         preDecodeFrames(frames);
         
-        // Ensure first frame is shown immediately (usually browser can handle first frame quickly)
-        // We artificially mark frame 0 as decoded to ensure start, or rely on browser
-        frames[0].decoded = true; // Force start
-        // Note: frame[0].imageElement will be set by preDecodeFrames sync part before decode() promise
-        // So we can assume it exists.
+        // Mark frame 0 as decoded
+        frames[0].decoded = true;
 
         this.frames = frames;
+        
+        // CRITICAL: Wait for the first frame's image to actually load before playing
+        const firstImg = this.frames[0].imageElement;
+        if (firstImg && !firstImg.complete) {
+          await new Promise((resolve) => {
+            firstImg.onload = () => {
+              console.log("Ugoira: First frame loaded successfully");
+              resolve();
+            };
+            firstImg.onerror = () => {
+              console.warn("Ugoira: First frame failed to load");
+              resolve(); // Still resolve to allow fallback
+            };
+            // If already loaded by now (race condition), resolve immediately
+            if (firstImg.complete) {
+              resolve();
+            }
+          });
+        }
+        
         // Auto play on load
         this.play();
         this.showButton(true);
