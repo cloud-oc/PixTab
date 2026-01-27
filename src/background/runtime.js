@@ -851,17 +851,18 @@ class SearchSource {
       ugoiraMeta = await this.fetchUgoiraMetadata(detail.illustId);
     }
     let profileUrl = fallbackProfileUrl || detail.userIllusts?.[detail.illustId]?.url || detail.profileImageUrl || null;
+    // Use regular resolution for best quality (parallel fetch optimization still applies)
     let imageUrl = detail.urls?.regular || detail.urls?.small || detail.urls?.thumb;
     if (!imageUrl) {
       return null;
     }
-    let imgBlob = await fetchImage(imageUrl);
+    // Fetch main image and profile image in parallel for faster loading
+    const [imgBlob, profileBlob] = await Promise.all([
+      fetchImage(imageUrl),
+      profileUrl ? fetchImage(profileUrl) : Promise.resolve(null)
+    ]);
     if (!imgBlob) {
       return null;
-    }
-    let profileBlob = null;
-    if (profileUrl) {
-      profileBlob = await fetchImage(profileUrl);
     }
     let result = {
       userName: detail.userName,

@@ -43,7 +43,7 @@ export const defaultPreferences = {
     blt: null,
     bgt: null,
     s_mode: KeywordStrategy.partial,
-    type: ArtworkKind.illustration,
+    type: ArtworkKind.ugoira,
     aiType: AIGCDisplay.display,
     artistId: "",
     size: "best_fit",

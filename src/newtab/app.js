@@ -98,14 +98,27 @@ import { unzipSync } from "../shared/fflate.module.js";
     if (ugoiraFrameCache.has(ugoiraPayload.zipUrl)) {
       return ugoiraFrameCache.get(ugoiraPayload.zipUrl);
     }
-    // Fetch zip via background script to bypass CORS/Referer issues
-    const zipDataUrl = await browserAPI.runtime.sendMessage({
-      action: "fetchUgoiraZip",
-      url: ugoiraPayload.zipUrl
-    });
+    // Fetch zip via background script with retry mechanism
+    const MAX_RETRIES = 3;
+    let zipDataUrl = null;
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        zipDataUrl = await browserAPI.runtime.sendMessage({
+          action: "fetchUgoiraZip",
+          url: ugoiraPayload.zipUrl
+        });
+        if (zipDataUrl) break;
+      } catch (e) {
+        console.warn(`Ugoira ZIP fetch attempt ${attempt + 1} failed:`, e);
+      }
+      if (attempt < MAX_RETRIES - 1) {
+        // Exponential backoff: 1s, 2s, 3s
+        await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+      }
+    }
     
     if (!zipDataUrl) {
-      throw new Error("Failed to fetch ugoira zip via background");
+      throw new Error("Failed to fetch ugoira zip after retries");
     }
 
     // Convert DataURL to Uint8Array
@@ -244,9 +257,12 @@ import { unzipSync } from "../shared/fflate.module.js";
 
       // Set canvas size to screen size for proper rendering
       const rect = document.body.getBoundingClientRect();
-      if (canvas.width !== rect.width || canvas.height !== rect.height) {
-          canvas.width = rect.width;
-          canvas.height = rect.height;
+      // Use window dimensions as fallback if body has no size
+      const targetWidth = rect.width > 0 ? rect.width : window.innerWidth;
+      const targetHeight = rect.height > 0 ? rect.height : window.innerHeight;
+      if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+          canvas.width = targetWidth;
+          canvas.height = targetHeight;
       }
       
       const token = this.playToken;
@@ -352,8 +368,12 @@ import { unzipSync } from "../shared/fflate.module.js";
 
         if (accumulatedTime >= delay) {
           const nextIndex = (this.currentIndex + 1) % this.frames.length;
-          // Progressive loading check
-          if (this.frames[nextIndex].decoded && this.frames[nextIndex].imageElement) {
+          // Check if next frame's image is actually ready (loaded and has dimensions)
+          const nextFrame = this.frames[nextIndex];
+          const isNextFrameReady = nextFrame.imageElement && 
+                                   nextFrame.imageElement.complete && 
+                                   nextFrame.imageElement.naturalWidth > 0;
+          if (isNextFrameReady) {
              accumulatedTime -= delay;
              this.currentIndex = nextIndex;
              frame = this.frames[this.currentIndex];
@@ -367,7 +387,11 @@ import { unzipSync } from "../shared/fflate.module.js";
              delay = Math.max(1, Number(frame.delay) || 60);
              while (accumulatedTime >= delay) {
                const skipNextIndex = (this.currentIndex + 1) % this.frames.length;
-               if (!this.frames[skipNextIndex].decoded || !this.frames[skipNextIndex].imageElement) break;
+               const skipFrame = this.frames[skipNextIndex];
+               const isSkipFrameReady = skipFrame.imageElement &&
+                                        skipFrame.imageElement.complete &&
+                                        skipFrame.imageElement.naturalWidth > 0;
+               if (!isSkipFrameReady) break;
                
                accumulatedTime -= delay;
                this.currentIndex = skipNextIndex;
@@ -382,9 +406,6 @@ import { unzipSync } from "../shared/fflate.module.js";
                ensureBackgroundHidden();
              }
           }
-        } else if (frame.decoded && frame.imageElement && accumulatedTime === deltaTime) {
-             // First draw on start or resume if needed
-             // (Wait, loop runs immediately. We should ensure first frame is drawn)
         }
         
         this.animationFrameId = requestAnimationFrame(loop);
