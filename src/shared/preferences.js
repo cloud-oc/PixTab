@@ -7,7 +7,10 @@ export const RankingMode = Object.freeze({
     monthly: "ranking_monthly",
     rookie: "ranking_rookie",
     original: "ranking_original",
-    artist: "artist"
+    artist: "artist",
+    following: "following",
+    bookmarks: "bookmarks",
+    recommendations: "recommendations"
 });
 
 export const ContentFilter = Object.freeze({
@@ -50,9 +53,9 @@ export const defaultPreferences = {
     minHeightPx: null,
     orKeywords: "7500users入り 10000users入り 30000users入り 50000users入り",
     minusKeywords: "虚偽users入りタグ 描き方 講座 作画資料 創作 素材 漫画",
-    andKeywords: ""
-    ,
-    debugLogging: false
+    andKeywords: "",
+    debugLogging: false,
+    loginFallbackMode: "ranking_daily"
 };
 
 export { defaultPreferences as defaultConfig };

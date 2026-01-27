@@ -68,6 +68,57 @@
   "artistIdHelper": {
     "message": "Enter artist IDs, separated by commas"
   },
+  "followingOrder": {
+    "message": "Following (Login Required)"
+  },
+  "bookmarksOrder": {
+    "message": "Bookmarks (Login Required)"
+  },
+  "recommendationsOrder": {
+    "message": "Recommendations (Login Required)"
+  },
+  "pixivAccountSection": {
+    "message": "Pixiv Account"
+  },
+  "loginStatusLabel": {
+    "message": "Login Status"
+  },
+  "loginStatusLoggedIn": {
+    "message": "Logged In"
+  },
+  "loginStatusNotLoggedIn": {
+    "message": "Not Logged In"
+  },
+  "loginButton": {
+    "message": "Login"
+  },
+  "loginFallbackModeLabel": {
+    "message": "Fallback Mode"
+  },
+  "fallbackDailyRanking": {
+    "message": "Daily Ranking"
+  },
+  "fallbackWeeklyRanking": {
+    "message": "Weekly Ranking"
+  },
+  "fallbackMonthlyRanking": {
+    "message": "Monthly Ranking"
+  },
+  "fallbackRookieRanking": {
+    "message": "Rookie Ranking"
+  },
+  "fallbackOriginalRanking": {
+    "message": "Original Ranking"
+  },
+  "fallbackPopularD": {
+    "message": "Sort by Popularity"
+  },
+  "fallbackPopularMaleD": {
+    "message": "Popular Among Males"
+  },
+  "fallbackPopularFemaleD": {
+    "message": "Popular Among Females"
+  },
   "modeLabel": {
     "message": "NSFW Display"
   },

@@ -157,6 +157,15 @@ let nextAllowedRequestTime = 0;
 let requestChain = Promise.resolve();
 let debugLoggingEnabled = false;
 
+function normalizeDetailType(rawType) {
+  if (typeof rawType === "number") {
+    if (rawType === 0) return "illust";
+    if (rawType === 1) return "manga";
+    if (rawType === 2) return "ugoira";
+  }
+  return rawType || null;
+}
+
 function dbg(...args) {
   if (debugLoggingEnabled) {
     console.debug(...args);
@@ -211,9 +220,11 @@ const rankingModeMap = Object.freeze({
   [Order.ranking_weekly]: { base: "weekly", r18: "weekly_r18" },
   [Order.ranking_monthly]: { base: "monthly", r18: "monthly_r18" },
   [Order.ranking_rookie]: { base: "rookie", r18: "rookie_r18" },
-  [Order.ranking_rookie]: { base: "rookie", r18: "rookie_r18" },
   [Order.ranking_original]: { base: "original", r18: "original_r18" },
-  [Order.artist]: { base: "artist", r18: "artist" }
+  [Order.artist]: { base: "artist", r18: "artist" },
+  [Order.following]: { base: "following", r18: "following" },
+  [Order.bookmarks]: { base: "bookmarks", r18: "bookmarks" },
+  [Order.recommendations]: { base: "recommendations", r18: "recommendations" }
 });
 
 function resolveRankingMode(order, nsfwMode) {
@@ -340,9 +351,7 @@ class SearchSource {
     if (this.rankingMode) {
       let paramUrl = this.generateSearchUrl(p);
       let url = `${rankingEndpoint}?${paramUrl}`;
-      let res = await throttledFetch(url, {
-        headers: { "referer": baseUrl }
-      });
+      let res = await throttledFetch(url);
       if (!res.ok) {
         dbg(`Fetch ranking json failed: ${res.status}`);
         return null;
@@ -359,10 +368,186 @@ class SearchSource {
     if (this.rankingMode === "artist") {
       return this.getRandomArtistIllust();
     }
+    if (this.rankingMode === "following") {
+      return this.getRandomFollowingIllust();
+    }
+    if (this.rankingMode === "bookmarks") {
+      return this.getRandomBookmarkIllust();
+    }
+    if (this.rankingMode === "recommendations") {
+      return this.getRandomRecommendationIllust();
+    }
     if (this.rankingMode) {
       return this.getRandomRankingIllust();
     }
     return this.getRandomSearchIllust();
+  }
+
+  async getRandomFollowingIllust() {
+    const userId = await getLoggedInUserId();
+    if (!userId) {
+      return this.handleLoginFailure();
+    }
+
+    const MAX_RETRIES = 5;
+    for (let i = 0; i < MAX_RETRIES; i++) {
+      try {
+        // Fetch following list with random offset
+        const offset = getRandomInt(0, 100); // Random offset to get variety
+        const followingUrl = `${baseUrl}/ajax/user/${userId}/following?offset=${offset}&limit=24&rest=show`;
+        const followingRes = await fetchPixivJson(followingUrl);
+        
+        if (!followingRes || !followingRes.body || !followingRes.body.users || followingRes.body.users.length === 0) {
+          continue;
+        }
+
+        // Pick a random followed user
+        const randomUser = followingRes.body.users[getRandomInt(0, followingRes.body.users.length)];
+        if (!randomUser || !randomUser.userId) continue;
+
+        // Fetch their profile to get illusts
+        const profileUrl = `${baseUrl}${userProfileUrl}${randomUser.userId}/profile/all`;
+        const profileRes = await fetchPixivJson(profileUrl);
+        
+        if (!profileRes || !profileRes.body || !profileRes.body.illusts) {
+          continue;
+        }
+
+        const illustIds = Object.keys(profileRes.body.illusts);
+        if (illustIds.length === 0) continue;
+
+        // Pick random illust
+        const randomIllustId = illustIds[getRandomInt(0, illustIds.length)];
+        const detailUrl = `${baseUrl}${illustInfoUrl}${randomIllustId}`;
+        const detail = await fetchPixivJson(detailUrl);
+        
+        if (!detail || !detail.body) continue;
+
+        // Get user avatar
+        const userAvatar = randomUser.profileImageUrl || null;
+        const filtered = await this.buildResultFromDetail(detail.body, userAvatar);
+        if (!filtered) continue;
+        return filtered;
+
+      } catch (e) {
+        dbg("Error in getRandomFollowingIllust loop:", e);
+        continue;
+      }
+    }
+    return null;
+  }
+
+  async getRandomBookmarkIllust() {
+    const userId = await getLoggedInUserId();
+    if (!userId) {
+      return this.handleLoginFailure();
+    }
+
+    const MAX_RETRIES = 5;
+    for (let i = 0; i < MAX_RETRIES; i++) {
+      try {
+        // Fetch bookmarks with random offset
+        const offset = getRandomInt(0, 200);
+        const bookmarksUrl = `${baseUrl}/ajax/user/${userId}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=show`;
+        const bookmarksRes = await fetchPixivJson(bookmarksUrl);
+        
+        if (!bookmarksRes || !bookmarksRes.body || !bookmarksRes.body.works || bookmarksRes.body.works.length === 0) {
+          continue;
+        }
+
+        // Pick a random bookmarked work
+        const randomWork = bookmarksRes.body.works[getRandomInt(0, bookmarksRes.body.works.length)];
+        if (!randomWork || !randomWork.id) continue;
+
+        // Fetch detail
+        const detailUrl = `${baseUrl}${illustInfoUrl}${randomWork.id}`;
+        const detail = await fetchPixivJson(detailUrl);
+        
+        if (!detail || !detail.body) continue;
+
+        // Get profile image from bookmark data
+        const profileImg = randomWork.profileImageUrl || null;
+        const filtered = await this.buildResultFromDetail(detail.body, profileImg);
+        if (!filtered) continue;
+        return filtered;
+
+      } catch (e) {
+        dbg("Error in getRandomBookmarkIllust loop:", e);
+        continue;
+      }
+    }
+    return null;
+  }
+
+  async getRandomRecommendationIllust() {
+    const userId = await getLoggedInUserId();
+    if (!userId) {
+      return this.handleLoginFailure();
+    }
+
+    const MAX_RETRIES = 5;
+    for (let i = 0; i < MAX_RETRIES; i++) {
+      try {
+        // Fetch recommendations
+        const recommendUrl = `${baseUrl}/ajax/top/illust?mode=all&lang=en`;
+        const recommendRes = await fetchPixivJson(recommendUrl);
+        
+        if (!recommendRes || !recommendRes.body) {
+          continue;
+        }
+
+        // Recommendations can be in different fields
+        let illusts = [];
+        if (recommendRes.body.thumbnails && recommendRes.body.thumbnails.illust) {
+          illusts = recommendRes.body.thumbnails.illust;
+        } else if (recommendRes.body.page && recommendRes.body.page.recommend) {
+          // Get IDs from recommend and look them up
+          const ids = recommendRes.body.page.recommend.ids || [];
+          if (ids.length > 0) {
+            const randomId = ids[getRandomInt(0, ids.length)];
+            const detailUrl = `${baseUrl}${illustInfoUrl}${randomId}`;
+            const detail = await fetchPixivJson(detailUrl);
+            if (detail && detail.body) {
+              const filtered = await this.buildResultFromDetail(detail.body);
+              if (filtered) return filtered;
+            }
+          }
+          continue;
+        }
+
+        if (illusts.length === 0) continue;
+
+        // Pick random illust
+        const randomIllust = illusts[getRandomInt(0, illusts.length)];
+        if (!randomIllust || !randomIllust.id) continue;
+
+        const detailUrl = `${baseUrl}${illustInfoUrl}${randomIllust.id}`;
+        const detail = await fetchPixivJson(detailUrl);
+        
+        if (!detail || !detail.body) continue;
+
+        const filtered = await this.buildResultFromDetail(detail.body, randomIllust.profileImageUrl);
+        if (!filtered) continue;
+        return filtered;
+
+      } catch (e) {
+        dbg("Error in getRandomRecommendationIllust loop:", e);
+        continue;
+      }
+    }
+    return null;
+  }
+
+  async handleLoginFailure() {
+    // Use user-configured fallback mode when login is required but user is not logged in
+    const fallbackMode = this.searchParam.loginFallbackMode || 'ranking_daily';
+    const fallbackRankingMode = resolveRankingMode(fallbackMode, this.searchParam.mode);
+    dbg(`Login required but not logged in, falling back to ${fallbackMode}`);
+    const originalMode = this.rankingMode;
+    this.rankingMode = fallbackRankingMode || 'daily';
+    const result = await this.getRandomRankingIllust();
+    this.rankingMode = originalMode; // Restore original mode
+    return result;
   }
 
   async getRandomArtistIllust() {
@@ -553,9 +738,7 @@ class SearchSource {
       params.set("date", this.rankingDate);
     }
     try {
-      let res = await throttledFetch(`${rankingEndpoint}?${params.toString()}`, {
-        headers: { "referer": baseUrl }
-      });
+      let res = await throttledFetch(`${rankingEndpoint}?${params.toString()}`);
       if (!res.ok) {
         dbg(`Ranking fetch failed: ${res.status} ${res.statusText}`);
         return null;
@@ -617,7 +800,7 @@ class SearchSource {
     if (!type || type === "all") {
       return true;
     }
-    const detailType = detail.illustType || detail.type;
+    const detailType = normalizeDetailType(detail.illustType || detail.type);
     if (!detailType) {
       return true;
     }
@@ -627,7 +810,19 @@ class SearchSource {
     return detailType === type;
   }
 
+  async fetchUgoiraMetadata(illustId) {
+    try {
+      const metaUrl = `${baseUrl}${illustInfoUrl}${illustId}/ugoira_meta`;
+      const meta = await fetchPixivJson(metaUrl);
+      return meta?.body || null;
+    } catch (e) {
+      dbg("Fetch ugoira metadata error", e);
+      return null;
+    }
+  }
+
   passesDetailFilters(detail) {
+    // ... (unchanged)
     let sp = this.searchParam;
     if (sp.aiType && detail.aiType !== undefined && detail.aiType !== null && Number(detail.aiType) !== Number(sp.aiType)) {
       return false;
@@ -667,6 +862,12 @@ class SearchSource {
     if (!this.passesDetailFilters(detail)) {
       return null;
     }
+    const detailType = normalizeDetailType(detail.illustType || detail.type);
+    
+    let ugoiraMeta = null;
+    if (detailType === "ugoira") {
+      ugoiraMeta = await this.fetchUgoiraMetadata(detail.illustId);
+    }
     let profileUrl = fallbackProfileUrl || detail.userIllusts?.[detail.illustId]?.url || detail.profileImageUrl || null;
     let imageUrl = detail.urls?.regular || detail.urls?.small || detail.urls?.thumb;
     if (!imageUrl) {
@@ -699,6 +900,16 @@ class SearchSource {
     } else if (profileUrl) {
       result.profileImageUrl = profileUrl;
     }
+    if (ugoiraMeta && ugoiraMeta.frames && ugoiraMeta.frames.length) {
+      const zipUrl = ugoiraMeta.originalSrc || ugoiraMeta.src || ugoiraMeta.zip_urls?.medium || null;
+      if (zipUrl) {
+        result.ugoira = {
+          zipUrl,
+          mimeType: ugoiraMeta.mime_type || "image/jpeg",
+          frames: ugoiraMeta.frames.map((frame) => ({ file: frame.file, delay: frame.delay }))
+        };
+      }
+    }
     if (!result.profileImageUrl) {
       result.profileImageUrl = "";
     }
@@ -715,18 +926,63 @@ function blobToDataUrl(blob) {
   });
 }
 
+// Check Pixiv login status via cookies
+async function checkPixivLogin() {
+  try {
+    const cookie = await browserAPI.cookies.get({
+      url: 'https://www.pixiv.net',
+      name: 'PHPSESSID'
+    });
+    
+    if (cookie && cookie.value) {
+      // Try to extract user ID from the session - format is typically "userId_sessionHash"
+      const parts = cookie.value.split('_');
+      const userId = parts[0] && /^\d+$/.test(parts[0]) ? parts[0] : null;
+      
+      // Try to fetch user nickname
+      let userName = null;
+      if (userId) {
+        try {
+          const userDataUrl = `${baseUrl}/ajax/user/${userId}?full=0`;
+          const userRes = await fetchPixivJson(userDataUrl);
+          if (userRes && userRes.body && userRes.body.name) {
+            userName = userRes.body.name;
+          }
+        } catch (e) {
+          dbg('Error fetching user name:', e);
+        }
+      }
+      
+      return { loggedIn: true, userId, userName };
+    }
+    return { loggedIn: false };
+  } catch (e) {
+    dbg('Error checking Pixiv login:', e);
+    return { loggedIn: false };
+  }
+}
+
+// Get logged-in user ID
+async function getLoggedInUserId() {
+  const status = await checkPixivLogin();
+  return status.loggedIn ? status.userId : null;
+}
+
 let searchSource;
 let artworkQueue;
 let running = 0;
 
 const MessageChannel = Object.freeze({
   requestArtwork: "requestArtwork",
-  refreshPreferences: "refreshPreferences"
+  refreshPreferences: "refreshPreferences",
+  checkPixivLogin: "checkPixivLogin",
+  fetchUgoiraZip: "fetchUgoiraZip"
 });
 
 const legacyActionMap = new Map([
   ["fetchImage", MessageChannel.requestArtwork],
-  ["updateConfig", MessageChannel.refreshPreferences]
+  ["updateConfig", MessageChannel.refreshPreferences],
+  ["fetchUgoiraZip", MessageChannel.fetchUgoiraZip]
 ]);
 
 function fillQueue() {
@@ -819,6 +1075,27 @@ browserAPI.runtime.onMessage.addListener(function (
         });
         fillQueue();
         sendResponse();
+      } else if (action === MessageChannel.checkPixivLogin) {
+        const status = await checkPixivLogin();
+        sendResponse(status);
+      } else if (action === MessageChannel.fetchUgoiraZip) {
+        const url = message.url;
+        if (!url) {
+          sendResponse(null);
+          return;
+        }
+        try {
+          const blob = await fetchImage(url);
+          if (blob) {
+            const dataUrl = await blobToDataUrl(blob);
+            sendResponse(dataUrl);
+          } else {
+            sendResponse(null);
+          }
+        } catch (e) {
+          console.warn("Fetch Ugoira Zip failed", e);
+          sendResponse(null);
+        }
       } else {
         // 其他分支，确保 sendResponse 被调用
         sendResponse();

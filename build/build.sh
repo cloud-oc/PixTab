@@ -15,8 +15,8 @@ echo "📋 [INFO] Version: $VERSION"
 rm -rf dist
 mkdir -p dist
 
-# Chrome/Edge packaging
-echo "📦 [PACK] Building Chrome/Edge version..."
+# Chrome packaging
+echo "📦 [PACK] Building Chrome version..."
 zip -r "dist/pixtab-${VERSION}-chrome.zip" manifest.json LICENSE index.html options.html style.css _locales icons src -x "*.git*" -x "*.DS_Store"
 
 # Firefox packaging (temporarily modify manifest)

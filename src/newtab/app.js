@@ -1,5 +1,6 @@
 import { initThemeSync } from "./theme.js";
 import browserAPI from "../shared/browser-polyfill.js";
+import { unzipSync } from "../shared/fflate.module.js";
 
 (function () {
   const WALLPAPER_PREF_DEFAULTS = Object.freeze({
@@ -9,6 +10,10 @@ import browserAPI from "../shared/browser-polyfill.js";
   });
   let wallpaperDisplayPrefs = { ...WALLPAPER_PREF_DEFAULTS };
   let fgImageElementRef = null;
+  let bgImageElementRef = null;
+  let ugoiraTimer = null;
+  let ugoiraPlayToken = 0;
+  const ugoiraFrameCache = new Map();
   initThemeSync();
 
   const sizeValueMap = {
@@ -77,6 +82,99 @@ import browserAPI from "../shared/browser-polyfill.js";
     return updated;
   }
 
+  const applyFrameUrl = (url) => {
+    if (bgImageElementRef) {
+      bgImageElementRef.style["background-image"] = `url(${url})`;
+    }
+    if (fgImageElementRef) {
+      fgImageElementRef.style["background-image"] = `url(${url})`;
+    }
+  };
+
+  const stopUgoiraPlayback = () => {
+    ugoiraPlayToken += 1;
+    if (ugoiraTimer) {
+      clearTimeout(ugoiraTimer);
+      ugoiraTimer = null;
+    }
+  };
+
+  async function blobToDataUrl(blob) {
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  async function decodeUgoiraFrames(ugoiraPayload) {
+    if (!ugoiraPayload || !ugoiraPayload.zipUrl || !ugoiraPayload.frames || !ugoiraPayload.frames.length) {
+      return null;
+    }
+    if (ugoiraFrameCache.has(ugoiraPayload.zipUrl)) {
+      return ugoiraFrameCache.get(ugoiraPayload.zipUrl);
+    }
+    // Fetch zip via background script to bypass CORS/Referer issues
+    const zipDataUrl = await browserAPI.runtime.sendMessage({
+      action: "fetchUgoiraZip",
+      url: ugoiraPayload.zipUrl
+    });
+    
+    if (!zipDataUrl) {
+      throw new Error("Failed to fetch ugoira zip via background");
+    }
+
+    // Convert DataURL to Uint8Array
+    const base64Content = zipDataUrl.split(',')[1];
+    const binaryString = atob(base64Content);
+    const len = binaryString.length;
+    const zipBytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        zipBytes[i] = binaryString.charCodeAt(i);
+    }
+    const files = unzipSync(zipBytes);
+    const mimeType = ugoiraPayload.mimeType || "image/jpeg";
+    const frames = [];
+    for (const frame of ugoiraPayload.frames) {
+      const fileData = files[frame.file];
+      if (!fileData) {
+        continue;
+      }
+      const dataUrl = await blobToDataUrl(new Blob([fileData], { type: mimeType }));
+      frames.push({ url: dataUrl, delay: frame.delay || 60 });
+    }
+    if (!frames.length) {
+      throw new Error("No ugoira frames decoded");
+    }
+    ugoiraFrameCache.set(ugoiraPayload.zipUrl, frames);
+    return frames;
+  }
+
+  async function startUgoiraPlayback(ugoiraPayload) {
+    const token = ++ugoiraPlayToken;
+    try {
+      const frames = await decodeUgoiraFrames(ugoiraPayload);
+      if (!frames || !frames.length || token !== ugoiraPlayToken) {
+        return;
+      }
+      let idx = 0;
+      const step = () => {
+        if (token !== ugoiraPlayToken) {
+          return;
+        }
+        const frame = frames[idx];
+        applyFrameUrl(frame.url);
+        const delay = Math.max(30, Number(frame.delay) || 60);
+        idx = (idx + 1) % frames.length;
+        ugoiraTimer = setTimeout(step, delay);
+      };
+      step();
+    } catch (e) {
+      console.warn("Failed to play ugoira", e);
+    }
+  }
+
   class Binding {
     constructor() {
       const bgElement = document.body.querySelector("#backgroundImage");
@@ -133,6 +231,7 @@ import browserAPI from "../shared/browser-polyfill.js";
       const fgElementBinding = (v) => {
         fgImageElement.style["background-image"] = `url(${v})`;
       };
+      bgImageElementRef = bgElement;
       fgImageElementRef = fgImageElement;
       loadWallpaperDisplayPreferences();
       this.ref = {
@@ -227,6 +326,7 @@ import browserAPI from "../shared/browser-polyfill.js";
       }
       return;
     }
+    stopUgoiraPlayback();
     for (let k in binding.ref) {
       if (illustObject.hasOwnProperty(k)) {
         let value = illustObject[k];
@@ -244,6 +344,9 @@ import browserAPI from "../shared/browser-polyfill.js";
     binding.illustInfoFadeOutTimeoutId = setTimeout(() => {
       binding.illustInfoElement.className = "unfocused";
     }, 10000);
+    if (illustObject.ugoira) {
+      startUgoiraPlayback(illustObject.ugoira);
+    }
   }
 
   const sendRefreshMessage = (() => {

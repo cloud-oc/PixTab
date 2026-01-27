@@ -442,37 +442,50 @@
       gap: 12px 20px;
     }
 
-    .keyword-section {
-      padding: 16px 0;
-      border-top: 1px solid var(--panel-border-color);
-      border-bottom: 1px solid var(--panel-border-color);
-      margin: 20px 0;
-    }
-
-    .keyword-settings-block {
-      margin-top: 12px;
-      padding: 16px;
-      border-radius: 14px;
-      border: 1px solid var(--panel-border-color);
-      background: rgba(255, 255, 255, 0.04);
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .keyword-settings-block .field-row {
-      padding: 12px 0;
-      border-bottom: 1px solid var(--panel-border-color);
+    .keyword-sub-section {
+      padding: 12px 16px;
       margin-top: 0;
-      min-height: 44px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 10px;
+      display: block;
     }
 
-    .keyword-settings-block .field-row:first-child {
+    .keyword-sub-section .sub-section-heading,
+    .keyword-sub-section .tip {
+      flex: 0 0 200px;
+      margin-bottom: 8px;
+    }
+
+    .keyword-sub-section.hidden {
+      display: none;
+    }
+
+    .keyword-sub-section .sub-section-heading {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--panel-label-color);
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+
+    .keyword-sub-section .tip {
+      font-size: 12px;
+      color: var(--panel-text-color);
+      opacity: 0.7;
+      margin-bottom: 10px;
+    }
+
+    .keyword-sub-section .field-row {
+      padding: 10px 0;
+      margin-top: 0;
+      min-height: 40px;
+    }
+
+    .keyword-sub-section .field-row:first-of-type {
       padding-top: 0;
     }
 
-    .keyword-settings-block .field-row:last-child {
-      border-bottom: none;
+    .keyword-sub-section .field-row:last-child {
       padding-bottom: 0;
     }
 
@@ -741,6 +754,68 @@
         flex: 0 0 150px;
       }
     }
+
+    /* Account section styles */
+    .account-section {
+      margin: 24px 0;
+    }
+
+    .login-status-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .login-status-value {
+      font-weight: 600;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--input-bg);
+      min-width: 80px;
+      text-align: center;
+      border: 1px solid var(--input-border-color);
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+      font-size: 14px;
+      color: var(--panel-text-color);
+      box-shadow: none;
+      margin-top: 0;
+      line-height: normal;
+    }
+
+    .login-status-value:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(101, 180, 255, 0.5);
+    }
+
+    .login-status-value.logged-in {
+      color: #4ade80;
+    }
+
+    .login-status-value.not-logged-in {
+      color: #f87171;
+    }
+
+    .secondary-button {
+      padding: 8px 16px;
+      font-size: 14px;
+      background: var(--input-bg);
+      color: var(--panel-text-color);
+      border: 1px solid var(--input-border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+      margin-top: 0;
+      width: auto;
+      box-shadow: none;
+    }
+
+    .secondary-button:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(101, 180, 255, 0.5);
+      transform: none;
+    }
   </style>
 </head>
 
@@ -750,7 +825,7 @@
     <h1 id="settingsHeading"></h1>
 
     <div class="group display-section">
-      <label class="section-label" id="displaySettingsLabel"></label>
+      <h2 class="section-label" id="displaySettingsLabel"></h2>
       <div class="display-settings-block">
         <div class="control-block language-block">
           <label id="languageLabel" for="languageSelect"></label>
@@ -760,6 +835,7 @@
             <option value="zh-TW">中文（繁體）</option>
             <option value="ja">日本語</option>
             <option value="ko">한국어</option>
+            <option value="ru">Русский</option>
           </select>
         </div>
         <div class="display-settings-grid">
@@ -798,35 +874,10 @@
       </div>
     </div>
 
-    <div class="group keyword-section">
-      <label class="section-label" id="keywordsSectionHeading"></label>
-      <input type="hidden" id="keywords" name="keywords" />
-      <div id="keywordsTip" class="tip"></div>
-      <div class="keyword-settings-block">
-        <div class="field-row">
-          <label id="andKeywordsLabel" for="andKeywords"></label>
-          <input type="text" id="andKeywords" name="andKeywords" />
-        </div>
-        <div class="field-row">
-          <label id="orKeywordsLabel" for="orKeywords"></label>
-          <input type="text" id="orKeywords" name="orKeywords" />
-        </div>
-        <div class="field-row">
-          <label id="minusKeywordsLabel" for="minusKeywords"></label>
-          <input type="text" id="minusKeywords" name="minusKeywords" />
-        </div>
-        <div class="field-row keyword-mode-row">
-          <label id="s_modeLabel" for="s_mode"></label>
-          <select id="s_mode" name="s_mode">
-            <option id="s_tagOption" value="s_tag"></option>
-            <option id="s_tag_fullOption" value="s_tag_full"></option>
-          </select>
-        </div>
-      </div>
-    </div>
+
 
     <div class="group filter-section">
-      <label class="section-label" id="filterSettingsLabel"></label>
+      <h2 class="section-label" id="filterSettingsLabel"></h2>
       <div class="filter-settings-block">
         <div class="group group-inline-row inline-field">
           <label id="orderLabel" for="order"></label>
@@ -840,7 +891,35 @@
             <option id="popular_male_dOrder" value="popular_male_d"></option>
             <option id="popular_female_dOrder" value="popular_female_d"></option>
             <option id="artistOrder" value="artist"></option>
+            <option id="followingOrder" value="following"></option>
+            <option id="bookmarksOrder" value="bookmarks"></option>
+            <option id="recommendationsOrder" value="recommendations"></option>
           </select>
+        </div>
+
+        <div id="keywordSettingsGroup" class="group group-inline-row keyword-sub-section">
+          <input type="hidden" id="keywords" name="keywords" />
+          <div class="sub-section-heading" id="keywordsSectionHeading"></div>
+          <div id="keywordsTip" class="tip"></div>
+          <div class="field-row">
+            <label id="andKeywordsLabel" for="andKeywords"></label>
+            <input type="text" id="andKeywords" name="andKeywords" />
+          </div>
+          <div class="field-row">
+            <label id="orKeywordsLabel" for="orKeywords"></label>
+            <input type="text" id="orKeywords" name="orKeywords" />
+          </div>
+          <div class="field-row">
+            <label id="minusKeywordsLabel" for="minusKeywords"></label>
+            <input type="text" id="minusKeywords" name="minusKeywords" />
+          </div>
+          <div class="field-row keyword-mode-row">
+            <label id="s_modeLabel" for="s_mode"></label>
+            <select id="s_mode" name="s_mode">
+              <option id="s_tagOption" value="s_tag"></option>
+              <option id="s_tag_fullOption" value="s_tag_full"></option>
+            </select>
+          </div>
         </div>
 
         <div class="group group-inline-row inline-field" id="artistIdGroup">
@@ -912,6 +991,34 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group account-section">
+      <h2 class="section-label" id="pixivAccountSection"></h2>
+      <div class="filter-settings-block">
+        <div class="group group-inline-row inline-field">
+          <label id="loginStatusLabel" for="loginStatusValue"></label>
+          <div class="field-body login-status-row">
+            <!-- Hidden spans for localization lookup -->
+            <span id="loginStatusLoggedIn" style="display:none;"></span>
+            <span id="loginStatusNotLoggedIn" style="display:none;"></span>
+            <button type="button" id="loginStatusValue" class="login-status-value"></button>
+          </div>
+      </div>
+        <div class="group group-inline-row inline-field">
+          <label id="loginFallbackModeLabel" for="loginFallbackMode"></label>
+          <select id="loginFallbackMode" name="loginFallbackMode">
+            <option id="fallbackDailyRanking" value="ranking_daily"></option>
+            <option id="fallbackWeeklyRanking" value="ranking_weekly"></option>
+            <option id="fallbackMonthlyRanking" value="ranking_monthly"></option>
+            <option id="fallbackRookieRanking" value="ranking_rookie"></option>
+            <option id="fallbackOriginalRanking" value="ranking_original"></option>
+            <option id="fallbackPopularD" value="popular_d"></option>
+            <option id="fallbackPopularMaleD" value="popular_male_d"></option>
+            <option id="fallbackPopularFemaleD" value="popular_female_d"></option>
+          </select>
         </div>
       </div>
     </div>

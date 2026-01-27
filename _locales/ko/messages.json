@@ -59,6 +59,66 @@
     "originalRankingOrder": {
         "message": "오리지널 랭킹"
     },
+    "artistOrder": {
+        "message": "특정 아티스트"
+    },
+    "artistIdLabel": {
+        "message": "아티스트 ID"
+    },
+    "artistIdHelper": {
+        "message": "아티스트 ID를 쉼표로 구분하여 입력하세요"
+    },
+    "followingOrder": {
+        "message": "팔로잉 (로그인 필요)"
+    },
+    "bookmarksOrder": {
+        "message": "북마크 (로그인 필요)"
+    },
+    "recommendationsOrder": {
+        "message": "추천 (로그인 필요)"
+    },
+    "pixivAccountSection": {
+        "message": "Pixiv 계정"
+    },
+    "loginStatusLabel": {
+        "message": "로그인 상태"
+    },
+    "loginStatusLoggedIn": {
+        "message": "로그인됨"
+    },
+    "loginStatusNotLoggedIn": {
+        "message": "로그인되지 않음"
+    },
+    "loginButton": {
+        "message": "로그인"
+    },
+    "loginFallbackModeLabel": {
+        "message": "대체 모드"
+    },
+    "fallbackDailyRanking": {
+        "message": "일간 랭킹"
+    },
+    "fallbackWeeklyRanking": {
+        "message": "주간 랭킹"
+    },
+    "fallbackMonthlyRanking": {
+        "message": "월간 랭킹"
+    },
+    "fallbackRookieRanking": {
+        "message": "루키 랭킹"
+    },
+    "fallbackOriginalRanking": {
+        "message": "오리지널 랭킹"
+    },
+    "fallbackPopularD": {
+        "message": "인기순 정렬"
+    },
+    "fallbackPopularMaleD": {
+        "message": "남성에게 인기"
+    },
+    "fallbackPopularFemaleD": {
+        "message": "여성에게 인기"
+    },
     "modeLabel": {
         "message": "NSFW 표시"
     },

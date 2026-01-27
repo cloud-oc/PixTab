@@ -59,6 +59,66 @@
   "originalRankingOrder": {
     "message": "Рейтинг оригиналов"
   },
+  "artistOrder": {
+    "message": "Конкретный художник"
+  },
+  "artistIdLabel": {
+    "message": "ID художника"
+  },
+  "artistIdHelper": {
+    "message": "Введите ID художников, разделённые запятыми"
+  },
+  "followingOrder": {
+    "message": "Подписки (требуется вход)"
+  },
+  "bookmarksOrder": {
+    "message": "Закладки (требуется вход)"
+  },
+  "recommendationsOrder": {
+    "message": "Рекомендации (требуется вход)"
+  },
+  "pixivAccountSection": {
+    "message": "Аккаунт Pixiv"
+  },
+  "loginStatusLabel": {
+    "message": "Статус входа"
+  },
+  "loginStatusLoggedIn": {
+    "message": "Вход выполнен"
+  },
+  "loginStatusNotLoggedIn": {
+    "message": "Вход не выполнен"
+  },
+  "loginButton": {
+    "message": "Войти"
+  },
+  "loginFallbackModeLabel": {
+    "message": "Резервный режим"
+  },
+  "fallbackDailyRanking": {
+    "message": "Дневной рейтинг"
+  },
+  "fallbackWeeklyRanking": {
+    "message": "Недельный рейтинг"
+  },
+  "fallbackMonthlyRanking": {
+    "message": "Месячный рейтинг"
+  },
+  "fallbackRookieRanking": {
+    "message": "Рейтинг новичков"
+  },
+  "fallbackOriginalRanking": {
+    "message": "Рейтинг оригиналов"
+  },
+  "fallbackPopularD": {
+    "message": "Сортировка по популярности"
+  },
+  "fallbackPopularMaleD": {
+    "message": "Популярное у мужчин"
+  },
+  "fallbackPopularFemaleD": {
+    "message": "Популярное у женщин"
+  },
   "modeLabel": {
     "message": "Отображение NSFW"
   },

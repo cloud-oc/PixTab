@@ -45,7 +45,8 @@ const saveOptions = () => {
     andKeywords: document.getElementById('andKeywords').value.trim(),
     andKeywords: document.getElementById('andKeywords').value.trim(),
     keywords: document.getElementById('keywords').value.trim(),
-    artistId: document.getElementById('artistId').value.trim()
+    artistId: document.getElementById('artistId').value.trim(),
+    loginFallbackMode: document.getElementById('loginFallbackMode')?.value || 'ranking_daily'
   };
 
   browserAPI.storage.local.set(
@@ -99,9 +100,11 @@ const resetOptions = () => {
       document.getElementById('orKeywords').value = items.orKeywords;
       document.getElementById('minusKeywords').value = items.minusKeywords;
       document.getElementById('artistId').value = items.artistId || "";
+      document.getElementById('loginFallbackMode').value = items.loginFallbackMode || 'ranking_daily';
       updateKeywords();
       enforceBookmarkRange();
       updateArtistIdVisibility();
+      updateKeywordSectionVisibility();
       console.log("Reset config");
       console.log(items);
     }
@@ -129,9 +132,12 @@ const restoreOptions = () => {
     document.getElementById('orKeywords').value = items.orKeywords;
     document.getElementById('minusKeywords').value = items.minusKeywords;
     document.getElementById('artistId').value = items.artistId || "";
+    document.getElementById('loginFallbackMode').value = items.loginFallbackMode || 'ranking_daily';
     updateKeywords();
     enforceBookmarkRange();
     updateArtistIdVisibility();
+    updateKeywordSectionVisibility();
+    checkLoginStatus();
   });
 };
 
@@ -204,6 +210,65 @@ function updateArtistIdVisibility() {
   }
 }
 
+// Keyword-compatible modes: these use keyword search API
+const KEYWORD_COMPATIBLE_ORDERS = ['popular_d', 'popular_male_d', 'popular_female_d'];
+
+function updateKeywordSectionVisibility() {
+  const order = document.getElementById('order').value;
+  const keywordGroup = document.getElementById('keywordSettingsGroup');
+  if (keywordGroup) {
+    if (KEYWORD_COMPATIBLE_ORDERS.includes(order)) {
+      keywordGroup.classList.remove('hidden');
+    } else {
+      keywordGroup.classList.add('hidden');
+    }
+  }
+}
+
+// Login status check functions
+function checkLoginStatus() {
+  browserAPI.runtime.sendMessage({ action: 'checkPixivLogin' }, (response) => {
+    const lastError = browserAPI.runtime.lastError;
+    if (lastError) {
+      updateLoginStatusDisplay(false);
+      return;
+    }
+    if (response && response.loggedIn) {
+      updateLoginStatusDisplay(true, response.userId, response.userName);
+    } else {
+      updateLoginStatusDisplay(false);
+    }
+  });
+}
+
+function updateLoginStatusDisplay(loggedIn, userId = null, userName = null) {
+  const statusEl = document.getElementById('loginStatusValue');
+  if (!statusEl) return;
+  
+  // Get localized strings
+  // Get localized strings from hidden elements which are populated by loadTranslations
+  const loggedInText = document.getElementById('loginStatusLoggedIn')?.textContent || 'Logged In';
+  const notLoggedInText = document.getElementById('loginStatusNotLoggedIn')?.textContent || 'Not Logged In';
+  
+  if (loggedIn) {
+    let statusText = loggedInText;
+    if (userName) {
+      statusText += ` (${userName})`;
+    } else if (userId) {
+      statusText += ` (ID: ${userId})`;
+    }
+    statusEl.textContent = statusText;
+    statusEl.className = 'login-status-value logged-in';
+  } else {
+    statusEl.textContent = notLoggedInText;
+    statusEl.className = 'login-status-value not-logged-in';
+  }
+}
+
+function openPixivLogin() {
+  browserAPI.tabs.create({ url: 'https://www.pixiv.net/login.php' });
+}
+
 function registerAutoSaveListeners() {
   const autoSaveElements = document.querySelectorAll('input:not([type="hidden"]), select, textarea');
   autoSaveElements.forEach((element) => {
@@ -222,6 +287,7 @@ const maxBookmarkInput = document.getElementById('bgt');
   maxBookmarkInput?.addEventListener(eventName, () => enforceBookmarkRange(maxBookmarkInput));
 });
 document.getElementById('order')?.addEventListener('change', updateArtistIdVisibility);
+document.getElementById('order')?.addEventListener('change', updateKeywordSectionVisibility);
 const backToNewTabButton = document.getElementById('backToNewTabButton');
 if (backToNewTabButton) {
   backToNewTabButton.addEventListener('click', () => {
@@ -236,6 +302,12 @@ if (backToNewTabButton) {
 document.addEventListener('DOMContentLoaded', () => {
   restoreOptions();
   registerAutoSaveListeners();
+  
+  // Setup login status button (clicking opens Pixiv login page)
+  const loginStatusEl = document.getElementById('loginStatusValue');
+  if (loginStatusEl) {
+    loginStatusEl.addEventListener('click', openPixivLogin);
+  }
 });
 document.getElementById('reset').addEventListener('click', resetOptions);
 
@@ -267,7 +339,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // the legacy `_locales/zh` folder has been removed from the repository.
   // We therefore map saved 'zh' to 'zh-CN' and intentionally avoid listing
   // 'zh' among supported languages to prevent any runtime lookup for it.
-  const supportedLanguages = ["en", "zh-CN", "zh-TW", "ja", "ko"];
+  const supportedLanguages = ["en", "zh-CN", "zh-TW", "ja", "ko", "ru"];
 
   function detectBrowserLanguage() {
     const browserLangs = navigator.languages || [navigator.language || "en"];
@@ -316,10 +388,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function loadTranslations(lang) {
-    // 兼容中划线和下划线
+    // 兼容中划线和下划线 - try underscore first as that matches disk
     const tryPaths = [
-      `_locales/${lang}/messages.json`,
-      `_locales/${lang.replace('-', '_')}/messages.json`
+      `_locales/${lang.replace('-', '_')}/messages.json`,
+      `_locales/${lang}/messages.json`
     ];
     (function tryFetch(i) {
       fetch(tryPaths[i])
@@ -345,6 +417,8 @@ document.addEventListener("DOMContentLoaded", function () {
             backButton.title = backLabel.textContent;
           }
           applyHelperTitles(data);
+          // Re-update login status to reflect new language strings
+          checkLoginStatus();
         })
         .catch((error) => {
           if (i + 1 < tryPaths.length) {

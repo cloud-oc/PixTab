@@ -59,6 +59,66 @@
   "originalRankingOrder": {
     "message": "オリジナルランキング"
   },
+  "artistOrder": {
+    "message": "特定のアーティスト"
+  },
+  "artistIdLabel": {
+    "message": "アーティストID"
+  },
+  "artistIdHelper": {
+    "message": "アーティストIDをカンマで区切って入力してください"
+  },
+  "followingOrder": {
+    "message": "フォロー中（ログイン必要）"
+  },
+  "bookmarksOrder": {
+    "message": "ブックマーク（ログイン必要）"
+  },
+  "recommendationsOrder": {
+    "message": "おすすめ（ログイン必要）"
+  },
+  "pixivAccountSection": {
+    "message": "Pixiv アカウント"
+  },
+  "loginStatusLabel": {
+    "message": "ログイン状態"
+  },
+  "loginStatusLoggedIn": {
+    "message": "ログイン中"
+  },
+  "loginStatusNotLoggedIn": {
+    "message": "未ログイン"
+  },
+  "loginButton": {
+    "message": "ログイン"
+  },
+  "loginFallbackModeLabel": {
+    "message": "フォールバックモード"
+  },
+  "fallbackDailyRanking": {
+    "message": "デイリーランキング"
+  },
+  "fallbackWeeklyRanking": {
+    "message": "ウィークリーランキング"
+  },
+  "fallbackMonthlyRanking": {
+    "message": "マンスリーランキング"
+  },
+  "fallbackRookieRanking": {
+    "message": "ルーキーランキング"
+  },
+  "fallbackOriginalRanking": {
+    "message": "オリジナルランキング"
+  },
+  "fallbackPopularD": {
+    "message": "全体の人気順"
+  },
+  "fallbackPopularMaleD": {
+    "message": "男性の人気順"
+  },
+  "fallbackPopularFemaleD": {
+    "message": "女性の人気順"
+  },
   "modeLabel": {
     "message": "NSFW表示"
   },

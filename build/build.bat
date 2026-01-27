@@ -21,8 +21,8 @@ REM Clean and recreate dist directory
 if exist dist rmdir /s /q dist
 mkdir dist
 
-REM Chrome/Edge packaging
-echo [PACK] Building Chrome/Edge version...
+REM Chrome packaging
+echo [PACK] Building Chrome version...
 tar -a -cf "dist\pixtab-%VERSION%-chrome.zip" manifest.json LICENSE index.html options.html style.css _locales icons src
 
 REM Firefox packaging (temporarily modify manifest)

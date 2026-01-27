@@ -62,6 +62,66 @@
     "originalRankingOrder": {
         "message": "原創排行榜"
     },
+    "artistOrder": {
+        "message": "指定畫師"
+    },
+    "artistIdLabel": {
+        "message": "畫師 ID"
+    },
+    "artistIdHelper": {
+        "message": "請輸入畫師 ID，多個 ID 請用英文逗號分隔"
+    },
+    "followingOrder": {
+        "message": "追蹤中（需登入）"
+    },
+    "bookmarksOrder": {
+        "message": "收藏（需登入）"
+    },
+    "recommendationsOrder": {
+        "message": "推薦（需登入）"
+    },
+    "pixivAccountSection": {
+        "message": "Pixiv 帳號"
+    },
+    "loginStatusLabel": {
+        "message": "登入狀態"
+    },
+    "loginStatusLoggedIn": {
+        "message": "已登入"
+    },
+    "loginStatusNotLoggedIn": {
+        "message": "未登入"
+    },
+    "loginButton": {
+        "message": "登入"
+    },
+    "loginFallbackModeLabel": {
+        "message": "回退模式"
+    },
+    "fallbackDailyRanking": {
+        "message": "每日排行榜"
+    },
+    "fallbackWeeklyRanking": {
+        "message": "每週排行榜"
+    },
+    "fallbackMonthlyRanking": {
+        "message": "每月排行榜"
+    },
+    "fallbackRookieRanking": {
+        "message": "新人排行榜"
+    },
+    "fallbackOriginalRanking": {
+        "message": "原創排行榜"
+    },
+    "fallbackPopularD": {
+        "message": "按熱門度排序"
+    },
+    "fallbackPopularMaleD": {
+        "message": "受男性歡迎"
+    },
+    "fallbackPopularFemaleD": {
+        "message": "受女性歡迎"
+    },
     "modeLabel": {
         "message": "NSFW 顯示"
     },
