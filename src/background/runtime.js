@@ -146,6 +146,7 @@ async function fetchImage(url, attempt = 0) {
 
 let baseUrl = "https://www.pixiv.net";
 let illustInfoUrl = "/ajax/illust/";
+let userProfileUrl = "/ajax/user/";
 let searchUrl = "/ajax/search/illustrations/";
 let rankingEndpoint = "https://www.pixiv.net/ranking.php";
 
@@ -210,7 +211,9 @@ const rankingModeMap = Object.freeze({
   [Order.ranking_weekly]: { base: "weekly", r18: "weekly_r18" },
   [Order.ranking_monthly]: { base: "monthly", r18: "monthly_r18" },
   [Order.ranking_rookie]: { base: "rookie", r18: "rookie_r18" },
-  [Order.ranking_original]: { base: "original", r18: "original_r18" }
+  [Order.ranking_rookie]: { base: "rookie", r18: "rookie_r18" },
+  [Order.ranking_original]: { base: "original", r18: "original_r18" },
+  [Order.artist]: { base: "artist", r18: "artist" }
 });
 
 function resolveRankingMode(order, nsfwMode) {
@@ -353,10 +356,91 @@ class SearchSource {
   }
 
   async getRandomIllust() {
+    if (this.rankingMode === "artist") {
+      return this.getRandomArtistIllust();
+    }
     if (this.rankingMode) {
       return this.getRandomRankingIllust();
     }
     return this.getRandomSearchIllust();
+  }
+
+  async getRandomArtistIllust() {
+    const artistIdsStr = this.searchParam.artistId;
+    if (!artistIdsStr) {
+      return null;
+    }
+    // Split by comma, trim whitespace, remove empty strings
+    const artistIds = artistIdsStr.split(',').map(s => s.trim()).filter(s => s);
+    if (artistIds.length === 0) {
+      return null;
+    }
+
+    const MAX_RETRIES = 5;
+    for (let i = 0; i < MAX_RETRIES; i++) {
+        try {
+            // 1. Pick a random artist ID
+            const randomArtistId = artistIds[getRandomInt(0, artistIds.length)];
+            
+            // 2. Fetch user profile to get list of work IDs AND user basic info (for avatar)
+            // URL: /ajax/user/{id}/profile/all
+            const profileUrl = `${baseUrl}${userProfileUrl}${randomArtistId}/profile/all`;
+            const userDataUrl = `${baseUrl}/ajax/user/${randomArtistId}?full=1`;
+            
+            const [profileRes, userDataRes] = await Promise.all([
+                fetchPixivJson(profileUrl),
+                fetchPixivJson(userDataUrl)
+            ]);
+            
+            if (!profileRes || !profileRes.body || !profileRes.body.illusts) {
+                // If artist not found or has no illusts
+                continue;
+            }
+
+            let artistAvatar = null;
+            if (userDataRes && userDataRes.body) {
+                artistAvatar = userDataRes.body.image || userDataRes.body.imageBig;
+            }
+
+            const illustsMap = profileRes.body.illusts;
+            const illustIds = Object.keys(illustsMap);
+            
+            if (illustIds.length === 0) {
+                continue;
+            }
+
+            // 3. Pick random illust ID
+            const randomIllustId = illustIds[getRandomInt(0, illustIds.length)];
+
+            // 4. Fetch detail
+            const detailUrl = `${baseUrl}${illustInfoUrl}${randomIllustId}`;
+            const detail = await fetchPixivJson(detailUrl);
+            
+            if (!detail || !detail.body) {
+                continue;
+            }
+
+            // 5. Build result
+            // We might want to pass profile image from somewhere if available, but detail.body usually has it?
+            // Actually detail.body has user info.
+            // Note: We are not enforcing "passesDetailFilters" strictly here except maybe for R18/Safe mode?
+            // The user chose a specific artist, so maybe they want to see everything?
+            // But 'mode' (safe/r18) preference is global. So we should probably respect it.
+            
+            const filtered = await this.buildResultFromDetail(detail.body, artistAvatar);
+            if (!filtered) {
+                 // Maybe this artwork was filtered out (e.g. R18 when in Safe mode)
+                 // Continue loop to find another valid one
+                continue;
+            }
+            return filtered;
+
+        } catch (e) {
+            dbg("Error in getRandomArtistIllust loop:", e);
+            continue;
+        }
+    }
+    return null;
   }
 
   async getRandomSearchIllust() {

@@ -59,6 +59,15 @@
     "originalRankingOrder": {
         "message": "原创排行榜"
     },
+    "artistOrder": {
+        "message": "指定画师"
+    },
+    "artistIdLabel": {
+        "message": "画师ID"
+    },
+    "artistIdHelper": {
+        "message": "请输入画师ID，多个ID请用英文逗号分隔"
+    },
     "modeLabel": {
         "message": "NSFW展示"
     },

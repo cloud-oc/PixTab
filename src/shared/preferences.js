@@ -6,7 +6,8 @@ export const RankingMode = Object.freeze({
     weekly: "ranking_weekly",
     monthly: "ranking_monthly",
     rookie: "ranking_rookie",
-    original: "ranking_original"
+    original: "ranking_original",
+    artist: "artist"
 });
 
 export const ContentFilter = Object.freeze({
@@ -41,6 +42,7 @@ export const defaultPreferences = {
     s_mode: KeywordStrategy.partial,
     type: ArtworkKind.illustration,
     aiType: AIGCDisplay.display,
+    artistId: "",
     size: "best_fit",
     align: "center",
     tiling: "none",

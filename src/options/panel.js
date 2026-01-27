@@ -43,7 +43,9 @@ const saveOptions = () => {
     orKeywords: document.getElementById('orKeywords').value.trim(),
     minusKeywords: document.getElementById('minusKeywords').value.trim(),
     andKeywords: document.getElementById('andKeywords').value.trim(),
-    keywords: document.getElementById('keywords').value.trim()
+    andKeywords: document.getElementById('andKeywords').value.trim(),
+    keywords: document.getElementById('keywords').value.trim(),
+    artistId: document.getElementById('artistId').value.trim()
   };
 
   browserAPI.storage.local.set(
@@ -96,8 +98,10 @@ const resetOptions = () => {
       document.getElementById('andKeywords').value = items.andKeywords;
       document.getElementById('orKeywords').value = items.orKeywords;
       document.getElementById('minusKeywords').value = items.minusKeywords;
+      document.getElementById('artistId').value = items.artistId || "";
       updateKeywords();
       enforceBookmarkRange();
+      updateArtistIdVisibility();
       console.log("Reset config");
       console.log(items);
     }
@@ -124,8 +128,10 @@ const restoreOptions = () => {
     document.getElementById('andKeywords').value = items.andKeywords;
     document.getElementById('orKeywords').value = items.orKeywords;
     document.getElementById('minusKeywords').value = items.minusKeywords;
+    document.getElementById('artistId').value = items.artistId || "";
     updateKeywords();
     enforceBookmarkRange();
+    updateArtistIdVisibility();
   });
 };
 
@@ -190,6 +196,14 @@ function updateKeywords() {
   document.getElementById('keywords').value = word;
 }
 
+function updateArtistIdVisibility() {
+  const order = document.getElementById('order').value;
+  const group = document.getElementById('artistIdGroup');
+  if (group) {
+    group.style.display = (order === 'artist') ? 'flex' : 'none';
+  }
+}
+
 function registerAutoSaveListeners() {
   const autoSaveElements = document.querySelectorAll('input:not([type="hidden"]), select, textarea');
   autoSaveElements.forEach((element) => {
@@ -207,6 +221,7 @@ const maxBookmarkInput = document.getElementById('bgt');
   minBookmarkInput?.addEventListener(eventName, () => enforceBookmarkRange(minBookmarkInput));
   maxBookmarkInput?.addEventListener(eventName, () => enforceBookmarkRange(maxBookmarkInput));
 });
+document.getElementById('order')?.addEventListener('change', updateArtistIdVisibility);
 const backToNewTabButton = document.getElementById('backToNewTabButton');
 if (backToNewTabButton) {
   backToNewTabButton.addEventListener('click', () => {

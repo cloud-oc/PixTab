@@ -59,6 +59,15 @@
   "originalRankingOrder": {
     "message": "Original Ranking"
   },
+  "artistOrder": {
+    "message": "Specific Artist"
+  },
+  "artistIdLabel": {
+    "message": "Artist ID"
+  },
+  "artistIdHelper": {
+    "message": "Enter artist IDs, separated by commas"
+  },
   "modeLabel": {
     "message": "NSFW Display"
   },
