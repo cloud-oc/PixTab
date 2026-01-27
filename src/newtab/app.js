@@ -11,8 +11,6 @@ import { unzipSync } from "../shared/fflate.module.js";
   let wallpaperDisplayPrefs = { ...WALLPAPER_PREF_DEFAULTS };
   let fgImageElementRef = null;
   let bgImageElementRef = null;
-  let ugoiraTimer = null;
-  let ugoiraPlayToken = 0;
   const ugoiraFrameCache = new Map();
   initThemeSync();
 
@@ -91,14 +89,6 @@ import { unzipSync } from "../shared/fflate.module.js";
     }
   };
 
-  const stopUgoiraPlayback = () => {
-    ugoiraPlayToken += 1;
-    if (ugoiraTimer) {
-      clearTimeout(ugoiraTimer);
-      ugoiraTimer = null;
-    }
-  };
-
   async function blobToDataUrl(blob) {
     return await new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -151,29 +141,106 @@ import { unzipSync } from "../shared/fflate.module.js";
     return frames;
   }
 
-  async function startUgoiraPlayback(ugoiraPayload) {
-    const token = ++ugoiraPlayToken;
-    try {
-      const frames = await decodeUgoiraFrames(ugoiraPayload);
-      if (!frames || !frames.length || token !== ugoiraPlayToken) {
-        return;
+  const ugoiraController = {
+    timer: null,
+    playToken: 0,
+    frames: [],
+    currentIndex: 0,
+    isPlaying: false,
+    
+    stop() {
+      this.playToken++;
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
       }
-      let idx = 0;
+      this.isPlaying = false;
+      this.updateButtonState();
+    },
+
+    play() {
+      if (!this.frames || !this.frames.length) return;
+      this.isPlaying = true;
+      this.updateButtonState();
+      
+      const token = this.playToken;
       const step = () => {
-        if (token !== ugoiraPlayToken) {
-          return;
-        }
-        const frame = frames[idx];
+        if (token !== this.playToken || !this.isPlaying) return;
+        
+        const frame = this.frames[this.currentIndex];
         applyFrameUrl(frame.url);
         const delay = Math.max(30, Number(frame.delay) || 60);
-        idx = (idx + 1) % frames.length;
-        ugoiraTimer = setTimeout(step, delay);
+        this.currentIndex = (this.currentIndex + 1) % this.frames.length;
+        this.timer = setTimeout(step, delay);
       };
       step();
-    } catch (e) {
-      console.warn("Failed to play ugoira", e);
+    },
+    
+    toggle() {
+      if (this.isPlaying) {
+        this.stop(); // Pauses effectively since we don't reset index
+        // But stop() increments token, which kills the loop.
+        // We want to be able to resume.
+        // The play() method uses current index.
+        // So calling play() again works fine.
+        // Wait, stop() sets isPlaying=false.
+      } else {
+        this.play();
+      }
+    },
+
+    async startNew(ugoiraPayload) {
+      this.stop(); // Stop previous
+      this.frames = [];
+      this.currentIndex = 0;
+      
+      try {
+        const frames = await decodeUgoiraFrames(ugoiraPayload);
+        if (!frames || !frames.length) return;
+        
+        this.frames = frames;
+        // Auto play on load
+        this.play();
+        this.showButton(true);
+      } catch (e) {
+        console.warn("Failed to play ugoira", e);
+        this.showButton(false);
+      }
+    },
+
+    updateButtonState() {
+      const btn = document.getElementById('playPauseButton');
+      if (!btn) return;
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (icon) {
+        icon.textContent = this.isPlaying ? 'pause' : 'play_arrow';
+        // Optional: padding adjustment for triangle icon centering if needed
+        // icon.style.marginLeft = this.isPlaying ? '0' : '4px'; 
+      }
+    },
+
+    showButton(show) {
+      const btn = document.getElementById('playPauseButton');
+      if (!btn) return;
+      if (show) {
+        btn.classList.remove('hidden');
+        this.updateButtonState();
+      } else {
+        btn.classList.add('hidden');
+      }
     }
-  }
+  };
+
+  // Setup button listener
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('playPauseButton');
+    if (btn) {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent clicking through to wallpaper logic if any
+        ugoiraController.toggle();
+      });
+    }
+  });
 
   class Binding {
     constructor() {
@@ -326,7 +393,10 @@ import { unzipSync } from "../shared/fflate.module.js";
       }
       return;
     }
-    stopUgoiraPlayback();
+    ugoiraController.stop();
+    // Also hide button by default until loaded
+    ugoiraController.showButton(false);
+    
     for (let k in binding.ref) {
       if (illustObject.hasOwnProperty(k)) {
         let value = illustObject[k];
@@ -345,7 +415,7 @@ import { unzipSync } from "../shared/fflate.module.js";
       binding.illustInfoElement.className = "unfocused";
     }, 10000);
     if (illustObject.ugoira) {
-      startUgoiraPlayback(illustObject.ugoira);
+      ugoiraController.startNew(illustObject.ugoira);
     }
   }
 

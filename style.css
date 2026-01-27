@@ -381,3 +381,43 @@ body.settings-open {
   border: none;
   background: transparent;
 }
+
+/* Play/Pause Button */
+.play-pause-btn {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.3s, transform 0.2s, opacity 0.3s, border-color 0.3s;
+  backdrop-filter: blur(4px);
+  padding: 0;
+  opacity: 0; /* Hidden by default, visible on hover */
+}
+
+.play-pause-btn:hover {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.9);
+  transform: translate(-50%, -50%) scale(1.05);
+  opacity: 1;
+}
+
+.play-pause-btn .material-symbols-outlined {
+  font-size: 48px;
+}
+
+.play-pause-btn.hidden {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+}
