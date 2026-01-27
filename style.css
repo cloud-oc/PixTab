@@ -138,6 +138,7 @@ body {
   background-position: center center;
   backdrop-filter: blur(18px);
   z-index: inherit;
+  /* opacity: 0; removed erroneous line */
   /* Disable transition during animation to prevent flickering */
   transition: background 0.3s;
 }
@@ -406,32 +407,40 @@ body.settings-open {
   height: 96px;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
   padding: 0;
-  pointer-events: none; /* Let clicks pass through to container for toggle */
+  pointer-events: auto; /* Allow clicking the button itself */
   transition: opacity 0.2s ease, transform 0.2s ease;
+  opacity: 0; /* Hidden by default (video player style) */
 }
 
 .play-pause-btn .material-symbols-outlined {
   font-size: 84px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  /* Reset complex shadows/colors */
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
   color: inherit;
+}
+
+/* Show button when hovering the container (if ugoira is loaded/button not hidden via JS) */
+#container:hover .play-pause-btn:not(.hidden) {
   opacity: 1;
 }
 
-/* Hidden during playback */
+/* BUT hide it if hovering over the info card or other interactive elements */
+#container:has(#illustInfo:hover) .play-pause-btn,
+#container:has(#settingsButton:hover) .play-pause-btn,
+#container:has(#refreshButton:hover) .play-pause-btn {
+  opacity: 0 !important;
+}
+
+/* Also show if paused (optional, user might prefer it stays visible when paused) */
+/* But sticking to strict "hover to see" for now unless paused state handling is complex */
+
+/* Hidden via JS (e.g. static image) */
 .play-pause-btn.hidden {
   display: none;
-}
-
-/* Optional: slight scale effect when visible (paused) */
-.play-pause-btn:not(.hidden) {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
 }

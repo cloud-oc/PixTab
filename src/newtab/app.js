@@ -238,8 +238,18 @@ import { unzipSync } from "../shared/fflate.module.js";
       // Restore background visibility
       document.getElementById('backgroundImage')?.classList.remove('animating');
       document.getElementById('foregroundImage')?.classList.remove('animating');
-      
-      // Re-enable CSS background visibility if needed (though canvas usually sits on top)
+    },
+
+    pause() {
+      this.playToken++; // Invalidate current loop token
+      if (this.animationFrameId) {
+        cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = null;
+      }
+      this.isPlaying = false;
+      this.updateButtonState();
+      // Do NOT clear canvas or restore background visibility
+      // The current frame remains drawn on the canvas
     },
 
     play() {
@@ -425,7 +435,7 @@ import { unzipSync } from "../shared/fflate.module.js";
     
     toggle() {
       if (this.isPlaying) {
-        this.stop(); 
+        this.pause(); 
       } else {
         this.play();
       }
