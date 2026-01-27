@@ -493,6 +493,14 @@ import { unzipSync } from "../shared/fflate.module.js";
       if (icon) {
         icon.textContent = this.isPlaying ? 'pause' : 'play_arrow';
       }
+      // Toggle state class for CSS styling
+      if (this.isPlaying) {
+        btn.classList.add('playing');
+        btn.classList.remove('paused');
+      } else {
+        btn.classList.add('paused');
+        btn.classList.remove('playing');
+      }
     },
 
     showButton(show) {

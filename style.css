@@ -399,6 +399,7 @@ body.settings-open {
 
 /* Play/Pause Button - Minimal Center Icon */
 .play-pause-btn {
+  /* ... fixed positioning ... */
   position: fixed;
   top: 50%;
   left: 50%;
@@ -414,21 +415,24 @@ body.settings-open {
   justify-content: center;
   z-index: 10;
   padding: 0;
-  pointer-events: auto; /* Allow clicking the button itself */
+  pointer-events: auto;
   transition: opacity 0.2s ease, transform 0.2s ease;
-  opacity: 0; /* Hidden by default (video player style) */
+  
+  /* DEFAULT VISIBILITY (PAUSED STATE): Visible */
+  opacity: 1; 
 }
 
-.play-pause-btn .material-symbols-outlined {
-  font-size: 84px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  color: inherit;
+/* PLAYING STATE: Hidden by default */
+.play-pause-btn.playing {
+  opacity: 0;
 }
 
-/* Show button when hovering the container (if ugoira is loaded/button not hidden via JS) */
-#container:hover .play-pause-btn:not(.hidden) {
+/* PLAYING STATE HOVER: Show when hovering container */
+#container:hover .play-pause-btn.playing {
   opacity: 1;
 }
+
+/* Remove the old generic hover rule since we handle states explicitly now */
 
 /* BUT hide it if hovering over the info card or other interactive elements */
 #container:has(#illustInfo:hover) .play-pause-btn,
