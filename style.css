@@ -130,7 +130,13 @@ body {
   background-position: center center;
   backdrop-filter: blur(18px);
   z-index: inherit;
+  /* Disable transition during animation to prevent flickering */
   transition: background 0.3s;
+}
+
+.animating {
+  transition: none !important;
+  opacity: 0 !important;
 }
 
 #loadingSpinner {

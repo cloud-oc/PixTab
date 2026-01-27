@@ -89,14 +89,7 @@ import { unzipSync } from "../shared/fflate.module.js";
     }
   };
 
-  async function blobToDataUrl(blob) {
-    return await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  }
+
 
   async function decodeUgoiraFrames(ugoiraPayload) {
     if (!ugoiraPayload || !ugoiraPayload.zipUrl || !ugoiraPayload.frames || !ugoiraPayload.frames.length) {
@@ -131,7 +124,7 @@ import { unzipSync } from "../shared/fflate.module.js";
       if (!fileData) {
         continue;
       }
-      const dataUrl = await blobToDataUrl(new Blob([fileData], { type: mimeType }));
+      const dataUrl = URL.createObjectURL(new Blob([fileData], { type: mimeType }));
       frames.push({ url: dataUrl, delay: frame.delay || 60 });
     }
     if (!frames.length) {
@@ -141,21 +134,99 @@ import { unzipSync } from "../shared/fflate.module.js";
     return frames;
   }
 
+  function preDecodeFrames(frames) {
+    if (!frames || !frames.length) return;
+    
+    // Create Image elements immediately
+    frames.forEach(frame => {
+      if (!frame.imageElement) {
+        const img = new Image();
+        img.src = frame.url;
+        frame.imageElement = img;
+      }
+    });
+
+    // Prioritized decoding queue
+    const queue = [...frames]; // copy
+    const MAX_CONCURRENCY = 6;
+    let active = 0;
+
+    const processQueue = () => {
+      while (active < MAX_CONCURRENCY && queue.length > 0) {
+        const frame = queue.shift();
+        if (frame.decoded) continue;
+
+        active++;
+        const img = frame.imageElement;
+        
+        // Race decode against a timeout to prevent hanging
+        const decodePromise = img.decode().catch(() => {});
+        const timeoutPromise = new Promise(resolve => setTimeout(resolve, 200));
+
+        Promise.race([decodePromise, timeoutPromise]).finally(() => {
+          frame.decoded = true;
+          active--;
+          processQueue();
+        });
+      }
+    };
+
+    processQueue();
+  }
+
   const ugoiraController = {
-    timer: null,
-    playToken: 0,
+    canvasContext: null,
+    canvasElement: null,
     frames: [],
     currentIndex: 0,
     isPlaying: false,
-    
+    playToken: 0,
+    animationFrameId: null,
+    lastFrameTime: 0,
+    firstFrameDrawn: false,
+
+    getCanvas() {
+      if (!this.canvasElement) {
+        let canvas = document.getElementById('ugoiraCanvas');
+        if (!canvas) {
+          canvas = document.createElement('canvas');
+          canvas.id = 'ugoiraCanvas';
+          canvas.style.position = 'fixed';
+          canvas.style.top = '0';
+          canvas.style.left = '0';
+          canvas.style.width = '100%';
+          canvas.style.height = '100%';
+          canvas.style.objectFit = 'contain'; 
+          canvas.style.zIndex = '-1'; // Same as #wallpaper
+          canvas.style.pointerEvents = 'none';
+          document.body.appendChild(canvas);
+        }
+        this.canvasElement = canvas;
+        this.canvasContext = canvas.getContext('2d');
+      }
+      return this.canvasElement;
+    },
+
     stop() {
       this.playToken++;
-      if (this.timer) {
-        clearTimeout(this.timer);
-        this.timer = null;
+      if (this.animationFrameId) {
+        cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = null;
       }
       this.isPlaying = false;
       this.updateButtonState();
+      
+      // Clear canvas
+      if (this.canvasElement && this.canvasContext) {
+        this.canvasContext.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+        this.canvasElement.style.display = 'none';
+      }
+      
+      // Restore background visibility
+      document.getElementById('backgroundImage')?.classList.remove('animating');
+      document.getElementById('foregroundImage')?.classList.remove('animating');
+      
+      // Re-enable CSS background visibility if needed (though canvas usually sits on top)
     },
 
     play() {
@@ -163,27 +234,177 @@ import { unzipSync } from "../shared/fflate.module.js";
       this.isPlaying = true;
       this.updateButtonState();
       
+      const canvas = this.getCanvas();
+      canvas.style.display = 'block';
+      this.firstFrameDrawn = false;
+      
+      // Removed immediate hiding of background to prevent black screen if first frame isn't ready
+      
+      const ctx = this.canvasContext;
+
+      // Set canvas size to screen size for proper rendering
+      const rect = document.body.getBoundingClientRect();
+      if (canvas.width !== rect.width || canvas.height !== rect.height) {
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+      }
+      
       const token = this.playToken;
-      const step = () => {
+      this.lastFrameTime = performance.now();
+      let accumulatedTime = 0;
+
+      // Helper to draw a frame covering/containing based on pref would be ideal, 
+      // but for now, we'll implement a simple "cover" or "contain" logic matching CSS.
+      // Assuming "cover" behavior similar to CSS background-size: cover for simplicity,
+      // or "contain" if that's the default.
+      // Let's implement "contain" (best_fit) as it's the default in preferences.
+      
+      const drawFrame = (img) => {
+        if (!img || !img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) return false;
+        const cw = canvas.width;
+        const ch = canvas.height;
+        if (cw === 0 || ch === 0) return false; // Canvas not visible or 0 size
+        
+        // Removed clearRect to prevent black flashing if draw fails or lags.
+        // The background cover draw below covers the entire canvas anyway. 
+        // ctx.clearRect(0, 0, cw, ch);
+        
+        const imgRatio = img.naturalWidth / img.naturalHeight;
+        const canvasRatio = cw / ch;
+        
+        // 1. Draw Blurred Background (Cover)
+        ctx.filter = 'blur(18px)';
+        let bw, bh, bx, by;
+        // Cover logic:
+        if (imgRatio > canvasRatio) {
+            // Image wider than canvas: height=100%, width=auto (cropped)
+            bh = ch;
+            bw = ch * imgRatio;
+            by = 0;
+            bx = (cw - bw) / 2;
+        } else {
+            // Image taller than canvas: width=100%, height=auto (cropped)
+            bw = cw;
+            bh = cw / imgRatio;
+            bx = 0;
+            by = (ch - bh) / 2;
+        }
+        // Draw slightly larger to avoid edge artifacts from blur? No, standard cover is usually fine.
+        ctx.drawImage(img, bx, by, bw, bh);
+
+        // 2. Draw Sharp Foreground (Contain)
+        ctx.filter = 'none';
+        let dw, dh, dx, dy;
+        
+        if (imgRatio > canvasRatio) {
+           // Contain logic: width=100%, height=auto (letterbox)
+           dw = cw;
+           dh = cw / imgRatio;
+           dx = 0;
+           dy = (ch - dh) / 2;
+        } else {
+           // Contain logic: height=100%, width=auto (pillarbox)
+           dh = ch;
+           dw = ch * imgRatio;
+           dy = 0;
+           dx = (cw - dw) / 2;
+        }
+        ctx.drawImage(img, dx, dy, dw, dh);
+        return true;
+      };
+
+      const ensureBackgroundHidden = () => {
+        if (!this.isPlaying) return;
+         document.getElementById('backgroundImage')?.classList.add('animating');
+         document.getElementById('foregroundImage')?.classList.add('animating');
+      };
+
+      const loop = (timestamp) => {
         if (token !== this.playToken || !this.isPlaying) return;
         
-        const frame = this.frames[this.currentIndex];
-        applyFrameUrl(frame.url);
-        const delay = Math.max(30, Number(frame.delay) || 60);
-        this.currentIndex = (this.currentIndex + 1) % this.frames.length;
-        this.timer = setTimeout(step, delay);
+        const deltaTime = timestamp - this.lastFrameTime;
+        this.lastFrameTime = timestamp;
+
+        // If we haven't drawn the first frame yet, don't accumulate time.
+        // This effectively pauses the animation logic on frame 0 until it is ready.
+        if (this.firstFrameDrawn) {
+            accumulatedTime += deltaTime;
+        }
+
+        let frame = this.frames[this.currentIndex];
+
+        // Critical: Ensure first frame is drawn before advancing
+        if (!this.firstFrameDrawn) {
+             // Try to draw the current frame (which should be frame 0)
+             if (frame.imageElement && drawFrame(frame.imageElement)) {
+                 this.firstFrameDrawn = true;
+                 ensureBackgroundHidden();
+                 // Reset timing to start smooth animation from now
+                 accumulatedTime = 0;
+             } else {
+                 // Not ready yet, wait for next tick.
+                 this.animationFrameId = requestAnimationFrame(loop);
+                 return;
+             }
+        }
+
+        let delay = Math.max(1, Number(frame.delay) || 60);
+
+        if (accumulatedTime >= delay) {
+          const nextIndex = (this.currentIndex + 1) % this.frames.length;
+          // Progressive loading check
+          if (this.frames[nextIndex].decoded && this.frames[nextIndex].imageElement) {
+             accumulatedTime -= delay;
+             this.currentIndex = nextIndex;
+             frame = this.frames[this.currentIndex];
+             
+              // Draw the final frame after catch-up
+              if (drawFrame(frame.imageElement)) {
+                this.firstFrameDrawn = true;
+                ensureBackgroundHidden();
+              }
+             
+             delay = Math.max(1, Number(frame.delay) || 60);
+             while (accumulatedTime >= delay) {
+               const skipNextIndex = (this.currentIndex + 1) % this.frames.length;
+               if (!this.frames[skipNextIndex].decoded || !this.frames[skipNextIndex].imageElement) break;
+               
+               accumulatedTime -= delay;
+               this.currentIndex = skipNextIndex;
+               frame = this.frames[this.currentIndex];
+               
+               // Skip drawing for skipped frames
+               
+               delay = Math.max(1, Number(frame.delay) || 60);
+             }
+             // Draw the final frame after catch-up
+             if (drawFrame(frame.imageElement)) {
+               ensureBackgroundHidden();
+             }
+          }
+        } else if (frame.decoded && frame.imageElement && accumulatedTime === deltaTime) {
+             // First draw on start or resume if needed
+             // (Wait, loop runs immediately. We should ensure first frame is drawn)
+        }
+        
+        this.animationFrameId = requestAnimationFrame(loop);
       };
-      step();
+      
+      // Draw first frame immediately
+      // Draw first frame immediately if ready
+      if (this.frames[this.currentIndex] && this.frames[this.currentIndex].decoded && this.frames[this.currentIndex].imageElement) {
+          if (drawFrame(this.frames[this.currentIndex].imageElement)) {
+            this.firstFrameDrawn = true;
+            ensureBackgroundHidden();
+          }
+      }
+      
+      this.animationFrameId = requestAnimationFrame(loop);
     },
     
     toggle() {
       if (this.isPlaying) {
-        this.stop(); // Pauses effectively since we don't reset index
-        // But stop() increments token, which kills the loop.
-        // We want to be able to resume.
-        // The play() method uses current index.
-        // So calling play() again works fine.
-        // Wait, stop() sets isPlaying=false.
+        this.stop(); 
       } else {
         this.play();
       }
@@ -198,6 +419,15 @@ import { unzipSync } from "../shared/fflate.module.js";
         const frames = await decodeUgoiraFrames(ugoiraPayload);
         if (!frames || !frames.length) return;
         
+        // Progressive: Start decoding in background, but don't wait
+        preDecodeFrames(frames);
+        
+        // Ensure first frame is shown immediately (usually browser can handle first frame quickly)
+        // We artificially mark frame 0 as decoded to ensure start, or rely on browser
+        frames[0].decoded = true; // Force start
+        // Note: frame[0].imageElement will be set by preDecodeFrames sync part before decode() promise
+        // So we can assume it exists.
+
         this.frames = frames;
         // Auto play on load
         this.play();
@@ -214,8 +444,6 @@ import { unzipSync } from "../shared/fflate.module.js";
       const icon = btn.querySelector('.material-symbols-outlined');
       if (icon) {
         icon.textContent = this.isPlaying ? 'pause' : 'play_arrow';
-        // Optional: padding adjustment for triangle icon centering if needed
-        // icon.style.marginLeft = this.isPlaying ? '0' : '4px'; 
       }
     },
 
@@ -387,35 +615,41 @@ import { unzipSync } from "../shared/fflate.module.js";
   };
 
   async function changeElement(illustObject) {
-    if (!illustObject) {
-      if (binding?.containerElement?.classList.contains("notReady")) {
-        toggleSpinnerVisibility(true);
-      }
-      return;
-    }
-    ugoiraController.stop();
-    // Also hide button by default until loaded
-    ugoiraController.showButton(false);
-    
-    for (let k in binding.ref) {
-      if (illustObject.hasOwnProperty(k)) {
-        let value = illustObject[k];
-        if (value === null || value === undefined) {
-          if (k === 'userName' || k === 'title') value = '';
+    try {
+      if (!illustObject) {
+        if (binding?.containerElement?.classList.contains("notReady")) {
+          toggleSpinnerVisibility(true);
         }
-        for (let o of binding.ref[k]) {
-          o(value);
+        return;
+      }
+      ugoiraController.stop();
+      // Also hide button by default until loaded
+      ugoiraController.showButton(false);
+      
+      for (let k in binding.ref) {
+        if (illustObject.hasOwnProperty(k)) {
+          let value = illustObject[k];
+          if (value === null || value === undefined) {
+            if (k === 'userName' || k === 'title') value = '';
+          }
+          for (let o of binding.ref[k]) {
+            o(value);
+          }
         }
       }
-    }
-    binding.containerElement.classList.toggle("notReady", false);
-    toggleSpinnerVisibility(false);
-    clearTimeout(binding.illustInfoFadeOutTimeoutId);
-    binding.illustInfoFadeOutTimeoutId = setTimeout(() => {
-      binding.illustInfoElement.className = "unfocused";
-    }, 10000);
-    if (illustObject.ugoira) {
-      ugoiraController.startNew(illustObject.ugoira);
+      binding.containerElement.classList.toggle("notReady", false);
+      toggleSpinnerVisibility(false);
+      clearTimeout(binding.illustInfoFadeOutTimeoutId);
+      binding.illustInfoFadeOutTimeoutId = setTimeout(() => {
+        binding.illustInfoElement.className = "unfocused";
+      }, 10000);
+      if (illustObject.ugoira) {
+        ugoiraController.startNew(illustObject.ugoira);
+      }
+    } catch (e) {
+      console.error("changeElement failed", e);
+      toggleSpinnerVisibility(false); // Force recover
+      setLoadFailedState(true);
     }
   }
 
@@ -457,15 +691,25 @@ import { unzipSync } from "../shared/fflate.module.js";
           // ignore if binding not ready
         }
 
-        Promise.resolve(changeElement(res)).finally(() => {
-          setRefreshing(false);
-          isRequestInProgress = false;
-        });
+        Promise.resolve(changeElement(res))
+          .catch(e => {
+             console.error("changeElement error:", e);
+             setLoadFailedState(true);
+             toggleSpinnerVisibility(false);
+          })
+          .finally(() => {
+            setRefreshing(false);
+            isRequestInProgress = false;
+          });
       });
     };
   })();
 
-  initApplication();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApplication);
+  } else {
+    initApplication();
+  }
   // Listen for background load success/failure notifications to update UI state
   if (browserAPI && browserAPI.runtime && browserAPI.runtime.onMessage) {
     browserAPI.runtime.onMessage.addListener((msg) => {

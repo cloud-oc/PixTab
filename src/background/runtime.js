@@ -124,25 +124,7 @@ async function fetchPixivJson(url) {
 
 const IMAGE_FETCH_MAX_RETRIES = 3;
 
-async function fetchImage(url, attempt = 0) {
-  try {
-    let res = await throttledFetch(url);
-    if (!res.ok) {
-      throw new Error(`IMAGE_STATUS_${res.status}`);
-    }
-    return await res.blob();
-  } catch (e) {
-    if (attempt < IMAGE_FETCH_MAX_RETRIES) {
-      const backoff = Math.min(2000 * (attempt + 1), 6000);
-      await delay(backoff);
-      return fetchImage(url, attempt + 1);
-    }
-    if (e?.message !== "PIXIV_RATE_LIMITED") {
-      console.warn(`Fetch image error after retries:`, e);
-    }
-    return null;
-  }
-}
+
 
 let baseUrl = "https://www.pixiv.net";
 let illustInfoUrl = "/ajax/illust/";
@@ -971,6 +953,7 @@ async function getLoggedInUserId() {
 let searchSource;
 let artworkQueue;
 let running = 0;
+let configVersion = 0;
 
 const MessageChannel = Object.freeze({
   requestArtwork: "requestArtwork",
@@ -985,12 +968,68 @@ const legacyActionMap = new Map([
   ["fetchUgoiraZip", MessageChannel.fetchUgoiraZip]
 ]);
 
+const MAX_CONCURRENT_DOWNLOADS = 4;
+let activeDownloads = 0;
+const downloadQueue = [];
+
+async function downloadFetch(url, options = {}, responseProcessor = null) {
+  if (activeDownloads >= MAX_CONCURRENT_DOWNLOADS) {
+    await new Promise(resolve => downloadQueue.push(resolve));
+  }
+  activeDownloads++;
+  try {
+    const res = await fetch(url, options);
+    if (responseProcessor) {
+      return await responseProcessor(res);
+    }
+    return res;
+  } finally {
+    activeDownloads--;
+    if (downloadQueue.length > 0) {
+      downloadQueue.shift()();
+    }
+  }
+}
+
+async function fetchImage(url, attempt = 0) {
+  try {
+    // Pass a processor to hold the lock until the blob is fully downloaded
+    const blob = await downloadFetch(url, {}, async (res) => {
+      if (!res.ok) {
+        throw new Error(`IMAGE_STATUS_${res.status}`);
+      }
+      return await res.blob();
+    });
+    return blob;
+  } catch (e) {
+    if (attempt < 5) { // Fixed constant for now or use global const if defined
+      const backoff = Math.min(2000 * (attempt + 1), 6000);
+      await delay(backoff);
+      return fetchImage(url, attempt + 1);
+    }
+    if (e?.message !== "PIXIV_RATE_LIMITED") {
+      console.warn(`Fetch image error after retries:`, e);
+    }
+    return null;
+  }
+}
+
 function fillQueue() {
   while (running < artworkQueue.capacity() - artworkQueue.size()) {
     ++running;
     setTimeout(async () => {
+      const localVersion = configVersion;
       if (artworkQueue.full()) { return; }
       let res = await searchSource.getRandomIllust();
+      
+      // If config changed while we were fetching (version mismatch), discard this result
+      if (localVersion !== configVersion) {
+        console.log(`Discarding stale result (v${localVersion} vs v${configVersion})`);
+        --running;
+        fillQueue(); // Trigger refill with new config
+        return;
+      }
+      
       if (res) {
         artworkQueue.push(res);
         storageSessionSet({
@@ -1003,7 +1042,35 @@ function fillQueue() {
   }
 }
 
+async function reloadConfig() {
+  configVersion++;
+  let config = await loadPreferences();
+  config = applyConfigNormalization(config);
+  if (searchSource) {
+    searchSource.updateConfig(config);
+  } else {
+    searchSource = new SearchSource(config);
+  }
+  debugLoggingEnabled = !!config.debugLogging;
+  
+  // WIPE existing queue to force new config usage
+  artworkQueue = new ArtworkQueue(5);
+  storageSessionSet({
+    artworkQueueCache: artworkQueue,
+    illustQueue: artworkQueue
+  });
+  fillQueue();
+  dbg("Config reloaded and queue reset via reloadConfig");
+}
+
+browserAPI.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local') {
+    reloadConfig();
+  }
+});
+
 async function start() {
+  // Initial load logic preserves cache if valid
   let config = await loadPreferences();
   config = applyConfigNormalization(config);
   debugLoggingEnabled = !!config.debugLogging;
@@ -1014,9 +1081,11 @@ async function start() {
   });
   const restoredQueue = queueCache.artworkQueueCache || queueCache.illustQueue || null;
   if (!restoredQueue) {
-    artworkQueue = new ArtworkQueue(2);
+    artworkQueue = new ArtworkQueue(5);
   } else {
     artworkQueue = Object.setPrototypeOf(restoredQueue, ArtworkQueue.prototype);
+    // Upgrade capacity if needed (though existing queue will keep its buffer until popped)
+    artworkQueue.maxsize = 5; 
   }
 
   fillQueue();
@@ -1064,16 +1133,7 @@ browserAPI.runtime.onMessage.addListener(function (
         }
         fillQueue();
       } else if (action === MessageChannel.refreshPreferences) {
-        let config = await loadPreferences();
-        config = applyConfigNormalization(config);
-        searchSource.updateConfig(config);
-        debugLoggingEnabled = !!config.debugLogging;
-        artworkQueue = new ArtworkQueue(2);
-        storageSessionSet({
-          artworkQueueCache: artworkQueue,
-          illustQueue: artworkQueue
-        });
-        fillQueue();
+        await reloadConfig();
         sendResponse();
       } else if (action === MessageChannel.checkPixivLogin) {
         const status = await checkPixivLogin();
@@ -1084,17 +1144,23 @@ browserAPI.runtime.onMessage.addListener(function (
           sendResponse(null);
           return;
         }
+        let sent = false;
         try {
           const blob = await fetchImage(url);
           if (blob) {
             const dataUrl = await blobToDataUrl(blob);
             sendResponse(dataUrl);
+            sent = true;
           } else {
-            sendResponse(null);
+            // Log specifically if null returned (retries failed)
+            console.warn("fetchImage returned null for Ugoira URL:", url);
           }
         } catch (e) {
-          console.warn("Fetch Ugoira Zip failed", e);
-          sendResponse(null);
+          console.warn("Fetch Ugoira Zip failed exception:", e);
+        } finally {
+          if (!sent) {
+            try { sendResponse(null); } catch (e) {} 
+          }
         }
       } else {
         // 其他分支，确保 sendResponse 被调用
