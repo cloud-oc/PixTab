@@ -414,7 +414,12 @@ body.settings-open {
 
 .play-pause-btn .material-symbols-outlined {
   font-size: 36px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  /* Inset/recessed effect - dark top-left, light bottom-right */
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 
+    inset 1px 1px 2px rgba(0, 0, 0, 0.5),
+    -1px -1px 1px rgba(0, 0, 0, 0.4),
+    1px 1px 1px rgba(255, 255, 255, 0.15);
 }
 
 /* Show on hover over the wallpaper area */
