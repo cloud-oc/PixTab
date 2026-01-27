@@ -489,16 +489,9 @@ import { unzipSync } from "../shared/fflate.module.js";
     updateButtonState() {
       const btn = document.getElementById('playPauseButton');
       if (!btn) return;
-      
-      // Video player style: 
-      // Playing -> Hide button
-      // Paused -> Show play button
-      if (this.isPlaying) {
-        btn.classList.add('hidden');
-      } else {
-        btn.classList.remove('hidden');
-        const icon = btn.querySelector('.material-symbols-outlined');
-        if (icon) icon.textContent = 'play_arrow';
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (icon) {
+        icon.textContent = this.isPlaying ? 'pause' : 'play_arrow';
       }
     },
 
