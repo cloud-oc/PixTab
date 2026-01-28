@@ -1056,10 +1056,16 @@ function fillQueue() {
       
       if (res) {
         artworkQueue.push(res);
-        storageSessionSet({
-          artworkQueueCache: artworkQueue,
-          illustQueue: artworkQueue
-        });
+        // Cache queue to session storage for persistence; quota errors are non-critical
+        try {
+          await storageSessionSet({
+            artworkQueueCache: artworkQueue,
+            illustQueue: artworkQueue
+          });
+        } catch (e) {
+          // Session storage quota exceeded - this is fine, queue still works in memory
+          dbg("Session storage quota exceeded, queue cache disabled");
+        }
       }
       --running;
     }, 0);
@@ -1079,10 +1085,14 @@ async function reloadConfig() {
   
   // WIPE existing queue to force new config usage
   artworkQueue = new ArtworkQueue(8); // Increased buffer size
-  storageSessionSet({
-    artworkQueueCache: artworkQueue,
-    illustQueue: artworkQueue
-  });
+  try {
+    await storageSessionSet({
+      artworkQueueCache: artworkQueue,
+      illustQueue: artworkQueue
+    });
+  } catch (e) {
+    dbg("Session storage quota exceeded during config reload");
+  }
   fillQueue();
   dbg("Config reloaded and queue reset via reloadConfig");
 }
