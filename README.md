@@ -43,6 +43,11 @@
 - 📊 **Multiple Rankings** — Daily, Weekly, Monthly, Rookie, Original, Popular, and more!
 - 🔍 **Keyword Search** — Combine AND, OR, NOT keywords to filter artworks precisely.
 - 🔖 **Bookmark Filter** — Set min/max bookmark counts to find the most popular works.
+- 👤 **Specify Artist** — Filter by artist ID to show works from specific creators.
+- ⭐ **Following Artists** — Display latest works from artists you follow on Pixiv.
+- 💝 **Bookmarked Artworks** — Browse illustrations you've bookmarked on Pixiv.
+- ✨ **Recommended Artworks** — Show personalized content recommended by Pixiv.
+- 🔐 **Login Support** — Sign in to your Pixiv account to unlock personalized features.
 - 🖼️ **Type Filter** — Choose Illustrations, Manga, Ugoira, or filter out AI-generated works.
 - 📏 **Resolution Control** — Ensure high quality by setting minimum width/height.
 - 🛠️ **Customization** — Adjust image size, alignment, and tiling mode to your liking.
