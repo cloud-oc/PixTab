@@ -53,6 +53,7 @@
 - 🛠️ **Customization** — Adjust image size, alignment, and tiling mode to your liking.
 - 🌓 **Theme Sync** — Automatically switches between Light & Dark themes.
 - 🌍 **Multi-language** — Available in English, Simplified Chinese, Traditional Chinese, Japanese, Korean, and Russian.
+- 🌐 **Reverse Proxy** — Configure a custom proxy URL to access Pixiv from restricted regions.
 - 🛡️ **Privacy First** — All settings are stored locally. No data is sent to external servers.
 
 ## 📦 Offline Installation
