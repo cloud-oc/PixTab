@@ -104,6 +104,7 @@ body {
 }
 
 #container {
+  position: fixed;
   left: 0;
   right: 0;
   top: 0;
@@ -317,6 +318,10 @@ body {
   height: 54px;
   border-radius: 50%;
   border: 2px solid var(--avatar-ring-color);
+  box-sizing: border-box;
+  background-size: 110%;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
 .info-card-body {
@@ -397,18 +402,16 @@ body.settings-open {
   background: transparent;
 }
 
-/* Play/Pause Button - Minimal Center Icon */
+/* Play/Pause Button - Glassmorphism Icon */
 .play-pause-btn {
-  /* ... fixed positioning ... */
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 96px;
-  height: 96px;
+  width: 120px;
+  height: 120px;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -416,33 +419,55 @@ body.settings-open {
   z-index: 10;
   padding: 0;
   pointer-events: auto;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.25s ease, transform 0.2s ease;
   
   /* DEFAULT VISIBILITY (PAUSED STATE): Visible */
   opacity: 1; 
 }
 
+.play-pause-btn:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.play-pause-btn:active {
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+/* Icon styling - solid filled with glassmorphism effect */
+.play-pause-btn .material-symbols-outlined {
+  font-size: 80px;
+  /* Glassmorphism text effect */
+  color: rgba(255, 255, 255, 0.75);
+  /* Enable filled icon style */
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 48;
+  line-height: 1;
+  /* Frosted glass effect via multiple layered shadows */
+  text-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.4),
+    0 0 40px rgba(255, 255, 255, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
 /* PLAYING STATE: Hidden by default */
 .play-pause-btn.playing {
   opacity: 0;
+  pointer-events: none;
 }
 
 /* PLAYING STATE HOVER: Show when hovering container */
 #container:hover .play-pause-btn.playing {
   opacity: 1;
+  pointer-events: auto;
 }
 
-/* Remove the old generic hover rule since we handle states explicitly now */
-
-/* BUT hide it if hovering over the info card or other interactive elements */
+/* Hide when hovering over interactive elements */
 #container:has(#illustInfo:hover) .play-pause-btn,
 #container:has(#settingsButton:hover) .play-pause-btn,
 #container:has(#refreshButton:hover) .play-pause-btn {
   opacity: 0 !important;
+  pointer-events: none !important;
 }
-
-/* Also show if paused (optional, user might prefer it stays visible when paused) */
-/* But sticking to strict "hover to see" for now unless paused state handling is complex */
 
 /* Hidden via JS (e.g. static image) */
 .play-pause-btn.hidden {
