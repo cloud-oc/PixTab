@@ -271,5 +271,14 @@
     },
     "reset": {
         "message": "기본 설정으로 재설정"
+    },
+    "advancedSettingsLabel": {
+        "message": "고급 설정"
+    },
+    "proxyUrlLabel": {
+        "message": "프록시 URL"
+    },
+    "proxyUrlHelper": {
+        "message": "Pixiv API 리버스 프록시 URL을 설정합니다. 비워두면 기본값을 사용합니다."
     }
 }

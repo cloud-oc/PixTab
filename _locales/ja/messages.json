@@ -271,5 +271,14 @@
   },
   "reset": {
     "message": "デフォルト設定にリセット"
+  },
+  "advancedSettingsLabel": {
+    "message": "詳細設定"
+  },
+  "proxyUrlLabel": {
+    "message": "プロキシURL"
+  },
+  "proxyUrlHelper": {
+    "message": "Pixiv APIのリバースプロキシURLを設定します。空白の場合はデフォルトを使用します。"
   }
 }

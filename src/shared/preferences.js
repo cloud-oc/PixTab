@@ -55,7 +55,8 @@ export const defaultPreferences = {
     minusKeywords: "虚偽users入りタグ 描き方 講座 作画資料 創作 素材 漫画",
     andKeywords: "",
     debugLogging: false,
-    loginFallbackMode: "ranking_daily"
+    loginFallbackMode: "ranking_daily",
+    proxyUrl: ""
 };
 
 export { defaultPreferences as defaultConfig };

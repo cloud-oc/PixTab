@@ -126,11 +126,26 @@ const IMAGE_FETCH_MAX_RETRIES = 3;
 
 
 
-let baseUrl = "https://www.pixiv.net";
+const defaultBaseUrl = "https://www.pixiv.net";
 let illustInfoUrl = "/ajax/illust/";
 let userProfileUrl = "/ajax/user/";
 let searchUrl = "/ajax/search/illustrations/";
-let rankingEndpoint = "https://www.pixiv.net/ranking.php";
+const defaultRankingEndpoint = "https://www.pixiv.net/ranking.php";
+
+// Resolve API base URL based on proxy configuration
+function resolveApiBaseUrl(proxyUrl) {
+  if (proxyUrl && typeof proxyUrl === "string" && proxyUrl.trim()) {
+    return proxyUrl.replace(/\/$/, ""); // Remove trailing slash
+  }
+  return defaultBaseUrl;
+}
+
+function resolveRankingEndpoint(proxyUrl) {
+  if (proxyUrl && typeof proxyUrl === "string" && proxyUrl.trim()) {
+    return proxyUrl.replace(/\/$/, "") + "/ranking.php";
+  }
+  return defaultRankingEndpoint;
+}
 
 const MIN_REQUEST_INTERVAL_MS = 1200;
 const RATE_LIMIT_BACKOFF_MS = 15000;
@@ -265,6 +280,7 @@ class SearchSource {
     this.itemsPerPage = 60;
     this.illustInfoPages = {};
     this.resetRankingState();
+    this._updateProxyUrls();
   }
 
   updateConfig(config) {
@@ -272,6 +288,12 @@ class SearchSource {
     this.totalPage = 0;
     this.illustInfoPages = {};
     this.resetRankingState();
+    this._updateProxyUrls();
+  }
+
+  _updateProxyUrls() {
+    this.baseUrl = resolveApiBaseUrl(this.searchParam.proxyUrl);
+    this.rankingEndpoint = resolveRankingEndpoint(this.searchParam.proxyUrl);
   }
 
   resetRankingState(dateOverride = null) {
@@ -332,7 +354,7 @@ class SearchSource {
   async searchIllustPage(p) {
     if (this.rankingMode) {
       let paramUrl = this.generateSearchUrl(p);
-      let url = `${rankingEndpoint}?${paramUrl}`;
+      let url = `${this.rankingEndpoint}?${paramUrl}`;
       let res = await throttledFetch(url);
       if (!res.ok) {
         dbg(`Fetch ranking json failed: ${res.status}`);
@@ -342,7 +364,7 @@ class SearchSource {
       return json;
     }
     let paramUrl = this.generateSearchUrl(p);
-    let jsonResult = await fetchPixivJson(baseUrl + searchUrl + paramUrl);
+    let jsonResult = await fetchPixivJson(this.baseUrl + searchUrl + paramUrl);
     return jsonResult;
   }
 
@@ -376,7 +398,7 @@ class SearchSource {
       try {
         // Fetch following list with random offset
         const offset = getRandomInt(0, 100); // Random offset to get variety
-        const followingUrl = `${baseUrl}/ajax/user/${userId}/following?offset=${offset}&limit=24&rest=show`;
+        const followingUrl = `${this.baseUrl}/ajax/user/${userId}/following?offset=${offset}&limit=24&rest=show`;
         const followingRes = await fetchPixivJson(followingUrl);
         
         if (!followingRes || !followingRes.body || !followingRes.body.users || followingRes.body.users.length === 0) {
@@ -388,7 +410,7 @@ class SearchSource {
         if (!randomUser || !randomUser.userId) continue;
 
         // Fetch their profile to get illusts
-        const profileUrl = `${baseUrl}${userProfileUrl}${randomUser.userId}/profile/all`;
+        const profileUrl = `${this.baseUrl}${userProfileUrl}${randomUser.userId}/profile/all`;
         const profileRes = await fetchPixivJson(profileUrl);
         
         if (!profileRes || !profileRes.body || !profileRes.body.illusts) {
@@ -400,7 +422,7 @@ class SearchSource {
 
         // Pick random illust
         const randomIllustId = illustIds[getRandomInt(0, illustIds.length)];
-        const detailUrl = `${baseUrl}${illustInfoUrl}${randomIllustId}`;
+        const detailUrl = `${this.baseUrl}${illustInfoUrl}${randomIllustId}`;
         const detail = await fetchPixivJson(detailUrl);
         
         if (!detail || !detail.body) continue;
@@ -430,7 +452,7 @@ class SearchSource {
       try {
         // Fetch bookmarks with random offset
         const offset = getRandomInt(0, 200);
-        const bookmarksUrl = `${baseUrl}/ajax/user/${userId}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=show`;
+        const bookmarksUrl = `${this.baseUrl}/ajax/user/${userId}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=show`;
         const bookmarksRes = await fetchPixivJson(bookmarksUrl);
         
         if (!bookmarksRes || !bookmarksRes.body || !bookmarksRes.body.works || bookmarksRes.body.works.length === 0) {
@@ -442,7 +464,7 @@ class SearchSource {
         if (!randomWork || !randomWork.id) continue;
 
         // Fetch detail
-        const detailUrl = `${baseUrl}${illustInfoUrl}${randomWork.id}`;
+        const detailUrl = `${this.baseUrl}${illustInfoUrl}${randomWork.id}`;
         const detail = await fetchPixivJson(detailUrl);
         
         if (!detail || !detail.body) continue;
@@ -471,7 +493,7 @@ class SearchSource {
     for (let i = 0; i < MAX_RETRIES; i++) {
       try {
         // Fetch recommendations
-        const recommendUrl = `${baseUrl}/ajax/top/illust?mode=all&lang=en`;
+        const recommendUrl = `${this.baseUrl}/ajax/top/illust?mode=all&lang=en`;
         const recommendRes = await fetchPixivJson(recommendUrl);
         
         if (!recommendRes || !recommendRes.body) {
@@ -487,7 +509,7 @@ class SearchSource {
           const ids = recommendRes.body.page.recommend.ids || [];
           if (ids.length > 0) {
             const randomId = ids[getRandomInt(0, ids.length)];
-            const detailUrl = `${baseUrl}${illustInfoUrl}${randomId}`;
+            const detailUrl = `${this.baseUrl}${illustInfoUrl}${randomId}`;
             const detail = await fetchPixivJson(detailUrl);
             if (detail && detail.body) {
               const filtered = await this.buildResultFromDetail(detail.body);
@@ -503,7 +525,7 @@ class SearchSource {
         const randomIllust = illusts[getRandomInt(0, illusts.length)];
         if (!randomIllust || !randomIllust.id) continue;
 
-        const detailUrl = `${baseUrl}${illustInfoUrl}${randomIllust.id}`;
+        const detailUrl = `${this.baseUrl}${illustInfoUrl}${randomIllust.id}`;
         const detail = await fetchPixivJson(detailUrl);
         
         if (!detail || !detail.body) continue;
@@ -551,8 +573,8 @@ class SearchSource {
             
             // 2. Fetch user profile to get list of work IDs AND user basic info (for avatar)
             // URL: /ajax/user/{id}/profile/all
-            const profileUrl = `${baseUrl}${userProfileUrl}${randomArtistId}/profile/all`;
-            const userDataUrl = `${baseUrl}/ajax/user/${randomArtistId}?full=1`;
+            const profileUrl = `${this.baseUrl}${userProfileUrl}${randomArtistId}/profile/all`;
+            const userDataUrl = `${this.baseUrl}/ajax/user/${randomArtistId}?full=1`;
             
             const [profileRes, userDataRes] = await Promise.all([
                 fetchPixivJson(profileUrl),
@@ -580,7 +602,7 @@ class SearchSource {
             const randomIllustId = illustIds[getRandomInt(0, illustIds.length)];
 
             // 4. Fetch detail
-            const detailUrl = `${baseUrl}${illustInfoUrl}${randomIllustId}`;
+            const detailUrl = `${this.baseUrl}${illustInfoUrl}${randomIllustId}`;
             const detail = await fetchPixivJson(detailUrl);
             
             if (!detail || !detail.body) {
@@ -650,7 +672,7 @@ class SearchSource {
 
         let randomIndex = getRandomInt(0, illustArray.length);
         let searchEntry = illustArray[randomIndex];
-        let detail = await fetchPixivJson(baseUrl + illustInfoUrl + searchEntry.id);
+        let detail = await fetchPixivJson(this.baseUrl + illustInfoUrl + searchEntry.id);
         if (!detail || !detail.body) continue;
         let filtered = await this.buildResultFromDetail(detail.body, searchEntry.profileImageUrl);
         if (!filtered) continue;
@@ -687,7 +709,7 @@ class SearchSource {
         let rankingEntry = pageData[randomIndex];
         if (!rankingEntry) continue;
 
-        let detail = await fetchPixivJson(baseUrl + illustInfoUrl + rankingEntry.illust_id);
+        let detail = await fetchPixivJson(this.baseUrl + illustInfoUrl + rankingEntry.illust_id);
         if (!detail || !detail.body) continue;
 
         let filtered = await this.buildResultFromDetail(detail.body, rankingEntry.profile_img);
@@ -720,7 +742,7 @@ class SearchSource {
       params.set("date", this.rankingDate);
     }
     try {
-      let res = await throttledFetch(`${rankingEndpoint}?${params.toString()}`);
+      let res = await throttledFetch(`${this.rankingEndpoint}?${params.toString()}`);
       if (!res.ok) {
         dbg(`Ranking fetch failed: ${res.status} ${res.statusText}`);
         return null;
@@ -794,7 +816,7 @@ class SearchSource {
 
   async fetchUgoiraMetadata(illustId) {
     try {
-      const metaUrl = `${baseUrl}${illustInfoUrl}${illustId}/ugoira_meta`;
+      const metaUrl = `${this.baseUrl}${illustInfoUrl}${illustId}/ugoira_meta`;
       const meta = await fetchPixivJson(metaUrl);
       return meta?.body || null;
     } catch (e) {
@@ -867,9 +889,9 @@ class SearchSource {
     let result = {
       userName: detail.userName,
       userId: detail.userId,
-      userIdUrl: baseUrl + "/users/" + detail.userId,
+      userIdUrl: defaultBaseUrl + "/users/" + detail.userId,
       illustId: detail.illustId,
-      illustIdUrl: baseUrl + "/artworks/" + detail.illustId,
+      illustIdUrl: defaultBaseUrl + "/artworks/" + detail.illustId,
       title: detail.title,
       imageObjectUrl: await blobToDataUrl(imgBlob),
       profileImageUrl: null

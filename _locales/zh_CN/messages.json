@@ -271,5 +271,14 @@
     },
     "reset": {
         "message": "重置默认设置"
+    },
+    "advancedSettingsLabel": {
+        "message": "高级设置"
+    },
+    "proxyUrlLabel": {
+        "message": "代理地址"
+    },
+    "proxyUrlHelper": {
+        "message": "配置 Pixiv API 反向代理地址，留空使用默认地址。"
     }
 }

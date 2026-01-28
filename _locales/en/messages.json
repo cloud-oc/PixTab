@@ -271,5 +271,14 @@
   },
   "reset": {
     "message": "Reset to default settings"
+  },
+  "advancedSettingsLabel": {
+    "message": "Advanced Settings"
+  },
+  "proxyUrlLabel": {
+    "message": "Proxy URL"
+  },
+  "proxyUrlHelper": {
+    "message": "Configure a reverse proxy URL for Pixiv API. Leave empty to use the default."
   }
 }

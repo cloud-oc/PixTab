@@ -271,5 +271,14 @@
   },
   "reset": {
     "message": "Сбросить настройки по умолчанию"
+  },
+  "advancedSettingsLabel": {
+    "message": "Расширенные настройки"
+  },
+  "proxyUrlLabel": {
+    "message": "URL прокси"
+  },
+  "proxyUrlHelper": {
+    "message": "Настройте URL обратного прокси для Pixiv API. Оставьте пустым для использования по умолчанию."
   }
 }

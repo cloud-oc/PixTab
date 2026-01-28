@@ -46,7 +46,8 @@ const saveOptions = () => {
     andKeywords: document.getElementById('andKeywords').value.trim(),
     keywords: document.getElementById('keywords').value.trim(),
     artistId: document.getElementById('artistId').value.trim(),
-    loginFallbackMode: document.getElementById('loginFallbackMode')?.value || 'ranking_daily'
+    loginFallbackMode: document.getElementById('loginFallbackMode')?.value || 'ranking_daily',
+    proxyUrl: document.getElementById('proxyUrl')?.value?.trim() || ''
   };
 
   browserAPI.storage.local.set(
@@ -101,6 +102,7 @@ const resetOptions = () => {
       document.getElementById('minusKeywords').value = items.minusKeywords;
       document.getElementById('artistId').value = items.artistId || "";
       document.getElementById('loginFallbackMode').value = items.loginFallbackMode || 'ranking_daily';
+      document.getElementById('proxyUrl').value = items.proxyUrl || '';
       updateKeywords();
       enforceBookmarkRange();
       updateArtistIdVisibility();
@@ -133,6 +135,7 @@ const restoreOptions = () => {
     document.getElementById('minusKeywords').value = items.minusKeywords;
     document.getElementById('artistId').value = items.artistId || "";
     document.getElementById('loginFallbackMode').value = items.loginFallbackMode || 'ranking_daily';
+    document.getElementById('proxyUrl').value = items.proxyUrl || '';
     updateKeywords();
     enforceBookmarkRange();
     updateArtistIdVisibility();

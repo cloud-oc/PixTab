@@ -309,7 +309,7 @@ body {
   opacity: 0;
 }
 
-#inllustInfo.focused {
+#illustInfo.focused {
   opacity: 1;
 }
 
