@@ -58,6 +58,7 @@
 
     body {
       font-family: Arial, sans-serif;
+      line-height: 1.5;
       background: transparent;
       color: var(--panel-text-color);
       padding: 32px;
@@ -95,6 +96,8 @@
       display: block;
       margin-bottom: 8px;
       font-size: 14px;
+      line-height: 20px;
+      min-height: 20px;
       font-weight: bold;
       color: var(--panel-label-color);
     }
@@ -143,6 +146,8 @@
     select {
       width: 100%;
       padding: 10px 12px;
+      line-height: 20px;
+      height: 42px;
       border: 1px solid var(--input-border-color);
       border-radius: 8px;
       font-size: 14px;
@@ -239,12 +244,15 @@
 
     .display-settings-grid .control-block label {
       margin-bottom: 0;
-      flex: 0 0 auto;
-      min-width: 0;
+      flex: 0 0 80px;
+      line-height: 42px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .display-settings-grid .control-block select {
-      flex: 0 0 130px;
+      flex: 1;
       min-width: 0;
     }
 
