@@ -81,6 +81,7 @@ body {
   margin: 0;
   padding: 0;
   border: 0;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 /* Default to a light background so the loading indicator stands out */
@@ -127,7 +128,11 @@ body {
   background-repeat: no-repeat;
   background-position: center center;
   z-index: inherit;
-  transition: background 0.3s;
+  transition: background 0.3s, filter 0.3s;
+}
+
+body[data-theme="dark"] #backgroundImage {
+  filter: brightness(0.6);
 }
 
 #foregroundImage {
@@ -234,16 +239,15 @@ body {
   justify-content: center;
   cursor: pointer;
   background: var(--control-bg);
-  border: 1px solid var(--control-border);
   box-shadow:
     inset 3px 3px 6px var(--control-shadow-dark),
     inset -3px -3px 6px var(--control-shadow-light);
-  transition: background-color 0.2s, box-shadow 0.2s;
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 #refreshButton svg,
 #settingsButton .material-symbols-outlined {
-  transition: color 0.2s, fill 0.2s;
+  transition: color 0.3s, fill 0.3s;
 }
 
 #refreshButton svg {
@@ -301,8 +305,8 @@ body {
   backdrop-filter: blur(var(--glass-blur-strength));
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
   color: var(--glass-text-color);
-  transition: opacity 1s, background-color 0.4s, border-color 0.4s, color 0.4s,
-    backdrop-filter 0.4s;
+  transition: opacity 0.3s, background-color 0.3s, border-color 0.3s, color 0.3s,
+    backdrop-filter 0.3s;
 }
 
 #illustInfo.unfocused {
