@@ -43,7 +43,6 @@ const saveOptions = () => {
     orKeywords: document.getElementById('orKeywords').value.trim(),
     minusKeywords: document.getElementById('minusKeywords').value.trim(),
     andKeywords: document.getElementById('andKeywords').value.trim(),
-    andKeywords: document.getElementById('andKeywords').value.trim(),
     keywords: document.getElementById('keywords').value.trim(),
     artistId: document.getElementById('artistId').value.trim(),
     loginFallbackMode: document.getElementById('loginFallbackMode')?.value || 'ranking_daily',
@@ -393,8 +392,8 @@ document.addEventListener("DOMContentLoaded", function () {
   function loadTranslations(lang) {
     // 兼容中划线和下划线 - try underscore first as that matches disk
     const tryPaths = [
-      `_locales/${lang.replace('-', '_')}/messages.json`,
-      `_locales/${lang}/messages.json`
+      `../../_locales/${lang.replace('-', '_')}/messages.json`,
+      `../../_locales/${lang}/messages.json`
     ];
     (function tryFetch(i) {
       fetch(tryPaths[i])

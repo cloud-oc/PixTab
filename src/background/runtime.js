@@ -948,7 +948,7 @@ async function checkPixivLogin() {
       let userName = null;
       if (userId) {
         try {
-          const userDataUrl = `${baseUrl}/ajax/user/${userId}?full=0`;
+          const userDataUrl = `${defaultBaseUrl}/ajax/user/${userId}?full=0`;
           const userRes = await fetchPixivJson(userDataUrl);
           if (userRes && userRes.body && userRes.body.name) {
             userName = userRes.body.name;
