@@ -70,7 +70,7 @@ chmod +x build/build.sh
 1.  **分支**: 創建描述性分支：`git checkout -b feature/cool-feature`。
 2.  **測試**: 確保更改在 Chrome 系瀏覽器和 Firefox 中均正常工作。
 3.  **提交**: 使用清晰的提交信息：`git commit -m "簡要描述你的更改"`。
-4.  **公關 (PR)**: 提交 PR，並詳細說明解決的問題或新增的功能。
+4.  **PR**: 提交 PR，並詳細說明解決的問題或新增的功能。
 
 ---
 
