@@ -3,7 +3,7 @@
   --glass-border-color: rgba(0, 0, 0, 0.1);
   --glass-text-color: #1c1b1f;
   --glass-link-color: #1c1b1f;
-  --avatar-ring-color: rgba(0, 0, 0, 0.12);
+  --avatar-ring-color: transparent;
   --glass-blur-strength: 9px;
   --control-bg: rgba(255, 255, 255, 0.22);
   --control-hover-bg: rgba(255, 255, 255, 0.3);
