@@ -2,6 +2,8 @@ name: Release PixTab
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *' # 每天凌晨 0:00 UTC 运行
 
 jobs:
   build_and_release:
@@ -11,33 +13,58 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取完整历史以进行差异对比
+
+      - name: Check for new commits since last version tag
+        id: check_updates
+        run: |
+          VERSION=$(node -e "console.log(require('./manifest.json').version)")
+          TAG="v$VERSION"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            COMMITS=$(git rev-list "$TAG..HEAD" --count)
+            if [ "$COMMITS" -eq 0 ]; then
+              echo "No new commits since $TAG. Skipping release."
+              echo "SKIP=true" >> $GITHUB_OUTPUT
+            else
+              echo "$COMMITS new commits found since $TAG."
+              echo "SKIP=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "Tag $TAG does not exist. Proceeding with new release."
+            echo "SKIP=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Setup Node.js
+        if: steps.check_updates.outputs.SKIP != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Make build script executable
+        if: steps.check_updates.outputs.SKIP != 'true'
         run: chmod +x build/build.sh
 
       - name: Build extension
+        if: steps.check_updates.outputs.SKIP != 'true'
         run: ./build/build.sh
 
       - name: Get version from manifest.json
+        if: steps.check_updates.outputs.SKIP != 'true'
         id: get_version
         run: |
           VERSION=$(node -e "console.log(require('./manifest.json').version)")
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create or Update GitHub Release
+        if: steps.check_updates.outputs.SKIP != 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.get_version.outputs.VERSION }}
           name: PixTab v${{ steps.get_version.outputs.VERSION }}
           draft: false
           prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
           files: |
             dist/*.zip
             dist/*.xpi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
