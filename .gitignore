@@ -1,0 +1,22 @@
+# Build artifacts
+dist/
+*.zip
+*.xpi
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+manifest.backup.json
+*.log
+
+# Node.js
+node_modules/
+package-lock.json

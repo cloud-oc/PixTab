@@ -1,0 +1,41 @@
+name: Release PixTab
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Make build script executable
+        run: chmod +x build/build.sh
+
+      - name: Build extension
+        run: ./build/build.sh
+
+      - name: Get version from manifest.json
+        id: get_version
+        run: |
+          VERSION=$(node -e "console.log(require('./manifest.json').version)")
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.get_version.outputs.VERSION }}
+          name: PixTab v${{ steps.get_version.outputs.VERSION }}
+          draft: false
+          prerelease: false
+          files: |
+            dist/*.zip
+            dist/*.xpi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

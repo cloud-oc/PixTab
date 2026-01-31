@@ -23,7 +23,7 @@ mkdir dist
 
 REM Chrome packaging
 echo [PACK] Building Chrome version...
-tar -a -cf "dist\pixtab-%VERSION%-chrome.zip" manifest.json LICENSE index.html options.html style.css _locales icons src
+tar -a -cf "dist\pixtab-%VERSION%-chrome.zip" manifest.json LICENSE _locales icons src
 
 REM Firefox packaging (temporarily modify manifest)
 echo [PACK] Building Firefox version...
@@ -32,7 +32,7 @@ copy manifest.json manifest.backup.json >nul
 REM Use external Node.js script for manifest conversion (more reliable)
 node "%~dp0convert-manifest-firefox.js"
 
-tar -a -cf "dist\pixtab-%VERSION%-firefox.zip" manifest.json LICENSE index.html options.html style.css _locales icons src
+tar -a -cf "dist\pixtab-%VERSION%-firefox.zip" manifest.json LICENSE _locales icons src
 
 REM Rename to .xpi
 if exist "dist\pixtab-%VERSION%-firefox.xpi" del "dist\pixtab-%VERSION%-firefox.xpi"

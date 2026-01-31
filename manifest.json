@@ -29,7 +29,7 @@
     }
   },
   "chrome_url_overrides": {
-    "newtab": "index.html"
+    "newtab": "src/newtab/index.html"
   },
   "background": {
     "service_worker": "src/background/runtime.js",
@@ -44,5 +44,5 @@
     "*://*.pixiv.net/*",
     "*://*.pximg.net/*"
   ],
-  "options_page": "options.html"
+  "options_page": "src/options/options.html"
 }

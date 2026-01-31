@@ -17,7 +17,7 @@ mkdir -p dist
 
 # Chrome packaging
 echo "📦 [PACK] Building Chrome version..."
-zip -r "dist/pixtab-${VERSION}-chrome.zip" manifest.json LICENSE index.html options.html style.css _locales icons src -x "*.git*" -x "*.DS_Store"
+zip -r "dist/pixtab-${VERSION}-chrome.zip" manifest.json LICENSE _locales icons src -x "*.git*" -x "*.DS_Store"
 
 # Firefox packaging (temporarily modify manifest)
 echo "📦 [PACK] Building Firefox version..."
@@ -26,7 +26,7 @@ cp manifest.json manifest.backup.json
 # Use external Node.js script for manifest conversion (more reliable)
 node "$SCRIPT_DIR/convert-manifest-firefox.js"
 
-zip -r "dist/pixtab-${VERSION}-firefox.xpi" manifest.json LICENSE index.html options.html style.css _locales icons src -x "*.git*" -x "*.DS_Store"
+zip -r "dist/pixtab-${VERSION}-firefox.xpi" manifest.json LICENSE _locales icons src -x "*.git*" -x "*.DS_Store"
 
 # Restore original manifest
 mv manifest.backup.json manifest.json
