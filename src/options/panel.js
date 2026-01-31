@@ -1,26 +1,31 @@
 import { defaultConfig, Order, SMode } from "../shared/preferences.js";
 import { buildKeywordQuery } from "../shared/keyword-builder.js";
 import browserAPI from "../shared/browser-polyfill.js";
+import { getThemePreference, setThemePreference, applyTheme, initThemeSync } from "../shared/theme.js";
 
-const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+// Initialize theme sync
+const cleanupThemeSync = initThemeSync();
 
-function applySystemTheme() {
-  const theme = darkModeMediaQuery.matches ? "dark" : "light";
-  if (document.body?.dataset?.theme !== theme) {
-    document.body.dataset.theme = theme;
+function updateThemeSwitcherUI() {
+  const preference = getThemePreference();
+  document.querySelectorAll(".theme-switcher button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  
+  if (preference === "light") {
+    document.getElementById("themeLightBtn")?.classList.add("active");
+  } else if (preference === "dark") {
+    document.getElementById("themeDarkBtn")?.classList.add("active");
+  } else {
+    document.getElementById("themeAutoBtn")?.classList.add("active");
   }
 }
 
-applySystemTheme();
-
-// Listen for system theme changes
-darkModeMediaQuery.addEventListener("change", applySystemTheme);
-
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) {
-    applySystemTheme();
-  }
-});
+function handleThemeChange(preference) {
+  setThemePreference(preference);
+  applyTheme();
+  updateThemeSwitcherUI();
+}
 
 const AUTO_SAVE_DEBOUNCE_MS = 500;
 let autoSaveTimeoutId = null;
@@ -310,6 +315,22 @@ document.addEventListener('DOMContentLoaded', () => {
   if (loginStatusEl) {
     loginStatusEl.addEventListener('click', openPixivLogin);
   }
+  
+  // Setup theme switcher buttons
+  document.getElementById('themeLightBtn')?.addEventListener('click', () => {
+    handleThemeChange('light');
+  });
+  
+  document.getElementById('themeDarkBtn')?.addEventListener('click', () => {
+    handleThemeChange('dark');
+  });
+  
+  document.getElementById('themeAutoBtn')?.addEventListener('click', () => {
+    handleThemeChange('auto');
+  });
+  
+  // Initialize theme switcher UI
+  updateThemeSwitcherUI();
 });
 document.getElementById('reset').addEventListener('click', resetOptions);
 

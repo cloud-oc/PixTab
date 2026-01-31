@@ -78,14 +78,68 @@
       background: transparent;
     }
 
-    h1 {
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 20px;
       padding-bottom: 12px;
+      border-bottom: 1px solid var(--panel-border-color);
+    }
+
+    h1 {
+      margin-bottom: 0;
+      padding-bottom: 0;
       font-size: 26px;
       text-align: left;
       color: var(--heading-color);
       letter-spacing: 0.03em;
-      border-bottom: 1px solid var(--panel-border-color);
+      border-bottom: none;
+    }
+
+    .theme-switcher {
+      display: flex;
+      gap: 2px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border-color);
+      border-radius: 6px;
+      padding: 3px;
+      flex-shrink: 0;
+    }
+
+    .theme-switcher button {
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--panel-text-color);
+      opacity: 0.6;
+      transition: opacity 0.2s, background-color 0.2s;
+      box-shadow: none;
+    }
+
+    .theme-switcher button:hover {
+      opacity: 0.9;
+      background: rgba(255, 255, 255, 0.1);
+      transform: none;
+      box-shadow: none;
+    }
+
+    .theme-switcher button.active {
+      opacity: 1;
+      background: var(--button-bg);
+      color: var(--button-text-color);
+    }
+
+    .theme-switcher button .material-symbols-outlined {
+      font-size: 18px;
     }
 
     .group {
@@ -615,6 +669,10 @@
         font-size: 20px;
       }
 
+      .settings-header {
+        gap: 8px;
+      }
+
       /* Stack inline fields vertically */
       .group.inline-field,
       .group-inline-row {
@@ -830,7 +888,20 @@
 <body data-theme="dark">
   <div class="panel-base" aria-hidden="true"></div>
   <div class="container">
-    <h1 id="settingsHeading"></h1>
+    <div class="settings-header">
+      <h1 id="settingsHeading"></h1>
+      <div class="theme-switcher">
+        <button id="themeLightBtn" type="button" title="Light Theme" aria-label="Light Theme">
+          <span class="material-symbols-outlined">light_mode</span>
+        </button>
+        <button id="themeDarkBtn" type="button" title="Dark Theme" aria-label="Dark Theme">
+          <span class="material-symbols-outlined">dark_mode</span>
+        </button>
+        <button id="themeAutoBtn" type="button" title="Auto Theme" aria-label="Auto Theme">
+          <span class="material-symbols-outlined">sync</span>
+        </button>
+      </div>
+    </div>
 
     <div class="group display-section">
       <h2 class="section-label" id="displaySettingsLabel"></h2>

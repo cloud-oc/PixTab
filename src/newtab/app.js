@@ -1,4 +1,4 @@
-import { initThemeSync } from "./theme.js";
+import { initThemeSync } from "../shared/theme.js";
 import browserAPI from "../shared/browser-polyfill.js";
 import { unzipSync } from "../shared/fflate.module.js";
 
