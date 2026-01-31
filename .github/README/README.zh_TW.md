@@ -1,18 +1,18 @@
 <div align="center">
   <p>
-    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.md"><img src="https://img.shields.io/badge/English-555555?style=flat-square" alt="English"></a>
-    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_CN.md"><img src="https://img.shields.io/badge/简体中文-D0021B?style=flat-square" alt="简体中文"></a>
-    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.zh_TW.md"><img src="https://img.shields.io/badge/繁體中文-E67E22?style=flat-square" alt="繁體中文"></a>
-    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ja.md"><img src="https://img.shields.io/badge/日本語-F48FB1?style=flat-square" alt="日本語"></a>
-    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ko.md"><img src="https://img.shields.io/badge/한국어-03C75A?style=flat-square" alt="한국어"></a>
-    <a href="https://github.com/cloud-oc/PixTab/blob/main/README.ru.md"><img src="https://img.shields.io/badge/Русский-0057B8?style=flat-square" alt="Русский"></a>
+    <a href="../../README.md"><img src="https://img.shields.io/badge/English-555555?style=flat-square" alt="English"></a>
+    <a href="README.zh_CN.md"><img src="https://img.shields.io/badge/简体中文-D0021B?style=flat-square" alt="简体中文"></a>
+    <a href="README.zh_TW.md"><img src="https://img.shields.io/badge/繁體中文-E67E22?style=flat-square" alt="繁體中文"></a>
+    <a href="README.ja.md"><img src="https://img.shields.io/badge/日本語-F48FB1?style=flat-square" alt="日本語"></a>
+    <a href="README.ko.md"><img src="https://img.shields.io/badge/한국어-03C75A?style=flat-square" alt="한국어"></a>
+    <a href="README.ru.md"><img src="https://img.shields.io/badge/Русский-0057B8?style=flat-square" alt="Русский"></a>
   </p>
 </div>
 
 <hr>
 
 <div align="center">
-  <img src="icons/icon-128.png" width="100" height="100" alt="PixTab Icon">
+  <img src="../../icons/icon-128.png" width="100" height="100" alt="PixTab Icon">
   <br>
   <b style="font-size: 36px;">PixTab</b>
   <p>
@@ -95,11 +95,11 @@
 
 ## 📜 許可證
 
-詳情請參閱 [LICENSE](LICENSE) 文件。
+詳情請參閱 [LICENSE](../../LICENSE) 文件。
 
 ## 🤝 貢獻與參與
 
-歡迎提交 Issue 或 PR！貢獻指南請參閱 [CONTRIBUTING.md](CONTRIBUTING.md)。
+歡迎提交 Issue 或 PR！貢獻指南請參閱 [CONTRIBUTING.md](../../CONTRIBUTING.md)。
 
 ## 💖 支持與讚賞
 
