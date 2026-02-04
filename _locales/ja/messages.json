@@ -275,10 +275,10 @@
   "advancedSettingsLabel": {
     "message": "詳細設定"
   },
-  "proxyUrlLabel": {
-    "message": "プロキシURL"
+  "reverseProxyDomainLabel": {
+    "message": "リバースプロキシを使用"
   },
-  "proxyUrlHelper": {
-    "message": "Pixiv APIのリバースプロキシURLを設定します。空白の場合はデフォルトを使用します。"
+  "reverseProxyDomainHelper": {
+    "message": "特定の地域で画像のダウンロードを高速化します。プロキシドメイン（例：i.pixiv.re、i.pixiv.cat、i.pixiv.nl）を入力するか、空白のままにして無効化します。"
   }
 }

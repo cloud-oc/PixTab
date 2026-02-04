@@ -275,10 +275,10 @@
   "advancedSettingsLabel": {
     "message": "Advanced Settings"
   },
-  "proxyUrlLabel": {
-    "message": "Proxy URL"
+  "reverseProxyDomainLabel": {
+    "message": "Use Reverse Proxy"
   },
-  "proxyUrlHelper": {
-    "message": "Configure a reverse proxy URL for Pixiv API. Leave empty to use the default."
+  "reverseProxyDomainHelper": {
+    "message": "Accelerate image downloads in certain regions. Enter proxy domain (e.g., i.pixiv.re, i.pixiv.cat, i.pixiv.nl) or leave empty to disable."
   }
 }

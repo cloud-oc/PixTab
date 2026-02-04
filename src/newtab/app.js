@@ -116,7 +116,7 @@ import { unzipSync } from "../shared/fflate.module.js";
         await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
       }
     }
-    
+
     if (!zipDataUrl) {
       throw new Error("Failed to fetch ugoira zip after retries");
     }
@@ -127,7 +127,7 @@ import { unzipSync } from "../shared/fflate.module.js";
     const len = binaryString.length;
     const zipBytes = new Uint8Array(len);
     for (let i = 0; i < len; i++) {
-        zipBytes[i] = binaryString.charCodeAt(i);
+      zipBytes[i] = binaryString.charCodeAt(i);
     }
     const files = unzipSync(zipBytes);
     const mimeType = ugoiraPayload.mimeType || "image/jpeg";
@@ -149,7 +149,7 @@ import { unzipSync } from "../shared/fflate.module.js";
 
   function preDecodeFrames(frames) {
     if (!frames || !frames.length) return;
-    
+
     // Create Image elements immediately
     frames.forEach(frame => {
       if (!frame.imageElement) {
@@ -171,9 +171,9 @@ import { unzipSync } from "../shared/fflate.module.js";
 
         active++;
         const img = frame.imageElement;
-        
+
         // Race decode against a timeout to prevent hanging
-        const decodePromise = img.decode().catch(() => {});
+        const decodePromise = img.decode().catch(() => { });
         const timeoutPromise = new Promise(resolve => setTimeout(resolve, 200));
 
         Promise.race([decodePromise, timeoutPromise]).finally(() => {
@@ -209,7 +209,7 @@ import { unzipSync } from "../shared/fflate.module.js";
           canvas.style.left = '0';
           canvas.style.width = '100%';
           canvas.style.height = '100%';
-          canvas.style.objectFit = 'contain'; 
+          canvas.style.objectFit = 'contain';
           canvas.style.zIndex = '-1'; // Same as #wallpaper
           canvas.style.pointerEvents = 'none';
           document.body.appendChild(canvas);
@@ -228,13 +228,13 @@ import { unzipSync } from "../shared/fflate.module.js";
       }
       this.isPlaying = false;
       this.updateButtonState();
-      
+
       // Clear canvas
       if (this.canvasElement && this.canvasContext) {
         this.canvasContext.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
         this.canvasElement.style.display = 'none';
       }
-      
+
       // Restore background visibility
       document.getElementById('backgroundImage')?.classList.remove('animating');
       document.getElementById('foregroundImage')?.classList.remove('animating');
@@ -256,13 +256,13 @@ import { unzipSync } from "../shared/fflate.module.js";
       if (!this.frames || !this.frames.length) return;
       this.isPlaying = true;
       this.updateButtonState();
-      
+
       const canvas = this.getCanvas();
       canvas.style.display = 'block';
       this.firstFrameDrawn = false;
-      
+
       // Removed immediate hiding of background to prevent black screen if first frame isn't ready
-      
+
       const ctx = this.canvasContext;
 
       // Set canvas size to screen size for proper rendering
@@ -271,10 +271,10 @@ import { unzipSync } from "../shared/fflate.module.js";
       const targetWidth = rect.width > 0 ? rect.width : window.innerWidth;
       const targetHeight = rect.height > 0 ? rect.height : window.innerHeight;
       if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
-          canvas.width = targetWidth;
-          canvas.height = targetHeight;
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
       }
-      
+
       const token = this.playToken;
       this.lastFrameTime = performance.now();
       let accumulatedTime = 0;
@@ -284,36 +284,36 @@ import { unzipSync } from "../shared/fflate.module.js";
       // Assuming "cover" behavior similar to CSS background-size: cover for simplicity,
       // or "contain" if that's the default.
       // Let's implement "contain" (best_fit) as it's the default in preferences.
-      
+
       const drawFrame = (img) => {
         if (!img || !img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) return false;
         const cw = canvas.width;
         const ch = canvas.height;
         if (cw === 0 || ch === 0) return false; // Canvas not visible or 0 size
-        
+
         // Removed clearRect to prevent black flashing if draw fails or lags.
         // The background cover draw below covers the entire canvas anyway. 
         // ctx.clearRect(0, 0, cw, ch);
-        
+
         const imgRatio = img.naturalWidth / img.naturalHeight;
         const canvasRatio = cw / ch;
-        
+
         // 1. Draw Blurred Background (Cover)
         ctx.filter = 'blur(18px)';
         let bw, bh, bx, by;
         // Cover logic:
         if (imgRatio > canvasRatio) {
-            // Image wider than canvas: height=100%, width=auto (cropped)
-            bh = ch;
-            bw = ch * imgRatio;
-            by = 0;
-            bx = (cw - bw) / 2;
+          // Image wider than canvas: height=100%, width=auto (cropped)
+          bh = ch;
+          bw = ch * imgRatio;
+          by = 0;
+          bx = (cw - bw) / 2;
         } else {
-            // Image taller than canvas: width=100%, height=auto (cropped)
-            bw = cw;
-            bh = cw / imgRatio;
-            bx = 0;
-            by = (ch - bh) / 2;
+          // Image taller than canvas: width=100%, height=auto (cropped)
+          bw = cw;
+          bh = cw / imgRatio;
+          bx = 0;
+          by = (ch - bh) / 2;
         }
         // Draw slightly larger to avoid edge artifacts from blur? No, standard cover is usually fine.
         ctx.drawImage(img, bx, by, bw, bh);
@@ -321,19 +321,19 @@ import { unzipSync } from "../shared/fflate.module.js";
         // 2. Draw Sharp Foreground (Contain)
         ctx.filter = 'none';
         let dw, dh, dx, dy;
-        
+
         if (imgRatio > canvasRatio) {
-           // Contain logic: width=100%, height=auto (letterbox)
-           dw = cw;
-           dh = cw / imgRatio;
-           dx = 0;
-           dy = (ch - dh) / 2;
+          // Contain logic: width=100%, height=auto (letterbox)
+          dw = cw;
+          dh = cw / imgRatio;
+          dx = 0;
+          dy = (ch - dh) / 2;
         } else {
-           // Contain logic: height=100%, width=auto (pillarbox)
-           dh = ch;
-           dw = ch * imgRatio;
-           dy = 0;
-           dx = (cw - dw) / 2;
+          // Contain logic: height=100%, width=auto (pillarbox)
+          dh = ch;
+          dw = ch * imgRatio;
+          dy = 0;
+          dx = (cw - dw) / 2;
         }
         ctx.drawImage(img, dx, dy, dw, dh);
         return true;
@@ -341,37 +341,37 @@ import { unzipSync } from "../shared/fflate.module.js";
 
       const ensureBackgroundHidden = () => {
         if (!this.isPlaying) return;
-         document.getElementById('backgroundImage')?.classList.add('animating');
-         document.getElementById('foregroundImage')?.classList.add('animating');
+        document.getElementById('backgroundImage')?.classList.add('animating');
+        document.getElementById('foregroundImage')?.classList.add('animating');
       };
 
       const loop = (timestamp) => {
         if (token !== this.playToken || !this.isPlaying) return;
-        
+
         const deltaTime = timestamp - this.lastFrameTime;
         this.lastFrameTime = timestamp;
 
         // If we haven't drawn the first frame yet, don't accumulate time.
         // This effectively pauses the animation logic on frame 0 until it is ready.
         if (this.firstFrameDrawn) {
-            accumulatedTime += deltaTime;
+          accumulatedTime += deltaTime;
         }
 
         let frame = this.frames[this.currentIndex];
 
         // Critical: Ensure first frame is drawn before advancing
         if (!this.firstFrameDrawn) {
-             // Try to draw the current frame (which should be frame 0)
-             if (frame.imageElement && drawFrame(frame.imageElement)) {
-                 this.firstFrameDrawn = true;
-                 ensureBackgroundHidden();
-                 // Reset timing to start smooth animation from now
-                 accumulatedTime = 0;
-             } else {
-                 // Not ready yet, wait for next tick.
-                 this.animationFrameId = requestAnimationFrame(loop);
-                 return;
-             }
+          // Try to draw the current frame (which should be frame 0)
+          if (frame.imageElement && drawFrame(frame.imageElement)) {
+            this.firstFrameDrawn = true;
+            ensureBackgroundHidden();
+            // Reset timing to start smooth animation from now
+            accumulatedTime = 0;
+          } else {
+            // Not ready yet, wait for next tick.
+            this.animationFrameId = requestAnimationFrame(loop);
+            return;
+          }
         }
 
         let delay = Math.max(1, Number(frame.delay) || 60);
@@ -380,62 +380,62 @@ import { unzipSync } from "../shared/fflate.module.js";
           const nextIndex = (this.currentIndex + 1) % this.frames.length;
           // Check if next frame's image is actually ready (loaded and has dimensions)
           const nextFrame = this.frames[nextIndex];
-          const isNextFrameReady = nextFrame.imageElement && 
-                                   nextFrame.imageElement.complete && 
-                                   nextFrame.imageElement.naturalWidth > 0;
+          const isNextFrameReady = nextFrame.imageElement &&
+            nextFrame.imageElement.complete &&
+            nextFrame.imageElement.naturalWidth > 0;
           if (isNextFrameReady) {
-             accumulatedTime -= delay;
-             this.currentIndex = nextIndex;
-             frame = this.frames[this.currentIndex];
-             
-              // Draw the final frame after catch-up
-              if (drawFrame(frame.imageElement)) {
-                this.firstFrameDrawn = true;
-                ensureBackgroundHidden();
-              }
-             
-             delay = Math.max(1, Number(frame.delay) || 60);
-             while (accumulatedTime >= delay) {
-               const skipNextIndex = (this.currentIndex + 1) % this.frames.length;
-               const skipFrame = this.frames[skipNextIndex];
-               const isSkipFrameReady = skipFrame.imageElement &&
-                                        skipFrame.imageElement.complete &&
-                                        skipFrame.imageElement.naturalWidth > 0;
-               if (!isSkipFrameReady) break;
-               
-               accumulatedTime -= delay;
-               this.currentIndex = skipNextIndex;
-               frame = this.frames[this.currentIndex];
-               
-               // Skip drawing for skipped frames
-               
-               delay = Math.max(1, Number(frame.delay) || 60);
-             }
-             // Draw the final frame after catch-up
-             if (drawFrame(frame.imageElement)) {
-               ensureBackgroundHidden();
-             }
+            accumulatedTime -= delay;
+            this.currentIndex = nextIndex;
+            frame = this.frames[this.currentIndex];
+
+            // Draw the final frame after catch-up
+            if (drawFrame(frame.imageElement)) {
+              this.firstFrameDrawn = true;
+              ensureBackgroundHidden();
+            }
+
+            delay = Math.max(1, Number(frame.delay) || 60);
+            while (accumulatedTime >= delay) {
+              const skipNextIndex = (this.currentIndex + 1) % this.frames.length;
+              const skipFrame = this.frames[skipNextIndex];
+              const isSkipFrameReady = skipFrame.imageElement &&
+                skipFrame.imageElement.complete &&
+                skipFrame.imageElement.naturalWidth > 0;
+              if (!isSkipFrameReady) break;
+
+              accumulatedTime -= delay;
+              this.currentIndex = skipNextIndex;
+              frame = this.frames[this.currentIndex];
+
+              // Skip drawing for skipped frames
+
+              delay = Math.max(1, Number(frame.delay) || 60);
+            }
+            // Draw the final frame after catch-up
+            if (drawFrame(frame.imageElement)) {
+              ensureBackgroundHidden();
+            }
           }
         }
-        
+
         this.animationFrameId = requestAnimationFrame(loop);
       };
-      
+
       // Draw first frame immediately
       // Draw first frame immediately if ready
       if (this.frames[this.currentIndex] && this.frames[this.currentIndex].decoded && this.frames[this.currentIndex].imageElement) {
-          if (drawFrame(this.frames[this.currentIndex].imageElement)) {
-            this.firstFrameDrawn = true;
-            ensureBackgroundHidden();
-          }
+        if (drawFrame(this.frames[this.currentIndex].imageElement)) {
+          this.firstFrameDrawn = true;
+          ensureBackgroundHidden();
+        }
       }
-      
+
       this.animationFrameId = requestAnimationFrame(loop);
     },
-    
+
     toggle() {
       if (this.isPlaying) {
-        this.pause(); 
+        this.pause();
       } else {
         this.play();
       }
@@ -445,19 +445,19 @@ import { unzipSync } from "../shared/fflate.module.js";
       this.stop(); // Stop previous
       this.frames = [];
       this.currentIndex = 0;
-      
+
       try {
         const frames = await decodeUgoiraFrames(ugoiraPayload);
         if (!frames || !frames.length) return;
-        
+
         // Progressive: Start decoding in background, but don't wait
         preDecodeFrames(frames);
-        
+
         // Mark frame 0 as decoded
         frames[0].decoded = true;
 
         this.frames = frames;
-        
+
         // CRITICAL: Wait for the first frame's image to actually load before playing
         const firstImg = this.frames[0].imageElement;
         if (firstImg && !firstImg.complete) {
@@ -476,7 +476,7 @@ import { unzipSync } from "../shared/fflate.module.js";
             }
           });
         }
-        
+
         // Auto play on load
         this.play();
         this.showButton(true);
@@ -489,9 +489,14 @@ import { unzipSync } from "../shared/fflate.module.js";
     updateButtonState() {
       const btn = document.getElementById('playPauseButton');
       if (!btn) return;
-      const icon = btn.querySelector('.material-symbols-outlined');
-      if (icon) {
-        icon.textContent = this.isPlaying ? 'pause' : 'play_arrow';
+      const svg = btn.querySelector('.icon');
+      const path = svg?.querySelector('path');
+      if (path) {
+        // Pause icon: two vertical bars
+        // Play icon: triangle pointing right
+        path.setAttribute('d', this.isPlaying
+          ? 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'
+          : 'M8 5v14l11-7z');
       }
       // Toggle state class for CSS styling
       if (this.isPlaying) {
@@ -525,7 +530,7 @@ import { unzipSync } from "../shared/fflate.module.js";
         ugoiraController.toggle();
       });
     }
-    
+
     // Background click to toggle
     // Listen on container because wallpaper is behind maskLayer/others
     const container = document.getElementById('container');
@@ -533,11 +538,11 @@ import { unzipSync } from "../shared/fflate.module.js";
       container.addEventListener('click', (e) => {
         // Only toggle if ugoira is loaded (frames exist)
         if (ugoiraController.frames && ugoiraController.frames.length > 0) {
-           ugoiraController.toggle();
+          ugoiraController.toggle();
         }
       });
     }
-    
+
     // Prevent info card clicks from bubbling to wallpaper
     const infoCard = document.getElementById('illustInfo');
     if (infoCard) {
@@ -700,7 +705,7 @@ import { unzipSync } from "../shared/fflate.module.js";
       ugoiraController.stop();
       // Also hide button by default until loaded
       ugoiraController.showButton(false);
-      
+
       for (let k in binding.ref) {
         if (illustObject.hasOwnProperty(k)) {
           let value = illustObject[k];
@@ -730,6 +735,9 @@ import { unzipSync } from "../shared/fflate.module.js";
 
   const sendRefreshMessage = (() => {
     let isRequestInProgress = false;
+    let loadTimeoutId = null;
+    let autoProxyAttempted = false;
+
     const setRefreshing = (state) => {
       const refreshButton = binding?.refreshElement;
       if (!refreshButton) {
@@ -738,23 +746,61 @@ import { unzipSync } from "../shared/fflate.module.js";
       refreshButton.classList.toggle("loading", state);
       refreshButton.setAttribute("aria-busy", state ? "true" : "false");
     };
+
+    const enableReverseProxyIfNeeded = () => {
+      if (!autoProxyAttempted) {
+        autoProxyAttempted = true;
+        browserAPI.runtime.sendMessage({ action: "enableReverseProxyAuto" }, (response) => {
+          const lastError = browserAPI.runtime.lastError;
+          if (lastError) {
+            console.warn('Failed to auto-enable reverse proxy:', lastError);
+            return;
+          }
+          if (response && response.success) {
+            // Retry loading once after enabling proxy
+            console.log('Auto-enabled reverse proxy, retrying artwork request');
+            // allow previous call to clear and re-enter
+            setTimeout(() => {
+              isRequestInProgress = false;
+              sendRefreshMessage();
+            }, 500);
+          }
+        });
+      }
+    };
+
+    const startLoadTimeout = () => {
+      clearTimeout(loadTimeoutId);
+      loadTimeoutId = setTimeout(() => {
+        const container = binding?.containerElement;
+        const stillLoading = container ? container.classList.contains('notReady') : true;
+        if (isRequestInProgress && stillLoading) {
+          enableReverseProxyIfNeeded();
+        }
+      }, 8000); // 8s timeout
+    };
+
     return () => {
       if (isRequestInProgress) {
         return;
       }
       isRequestInProgress = true;
+      autoProxyAttempted = false;
       setRefreshing(true);
       showSpinnerIfBlank();
+      startLoadTimeout();
       browserAPI.runtime.sendMessage({ action: "requestArtwork" }, (res) => {
         const lastError = browserAPI.runtime.lastError;
         if (lastError) {
           if (lastError.message && lastError.message.includes('Could not establish connection')) {
             // 静默忽略 Manifest V3 service worker 休眠导致的错误
+            clearTimeout(loadTimeoutId);
             setRefreshing(false);
             isRequestInProgress = false;
             return;
           }
           console.warn("Extension messaging error:", lastError.message);
+          clearTimeout(loadTimeoutId);
           setRefreshing(false);
           isRequestInProgress = false;
           return;
@@ -768,11 +814,12 @@ import { unzipSync } from "../shared/fflate.module.js";
 
         Promise.resolve(changeElement(res))
           .catch(e => {
-             console.error("changeElement error:", e);
-             setLoadFailedState(true);
-             toggleSpinnerVisibility(false);
+            console.error("changeElement error:", e);
+            setLoadFailedState(true);
+            toggleSpinnerVisibility(false);
           })
           .finally(() => {
+            clearTimeout(loadTimeoutId);
             setRefreshing(false);
             isRequestInProgress = false;
           });

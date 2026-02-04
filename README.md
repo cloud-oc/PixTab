@@ -92,7 +92,16 @@
 ## 🎐 Network Requirements
 
 This extension requires access to Pixiv (`pixiv.net` and `pximg.net`).
-> If the loading animation spins forever, it means your network cannot access Pixiv. Please check your network connection or proxy settings. This extension **does not** provide proxy functionality.
+
+> **For users in regions with restricted access**: This extension supports **Reverse Proxy** for loading images. You can enable this feature in the Advanced Settings:
+> 1. Open extension settings
+> 2. Scroll to **Advanced Settings**
+> 3. Enter a proxy domain in **Use Reverse Proxy** (e.g., `i.pixiv.re`, `i.pixiv.cat`, `i.pixiv.nl`)
+> 4. Leave empty to disable
+> 
+> See [REVERSE_PROXY_GUIDE.md](REVERSE_PROXY_GUIDE.md) for detailed instructions.
+
+> If images still cannot load, check your network connection or try a different proxy domain. Note that this extension does not provide its own proxy infrastructure—it uses third-party reverse proxy services.
 
 ## 📜 License
 

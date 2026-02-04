@@ -275,10 +275,10 @@
   "advancedSettingsLabel": {
     "message": "Расширенные настройки"
   },
-  "proxyUrlLabel": {
-    "message": "URL прокси"
+  "reverseProxyDomainLabel": {
+    "message": "Использовать обратный прокси"
   },
-  "proxyUrlHelper": {
-    "message": "Настройте URL обратного прокси для Pixiv API. Оставьте пустым для использования по умолчанию."
+  "reverseProxyDomainHelper": {
+    "message": "Ускорить загрузку изображений в некоторых регионах. Введите домен прокси (например, i.pixiv.re, i.pixiv.cat, i.pixiv.nl) или оставьте пустым для отключения."
   }
 }

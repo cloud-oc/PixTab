@@ -56,7 +56,7 @@ export const defaultPreferences = {
     andKeywords: "",
     debugLogging: false,
     loginFallbackMode: "ranking_daily",
-    proxyUrl: ""
+    reverseProxyDomain: ""
 };
 
 export { defaultPreferences as defaultConfig };

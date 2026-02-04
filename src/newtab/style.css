@@ -25,7 +25,7 @@
   --loading-bg-fail: rgb(var(--fail-red-rgb));
   --spinner-core-color-fail: rgb(var(--fail-red-rgb));
   --spinner-core-glow-fail: rgb(var(--fail-red-rgb));
-  
+
   /* Light theme: Dark transparent text with white highlight below = Letterpress/Recessed */
   --icon-recessed-color: rgba(0, 0, 0, 0.25);
   --icon-text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.7);
@@ -58,7 +58,7 @@ body[data-theme="dark"] {
   --loading-bg-fail: rgb(var(--fail-red-rgb));
   --spinner-core-color-fail: rgb(var(--fail-red-rgb));
   --spinner-core-glow-fail: rgb(var(--fail-red-rgb));
-  
+
   /* Dark theme: Black transparent text with faint light highlight below = Recessed */
   --icon-recessed-color: rgba(0, 0, 0, 0.4);
   --icon-text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1), -1px -1px 1px rgba(0, 0, 0, 0.3);
@@ -246,11 +246,12 @@ body[data-theme="dark"] #backgroundImage {
 }
 
 #refreshButton svg,
-#settingsButton .material-symbols-outlined {
+#settingsButton .icon {
   transition: color 0.3s, fill 0.3s;
 }
 
-#refreshButton svg {
+#refreshButton svg,
+#settingsButton .icon {
   width: 20px;
   height: 20px;
   fill: var(--icon-color);
@@ -262,13 +263,6 @@ body[data-theme="dark"] #backgroundImage {
   box-shadow:
     inset 2px 2px 5px var(--control-shadow-dark),
     inset -2px -2px 5px var(--control-shadow-light);
-}
-
-#settingsButton .material-symbols-outlined {
-  font-size: 22px;
-  color: var(--icon-color);
-  line-height: 1;
-  pointer-events: none;
 }
 
 #refreshButton.loading {
@@ -424,9 +418,9 @@ body.settings-open {
   padding: 0;
   pointer-events: auto;
   transition: opacity 0.25s ease, transform 0.2s ease;
-  
+
   /* DEFAULT VISIBILITY (PAUSED STATE): Visible */
-  opacity: 1; 
+  opacity: 1;
 }
 
 .play-pause-btn:hover {
@@ -438,19 +432,14 @@ body.settings-open {
 }
 
 /* Icon styling - solid filled with glassmorphism effect */
-.play-pause-btn .material-symbols-outlined {
-  font-size: 80px;
-  /* Glassmorphism text effect */
-  color: rgba(255, 255, 255, 0.75);
-  /* Enable filled icon style */
-  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 48;
-  line-height: 1;
+.play-pause-btn .icon {
+  width: 80px;
+  height: 80px;
+  /* Glassmorphism effect */
+  fill: rgba(255, 255, 255, 0.75);
   /* Frosted glass effect via multiple layered shadows */
-  text-shadow: 
-    0 0 20px rgba(255, 255, 255, 0.4),
-    0 0 40px rgba(255, 255, 255, 0.2),
-    0 4px 8px rgba(0, 0, 0, 0.3);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  filter:
+    drop-shadow(0 0 20px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 40px rgba(255, 255, 255, 0.2)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
 }
 
 /* PLAYING STATE: Hidden by default */

@@ -278,10 +278,10 @@
     "advancedSettingsLabel": {
         "message": "進階設定"
     },
-    "proxyUrlLabel": {
-        "message": "代理地址"
+    "reverseProxyDomainLabel": {
+        "message": "使用反向代理"
     },
-    "proxyUrlHelper": {
-        "message": "配置 Pixiv API 反向代理地址，留空使用預設地址。"
+    "reverseProxyDomainHelper": {
+        "message": "加速某些地區的圖片下載。輸入代理網域（如 i.pixiv.re、i.pixiv.cat、i.pixiv.nl）或留空不啟用。"
     }
 }

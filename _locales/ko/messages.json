@@ -275,10 +275,10 @@
     "advancedSettingsLabel": {
         "message": "고급 설정"
     },
-    "proxyUrlLabel": {
-        "message": "프록시 URL"
+    "reverseProxyDomainLabel": {
+        "message": "리버스 프록시 사용"
     },
-    "proxyUrlHelper": {
-        "message": "Pixiv API 리버스 프록시 URL을 설정합니다. 비워두면 기본값을 사용합니다."
+    "reverseProxyDomainHelper": {
+        "message": "특정 지역에서 이미지 다운로드를 가속화합니다. 프록시 도메인(예: i.pixiv.re, i.pixiv.cat, i.pixiv.nl)을 입력하거나 비워두어 비활성화합니다."
     }
 }

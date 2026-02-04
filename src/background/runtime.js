@@ -11,7 +11,7 @@ browserAPI.runtime.onInstalled.addListener((details) => {
     "urlFilter": "*://*.pixiv.net/*",
     "resourceTypes": ["xmlhttprequest"]
   };
-  
+
   const pximgCondition = {
     "urlFilter": "*://*.pximg.net/*",
     "resourceTypes": ["xmlhttprequest"]
@@ -132,17 +132,17 @@ let userProfileUrl = "/ajax/user/";
 let searchUrl = "/ajax/search/illustrations/";
 const defaultRankingEndpoint = "https://www.pixiv.net/ranking.php";
 
-// Resolve API base URL based on proxy configuration
-function resolveApiBaseUrl(proxyUrl) {
-  if (proxyUrl && typeof proxyUrl === "string" && proxyUrl.trim()) {
-    return proxyUrl.replace(/\/$/, ""); // Remove trailing slash
+// Resolve API base URL based on reverse proxy configuration
+function resolveApiBaseUrl(reverseProxyDomain) {
+  if (reverseProxyDomain && typeof reverseProxyDomain === "string" && reverseProxyDomain.trim()) {
+    return "https://" + reverseProxyDomain.trim();
   }
   return defaultBaseUrl;
 }
 
-function resolveRankingEndpoint(proxyUrl) {
-  if (proxyUrl && typeof proxyUrl === "string" && proxyUrl.trim()) {
-    return proxyUrl.replace(/\/$/, "") + "/ranking.php";
+function resolveRankingEndpoint(reverseProxyDomain) {
+  if (reverseProxyDomain && typeof reverseProxyDomain === "string" && reverseProxyDomain.trim()) {
+    return "https://" + reverseProxyDomain.trim() + "/ranking.php";
   }
   return defaultRankingEndpoint;
 }
@@ -275,6 +275,7 @@ function applyConfigNormalization(config) {
 class SearchSource {
   constructor(config) {
     this.searchParam = config;
+    this.config = config;  // Keep reference for fetchImage to access
     this.params = ["order", "mode", "p", "s_mode", "type", "blt", "bgt"];
     this.totalPage = 0;
     this.itemsPerPage = 60;
@@ -285,6 +286,7 @@ class SearchSource {
 
   updateConfig(config) {
     this.searchParam = config;
+    this.config = config;  // Update reference
     this.totalPage = 0;
     this.illustInfoPages = {};
     this.resetRankingState();
@@ -292,8 +294,8 @@ class SearchSource {
   }
 
   _updateProxyUrls() {
-    this.baseUrl = resolveApiBaseUrl(this.searchParam.proxyUrl);
-    this.rankingEndpoint = resolveRankingEndpoint(this.searchParam.proxyUrl);
+    this.baseUrl = resolveApiBaseUrl(this.searchParam.reverseProxyDomain);
+    this.rankingEndpoint = resolveRankingEndpoint(this.searchParam.reverseProxyDomain);
   }
 
   resetRankingState(dateOverride = null) {
@@ -400,7 +402,7 @@ class SearchSource {
         const offset = getRandomInt(0, 100); // Random offset to get variety
         const followingUrl = `${this.baseUrl}/ajax/user/${userId}/following?offset=${offset}&limit=24&rest=show`;
         const followingRes = await fetchPixivJson(followingUrl);
-        
+
         if (!followingRes || !followingRes.body || !followingRes.body.users || followingRes.body.users.length === 0) {
           continue;
         }
@@ -412,7 +414,7 @@ class SearchSource {
         // Fetch their profile to get illusts
         const profileUrl = `${this.baseUrl}${userProfileUrl}${randomUser.userId}/profile/all`;
         const profileRes = await fetchPixivJson(profileUrl);
-        
+
         if (!profileRes || !profileRes.body || !profileRes.body.illusts) {
           continue;
         }
@@ -424,7 +426,7 @@ class SearchSource {
         const randomIllustId = illustIds[getRandomInt(0, illustIds.length)];
         const detailUrl = `${this.baseUrl}${illustInfoUrl}${randomIllustId}`;
         const detail = await fetchPixivJson(detailUrl);
-        
+
         if (!detail || !detail.body) continue;
 
         // Get user avatar
@@ -454,7 +456,7 @@ class SearchSource {
         const offset = getRandomInt(0, 200);
         const bookmarksUrl = `${this.baseUrl}/ajax/user/${userId}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=show`;
         const bookmarksRes = await fetchPixivJson(bookmarksUrl);
-        
+
         if (!bookmarksRes || !bookmarksRes.body || !bookmarksRes.body.works || bookmarksRes.body.works.length === 0) {
           continue;
         }
@@ -466,7 +468,7 @@ class SearchSource {
         // Fetch detail
         const detailUrl = `${this.baseUrl}${illustInfoUrl}${randomWork.id}`;
         const detail = await fetchPixivJson(detailUrl);
-        
+
         if (!detail || !detail.body) continue;
 
         // Get profile image from bookmark data
@@ -495,7 +497,7 @@ class SearchSource {
         // Fetch recommendations
         const recommendUrl = `${this.baseUrl}/ajax/top/illust?mode=all&lang=en`;
         const recommendRes = await fetchPixivJson(recommendUrl);
-        
+
         if (!recommendRes || !recommendRes.body) {
           continue;
         }
@@ -527,7 +529,7 @@ class SearchSource {
 
         const detailUrl = `${this.baseUrl}${illustInfoUrl}${randomIllust.id}`;
         const detail = await fetchPixivJson(detailUrl);
-        
+
         if (!detail || !detail.body) continue;
 
         const filtered = await this.buildResultFromDetail(detail.body, randomIllust.profileImageUrl);
@@ -567,67 +569,67 @@ class SearchSource {
 
     const MAX_RETRIES = 5;
     for (let i = 0; i < MAX_RETRIES; i++) {
-        try {
-            // 1. Pick a random artist ID
-            const randomArtistId = artistIds[getRandomInt(0, artistIds.length)];
-            
-            // 2. Fetch user profile to get list of work IDs AND user basic info (for avatar)
-            // URL: /ajax/user/{id}/profile/all
-            const profileUrl = `${this.baseUrl}${userProfileUrl}${randomArtistId}/profile/all`;
-            const userDataUrl = `${this.baseUrl}/ajax/user/${randomArtistId}?full=1`;
-            
-            const [profileRes, userDataRes] = await Promise.all([
-                fetchPixivJson(profileUrl),
-                fetchPixivJson(userDataUrl)
-            ]);
-            
-            if (!profileRes || !profileRes.body || !profileRes.body.illusts) {
-                // If artist not found or has no illusts
-                continue;
-            }
+      try {
+        // 1. Pick a random artist ID
+        const randomArtistId = artistIds[getRandomInt(0, artistIds.length)];
 
-            let artistAvatar = null;
-            if (userDataRes && userDataRes.body) {
-                artistAvatar = userDataRes.body.image || userDataRes.body.imageBig;
-            }
+        // 2. Fetch user profile to get list of work IDs AND user basic info (for avatar)
+        // URL: /ajax/user/{id}/profile/all
+        const profileUrl = `${this.baseUrl}${userProfileUrl}${randomArtistId}/profile/all`;
+        const userDataUrl = `${this.baseUrl}/ajax/user/${randomArtistId}?full=1`;
 
-            const illustsMap = profileRes.body.illusts;
-            const illustIds = Object.keys(illustsMap);
-            
-            if (illustIds.length === 0) {
-                continue;
-            }
+        const [profileRes, userDataRes] = await Promise.all([
+          fetchPixivJson(profileUrl),
+          fetchPixivJson(userDataUrl)
+        ]);
 
-            // 3. Pick random illust ID
-            const randomIllustId = illustIds[getRandomInt(0, illustIds.length)];
-
-            // 4. Fetch detail
-            const detailUrl = `${this.baseUrl}${illustInfoUrl}${randomIllustId}`;
-            const detail = await fetchPixivJson(detailUrl);
-            
-            if (!detail || !detail.body) {
-                continue;
-            }
-
-            // 5. Build result
-            // We might want to pass profile image from somewhere if available, but detail.body usually has it?
-            // Actually detail.body has user info.
-            // Note: We are not enforcing "passesDetailFilters" strictly here except maybe for R18/Safe mode?
-            // The user chose a specific artist, so maybe they want to see everything?
-            // But 'mode' (safe/r18) preference is global. So we should probably respect it.
-            
-            const filtered = await this.buildResultFromDetail(detail.body, artistAvatar);
-            if (!filtered) {
-                 // Maybe this artwork was filtered out (e.g. R18 when in Safe mode)
-                 // Continue loop to find another valid one
-                continue;
-            }
-            return filtered;
-
-        } catch (e) {
-            dbg("Error in getRandomArtistIllust loop:", e);
-            continue;
+        if (!profileRes || !profileRes.body || !profileRes.body.illusts) {
+          // If artist not found or has no illusts
+          continue;
         }
+
+        let artistAvatar = null;
+        if (userDataRes && userDataRes.body) {
+          artistAvatar = userDataRes.body.image || userDataRes.body.imageBig;
+        }
+
+        const illustsMap = profileRes.body.illusts;
+        const illustIds = Object.keys(illustsMap);
+
+        if (illustIds.length === 0) {
+          continue;
+        }
+
+        // 3. Pick random illust ID
+        const randomIllustId = illustIds[getRandomInt(0, illustIds.length)];
+
+        // 4. Fetch detail
+        const detailUrl = `${this.baseUrl}${illustInfoUrl}${randomIllustId}`;
+        const detail = await fetchPixivJson(detailUrl);
+
+        if (!detail || !detail.body) {
+          continue;
+        }
+
+        // 5. Build result
+        // We might want to pass profile image from somewhere if available, but detail.body usually has it?
+        // Actually detail.body has user info.
+        // Note: We are not enforcing "passesDetailFilters" strictly here except maybe for R18/Safe mode?
+        // The user chose a specific artist, so maybe they want to see everything?
+        // But 'mode' (safe/r18) preference is global. So we should probably respect it.
+
+        const filtered = await this.buildResultFromDetail(detail.body, artistAvatar);
+        if (!filtered) {
+          // Maybe this artwork was filtered out (e.g. R18 when in Safe mode)
+          // Continue loop to find another valid one
+          continue;
+        }
+        return filtered;
+
+      } catch (e) {
+        dbg("Error in getRandomArtistIllust loop:", e);
+        continue;
+      }
     }
     return null;
   }
@@ -867,7 +869,7 @@ class SearchSource {
       return null;
     }
     const detailType = normalizeDetailType(detail.illustType || detail.type);
-    
+
     let ugoiraMeta = null;
     if (detailType === "ugoira") {
       ugoiraMeta = await this.fetchUgoiraMetadata(detail.illustId);
@@ -938,28 +940,36 @@ async function checkPixivLogin() {
       url: 'https://www.pixiv.net',
       name: 'PHPSESSID'
     });
-    
-    if (cookie && cookie.value) {
-      // Try to extract user ID from the session - format is typically "userId_sessionHash"
-      const parts = cookie.value.split('_');
-      const userId = parts[0] && /^\d+$/.test(parts[0]) ? parts[0] : null;
-      
-      // Try to fetch user nickname
-      let userName = null;
-      if (userId) {
-        try {
-          const userDataUrl = `${defaultBaseUrl}/ajax/user/${userId}?full=0`;
-          const userRes = await fetchPixivJson(userDataUrl);
-          if (userRes && userRes.body && userRes.body.name) {
-            userName = userRes.body.name;
-          }
-        } catch (e) {
-          dbg('Error fetching user name:', e);
-        }
-      }
-      
-      return { loggedIn: true, userId, userName };
+
+    // Cookie must exist and have a valid value
+    if (!cookie || !cookie.value || typeof cookie.value !== 'string' || cookie.value.trim() === '') {
+      return { loggedIn: false };
     }
+
+    // Try to extract user ID from the session - format is typically "userId_sessionHash"
+    const parts = cookie.value.split('_');
+    const userId = parts[0] && /^\d+$/.test(parts[0]) ? parts[0] : null;
+
+    // Must have a valid user ID
+    if (!userId) {
+      return { loggedIn: false };
+    }
+
+    // Try to fetch user nickname to verify login is actually valid
+    let userName = null;
+    try {
+      const userDataUrl = `${defaultBaseUrl}/ajax/user/${userId}?full=0`;
+      const userRes = await fetchPixivJson(userDataUrl);
+      if (userRes && userRes.body && userRes.body.name) {
+        userName = userRes.body.name;
+        // Only consider logged in if we successfully fetched user data
+        return { loggedIn: true, userId, userName };
+      }
+    } catch (e) {
+      dbg('Error fetching user name:', e);
+    }
+
+    // If we can't verify the session with API, consider not logged in
     return { loggedIn: false };
   } catch (e) {
     dbg('Error checking Pixiv login:', e);
@@ -1014,10 +1024,28 @@ async function downloadFetch(url, options = {}, responseProcessor = null) {
   }
 }
 
+// Replace pixiv image URLs with reverse proxy if enabled
+function replaceImageUrl(url, config) {
+  // If reverseProxyDomain is empty or not set, don't use proxy
+  if (!config.reverseProxyDomain || config.reverseProxyDomain.trim() === '') {
+    return url;
+  }
+
+  // Replace i.pximg.net with reverse proxy domain
+  if (url.includes('i.pximg.net')) {
+    return url.replace('i.pximg.net', config.reverseProxyDomain.trim());
+  }
+
+  return url;
+}
+
 async function fetchImage(url, attempt = 0) {
   try {
+    // Apply reverse proxy replacement if configured
+    const finalUrl = replaceImageUrl(url, searchSource?.config || {});
+
     // Pass a processor to hold the lock until the blob is fully downloaded
-    const blob = await downloadFetch(url, {}, async (res) => {
+    const blob = await downloadFetch(finalUrl, {}, async (res) => {
       if (!res.ok) {
         throw new Error(`IMAGE_STATUS_${res.status}`);
       }
@@ -1045,7 +1073,7 @@ function fillQueue() {
       const localVersion = configVersion;
       if (artworkQueue.full()) { return; }
       let res = await searchSource.getRandomIllust();
-      
+
       // If config changed while we were fetching (version mismatch), discard this result
       if (localVersion !== configVersion) {
         console.log(`Discarding stale result (v${localVersion} vs v${configVersion})`);
@@ -1053,7 +1081,7 @@ function fillQueue() {
         fillQueue(); // Trigger refill with new config
         return;
       }
-      
+
       if (res) {
         artworkQueue.push(res);
         // Cache queue to session storage for persistence; quota errors are non-critical
@@ -1082,7 +1110,7 @@ async function reloadConfig() {
     searchSource = new SearchSource(config);
   }
   debugLoggingEnabled = !!config.debugLogging;
-  
+
   // WIPE existing queue to force new config usage
   artworkQueue = new ArtworkQueue(8); // Increased buffer size
   try {
@@ -1119,7 +1147,7 @@ async function start() {
   } else {
     artworkQueue = Object.setPrototypeOf(restoredQueue, ArtworkQueue.prototype);
     // Upgrade capacity if needed (though existing queue will keep its buffer until popped)
-    artworkQueue.maxsize = 8; 
+    artworkQueue.maxsize = 8;
   }
 
   fillQueue();
@@ -1193,7 +1221,7 @@ browserAPI.runtime.onMessage.addListener(function (
           console.warn("Fetch Ugoira Zip failed exception:", e);
         } finally {
           if (!sent) {
-            try { sendResponse(null); } catch (e) {} 
+            try { sendResponse(null); } catch (e) { }
           }
         }
       } else {

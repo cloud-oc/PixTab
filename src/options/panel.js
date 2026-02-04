@@ -11,7 +11,7 @@ function updateThemeSwitcherUI() {
   document.querySelectorAll(".theme-switcher button").forEach(btn => {
     btn.classList.remove("active");
   });
-  
+
   if (preference === "light") {
     document.getElementById("themeLightBtn")?.classList.add("active");
   } else if (preference === "dark") {
@@ -51,7 +51,7 @@ const saveOptions = () => {
     keywords: document.getElementById('keywords').value.trim(),
     artistId: document.getElementById('artistId').value.trim(),
     loginFallbackMode: document.getElementById('loginFallbackMode')?.value || 'ranking_daily',
-    proxyUrl: document.getElementById('proxyUrl')?.value?.trim() || ''
+    reverseProxyDomain: document.getElementById('reverseProxyDomain')?.value?.trim() || ''
   };
 
   browserAPI.storage.local.set(
@@ -106,13 +106,11 @@ const resetOptions = () => {
       document.getElementById('minusKeywords').value = items.minusKeywords;
       document.getElementById('artistId').value = items.artistId || "";
       document.getElementById('loginFallbackMode').value = items.loginFallbackMode || 'ranking_daily';
-      document.getElementById('proxyUrl').value = items.proxyUrl || '';
+      document.getElementById('reverseProxyDomain').value = items.reverseProxyDomain || '';
       updateKeywords();
       enforceBookmarkRange();
       updateArtistIdVisibility();
       updateKeywordSectionVisibility();
-      console.log("Reset config");
-      console.log(items);
     }
   );
 };
@@ -139,7 +137,7 @@ const restoreOptions = () => {
     document.getElementById('minusKeywords').value = items.minusKeywords;
     document.getElementById('artistId').value = items.artistId || "";
     document.getElementById('loginFallbackMode').value = items.loginFallbackMode || 'ranking_daily';
-    document.getElementById('proxyUrl').value = items.proxyUrl || '';
+    document.getElementById('reverseProxyDomain').value = items.reverseProxyDomain || '';
     updateKeywords();
     enforceBookmarkRange();
     updateArtistIdVisibility();
@@ -233,14 +231,51 @@ function updateKeywordSectionVisibility() {
 }
 
 // Login status check functions
+let loadingAnimationInterval = null;
+
+function startLoadingAnimation() {
+  const statusEl = document.getElementById('loginStatusValue');
+  if (!statusEl) return;
+
+  let dotCount = 1;
+  // Show initial loading state
+  statusEl.textContent = '·';
+  statusEl.className = 'login-status-value loading';
+
+  // Clear any existing animation
+  if (loadingAnimationInterval) {
+    clearInterval(loadingAnimationInterval);
+  }
+
+  // Animate dots: · → ·· → ··· → · → ...
+  loadingAnimationInterval = setInterval(() => {
+    dotCount = dotCount % 3 + 1;
+    statusEl.textContent = '·'.repeat(dotCount);
+  }, 400);
+}
+
+function stopLoadingAnimation() {
+  if (loadingAnimationInterval) {
+    clearInterval(loadingAnimationInterval);
+    loadingAnimationInterval = null;
+  }
+}
+
 function checkLoginStatus() {
+  startLoadingAnimation();
+
   browserAPI.runtime.sendMessage({ action: 'checkPixivLogin' }, (response) => {
+    stopLoadingAnimation();
+
     const lastError = browserAPI.runtime.lastError;
     if (lastError) {
+      dbg('Error checking login status:', lastError);
       updateLoginStatusDisplay(false);
       return;
     }
-    if (response && response.loggedIn) {
+
+    // Validate response structure
+    if (response && typeof response === 'object' && response.loggedIn === true) {
       updateLoginStatusDisplay(true, response.userId, response.userName);
     } else {
       updateLoginStatusDisplay(false);
@@ -251,12 +286,12 @@ function checkLoginStatus() {
 function updateLoginStatusDisplay(loggedIn, userId = null, userName = null) {
   const statusEl = document.getElementById('loginStatusValue');
   if (!statusEl) return;
-  
+
   // Get localized strings
   // Get localized strings from hidden elements which are populated by loadTranslations
   const loggedInText = document.getElementById('loginStatusLoggedIn')?.textContent || 'Logged In';
   const notLoggedInText = document.getElementById('loginStatusNotLoggedIn')?.textContent || 'Not Logged In';
-  
+
   if (loggedIn) {
     let statusText = loggedInText;
     if (userName) {
@@ -309,26 +344,26 @@ if (backToNewTabButton) {
 document.addEventListener('DOMContentLoaded', () => {
   restoreOptions();
   registerAutoSaveListeners();
-  
+
   // Setup login status button (clicking opens Pixiv login page)
   const loginStatusEl = document.getElementById('loginStatusValue');
   if (loginStatusEl) {
     loginStatusEl.addEventListener('click', openPixivLogin);
   }
-  
+
   // Setup theme switcher buttons
   document.getElementById('themeLightBtn')?.addEventListener('click', () => {
     handleThemeChange('light');
   });
-  
+
   document.getElementById('themeDarkBtn')?.addEventListener('click', () => {
     handleThemeChange('dark');
   });
-  
+
   document.getElementById('themeAutoBtn')?.addEventListener('click', () => {
     handleThemeChange('auto');
   });
-  
+
   // Initialize theme switcher UI
   updateThemeSwitcherUI();
 });
