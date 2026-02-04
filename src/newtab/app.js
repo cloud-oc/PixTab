@@ -908,16 +908,8 @@ import { unzipSync } from "../shared/fflate.module.js";
     browserAPI.storage.onChanged.addListener((changes, area) => {
       if (area === 'local') {
         const prefChanged = updateWallpaperPrefsFromChanges(changes);
-        const hasOtherChanges = Object.keys(changes).some((key) => !["size", "align", "tiling"].includes(key));
-        if (hasOtherChanges) {
-          try {
-            sendRefreshMessage();
-          } catch (e) {
-            console.warn('Failed to refresh after config change', e);
-          }
-        } else if (!prefChanged) {
-          // no action needed
-        }
+        // Automatic refresh on other settings changes is strictly disabled.
+        // Users must manually click the refresh button or reload the page.
       }
     });
   }
