@@ -42,7 +42,10 @@
   ],
   "host_permissions": [
     "*://*.pixiv.net/*",
-    "*://*.pximg.net/*"
+    "*://*.pximg.net/*",
+    "*://*.pixiv.re/*",
+    "*://*.pixiv.cat/*",
+    "*://*.pixiv.nl/*"
   ],
   "options_page": "src/options/options.html"
 }

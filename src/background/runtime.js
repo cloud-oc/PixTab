@@ -4,60 +4,96 @@ import { loadPreferences } from "../shared/storage.js";
 import browserAPI, { getExtensionId, storageSessionGet, storageSessionSet, IS_FIREFOX } from "../shared/browser-polyfill.js";
 
 browserAPI.runtime.onInstalled.addListener((details) => {
-  // Firefox doesn't support extension IDs (e.g. "pixtab@pixtab.extension") in initiatorDomains.
-  // For Firefox, we omit initiatorDomains entirely - the extension context is scoped by default.
-  // For Chrome, we use the extension ID to restrict the rule to only requests from this extension.
-  const baseCondition = {
-    "urlFilter": "*://*.pixiv.net/*",
-    "resourceTypes": ["xmlhttprequest"]
-  };
-
-  const pximgCondition = {
-    "urlFilter": "*://*.pximg.net/*",
-    "resourceTypes": ["xmlhttprequest"]
-  };
-
-  // Only add initiatorDomains for Chrome (where extension ID format is valid)
-  if (!IS_FIREFOX) {
-    const extensionId = getExtensionId();
-    baseCondition.initiatorDomains = [extensionId];
-    pximgCondition.initiatorDomains = [extensionId];
-  }
-
+  const RESOURCE_TYPES = ["xmlhttprequest", "image", "media", "other"];
+  
   const RULE = [
     {
       "id": 1,
-      "priority": 1,
+      "priority": 10,
       "action": {
         "type": "modifyHeaders",
         "requestHeaders": [
-          {
-            "header": "referer",
-            "operation": "set",
-            "value": "https://www.pixiv.net/"
-          }
+          { "header": "referer", "operation": "set", "value": "https://www.pixiv.net/" },
+          { "header": "user-agent", "operation": "set", "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" }
         ]
       },
-      "condition": baseCondition
+      "condition": {
+        "urlFilter": "*://*.pixiv.net/*",
+        "resourceTypes": RESOURCE_TYPES
+      }
     },
     {
       "id": 2,
-      "priority": 1,
+      "priority": 10,
       "action": {
         "type": "modifyHeaders",
         "requestHeaders": [
-          {
-            "header": "referer",
-            "operation": "set",
-            "value": "https://www.pixiv.net/"
-          }
+          { "header": "referer", "operation": "set", "value": "https://www.pixiv.net/" },
+          { "header": "user-agent", "operation": "set", "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" }
         ]
       },
-      "condition": pximgCondition
+      "condition": {
+        "urlFilter": "*://*.pximg.net/*",
+        "resourceTypes": RESOURCE_TYPES
+      }
+    },
+    {
+      "id": 3,
+      "priority": 10,
+      "action": {
+        "type": "modifyHeaders",
+        "requestHeaders": [
+          { "header": "referer", "operation": "set", "value": "https://www.pixiv.net/" },
+          { "header": "user-agent", "operation": "set", "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" }
+        ],
+        "responseHeaders": [
+          { "header": "access-control-allow-origin", "operation": "set", "value": "*" },
+          { "header": "access-control-allow-methods", "operation": "set", "value": "GET, PUT, POST, DELETE, HEAD, OPTIONS" },
+          { "header": "access-control-allow-headers", "operation": "set", "value": "*" }
+        ]
+      },
+      "condition": {
+        "urlFilter": "*://*.pixiv.re/*",
+        "resourceTypes": RESOURCE_TYPES
+      }
+    },
+    {
+      "id": 4,
+      "priority": 10,
+      "action": {
+        "type": "modifyHeaders",
+        "requestHeaders": [
+          { "header": "referer", "operation": "set", "value": "https://www.pixiv.net/" }
+        ],
+        "responseHeaders": [
+          { "header": "access-control-allow-origin", "operation": "set", "value": "*" }
+        ]
+      },
+      "condition": {
+        "urlFilter": "*://*.pixiv.cat/*",
+        "resourceTypes": RESOURCE_TYPES
+      }
+    },
+    {
+      "id": 5,
+      "priority": 10,
+      "action": {
+        "type": "modifyHeaders",
+        "requestHeaders": [
+          { "header": "referer", "operation": "set", "value": "https://www.pixiv.net/" }
+        ],
+        "responseHeaders": [
+          { "header": "access-control-allow-origin", "operation": "set", "value": "*" }
+        ]
+      },
+      "condition": {
+        "urlFilter": "*://*.pixiv.nl/*",
+        "resourceTypes": RESOURCE_TYPES
+      }
     }
   ];
   browserAPI.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: RULE.map(o => o.id),
+    removeRuleIds: [1, 2, 3, 4, 5],
     addRules: RULE,
   });
 });
@@ -98,6 +134,48 @@ class ArtworkQueue {
   }
 }
 
+let isPixivReachable = true;
+let lastProbeTime = 0;
+const PROBE_INTERVAL_MS = 1000 * 60 * 10; // 10 minutes
+
+async function probePixivConnectivity() {
+  const now = Date.now();
+  // Ensure we don't probe too frequently, but allow initial probe
+  if (now - lastProbeTime < PROBE_INTERVAL_MS && (now - lastProbeTime > 0)) {
+    return isPixivReachable;
+  }
+  lastProbeTime = now;
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+    // Use favicon for a lightweight probe
+    const res = await fetch("https://www.pixiv.net/favicon.ico", {
+      mode: 'no-cors',
+      cache: 'no-store',
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    isPixivReachable = true;
+    dbg("Pixiv connectivity check: UP");
+    
+    // "Back to native" logic: If reachable and using the default auto-proxy, switch back
+    const config = await loadPreferences();
+    if (config.reverseProxyDomain === "i.pixiv.re") {
+      await browserAPI.storage.local.set({ reverseProxyDomain: "" });
+      dbg("Connectivity restored, reverting to native connection");
+    }
+  } catch (e) {
+    isPixivReachable = false;
+    dbg("Pixiv connectivity check: DOWN", e.message);
+    const config = await loadPreferences();
+    if (!config.reverseProxyDomain || config.reverseProxyDomain.trim() === '') {
+      await browserAPI.storage.local.set({ reverseProxyDomain: "i.pixiv.re" });
+      dbg("Auto-enabled reverse proxy due to connectivity probe failure");
+    }
+  }
+  return isPixivReachable;
+}
+
 async function fetchPixivJson(url) {
   try {
     let res = await throttledFetch(url);
@@ -132,8 +210,11 @@ let userProfileUrl = "/ajax/user/";
 let searchUrl = "/ajax/search/illustrations/";
 const defaultRankingEndpoint = "https://www.pixiv.net/ranking.php";
 
-// Resolve API base URL based on reverse proxy configuration
+// Resolve API base URL: Prefer native if reachable
 function resolveApiBaseUrl(reverseProxyDomain) {
+  if (isPixivReachable) {
+    return defaultBaseUrl;
+  }
   if (reverseProxyDomain && typeof reverseProxyDomain === "string" && reverseProxyDomain.trim()) {
     return "https://" + reverseProxyDomain.trim();
   }
@@ -1151,6 +1232,7 @@ async function start() {
   }
 
   fillQueue();
+  probePixivConnectivity(); // Background probe on start
   console.log("background script loaded");
 }
 
@@ -1183,6 +1265,12 @@ browserAPI.runtime.onMessage.addListener(function (
               }
             });
         } else {
+          // Fail case: trigger connectivity probe to see if we should auto-enable proxy
+          probePixivConnectivity().then((reachable) => {
+            if (!reachable) {
+              dbg("Artwork request failed and Pixiv found unreachable, proxy may be needed");
+            }
+          });
           browserAPI.runtime.sendMessage({ action: 'artworkLoadFailed' })
             .catch(e => {
               if (e && e.message && e.message.includes('Could not establish connection')) {
@@ -1223,6 +1311,20 @@ browserAPI.runtime.onMessage.addListener(function (
           if (!sent) {
             try { sendResponse(null); } catch (e) { }
           }
+        }
+      } else if (action === "enableReverseProxyAuto") {
+        try {
+          const config = await loadPreferences();
+          if (!config.reverseProxyDomain || config.reverseProxyDomain.trim() === '') {
+            await browserAPI.storage.local.set({ reverseProxyDomain: "i.pixiv.re" });
+            dbg("Auto-enabled reverse proxy: i.pixiv.re");
+            sendResponse({ success: true });
+          } else {
+            sendResponse({ success: false, reason: "already_enabled" });
+          }
+        } catch (e) {
+          console.warn("Failed to auto-enable reverse proxy:", e);
+          sendResponse({ success: false, error: e.message });
         }
       } else {
         // 其他分支，确保 sendResponse 被调用

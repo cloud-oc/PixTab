@@ -807,7 +807,12 @@ import { unzipSync } from "../shared/fflate.module.js";
         }
         // Update failure indicator based on response (null indicates failure)
         try {
-          setLoadFailedState(!res);
+          if (!res) {
+            setLoadFailedState(true);
+            enableReverseProxyIfNeeded();
+          } else {
+            setLoadFailedState(false);
+          }
         } catch (e) {
           // ignore if binding not ready
         }
