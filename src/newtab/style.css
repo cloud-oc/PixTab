@@ -36,7 +36,7 @@ body[data-theme="dark"] {
   --glass-border-color: rgba(255, 255, 255, 0.14);
   --glass-text-color: #f4f4f4;
   --glass-link-color: #fdfdfd;
-  --avatar-ring-color: rgba(255, 255, 255, 0.22);
+  --avatar-ring-color: transparent;
   --control-bg: rgba(15, 15, 15, 0.4);
   --control-hover-bg: rgba(15, 15, 15, 0.52);
   --control-border: rgba(0, 0, 0, 0.55);
@@ -314,10 +314,9 @@ body[data-theme="dark"] #backgroundImage {
 #avatarImage {
   width: 54px;
   height: 54px;
-  border-radius: 50%;
   border: 2px solid var(--avatar-ring-color);
   box-sizing: border-box;
-  background-size: 110%;
+  background-size: contain;
   background-position: center center;
   background-repeat: no-repeat;
 }
