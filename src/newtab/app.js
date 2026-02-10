@@ -14,6 +14,61 @@ import { unzipSync } from "../shared/fflate.module.js";
   const ugoiraFrameCache = new Map();
   initThemeSync();
 
+  // Safe message sending with timeout and retry
+  async function safeRuntimeMessage(message, options = {}) {
+    const {
+      timeout = 10000,
+      retries = 2,
+      onServiceWorkerSleep = null
+    } = options;
+
+    let lastErrorMsg = '';
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        const response = await Promise.race([
+          browserAPI.runtime.sendMessage(message),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('MESSAGE_TIMEOUT')), timeout)
+          )
+        ]);
+        return response;
+      } catch (e) {
+        const lastError = browserAPI.runtime.lastError || e;
+        const errorMsg = lastError?.message || e?.message || '';
+        lastErrorMsg = errorMsg;
+        
+        // Service worker sleeping - this is expected in MV3
+        if (errorMsg.includes('Could not establish connection') || 
+            errorMsg.includes('Extension context invalidated')) {
+          if (attempt < retries) {
+            console.log('Service worker sleeping, retrying...');
+            await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+            continue;
+          }
+          // Final attempt failed due to sleeping worker
+          if (onServiceWorkerSleep) {
+            return onServiceWorkerSleep();
+          }
+          return null;
+        }
+        
+        // Timeout or other errors - retry if attempts remain
+        if (attempt < retries) {
+          // Silent retry for timeout and transient errors
+          await new Promise(r => setTimeout(r, 300 * (attempt + 1)));
+          continue;
+        }
+        
+        // Only warn on final failure, and only if it's not a timeout (those are expected)
+        if (errorMsg !== 'MESSAGE_TIMEOUT') {
+          console.warn('Runtime message failed after retries:', errorMsg);
+        }
+        return null;
+      }
+    }
+    return null;
+  }
+
   const sizeValueMap = {
     original: "auto",
     full: "cover",
@@ -103,16 +158,24 @@ import { unzipSync } from "../shared/fflate.module.js";
     let zipDataUrl = null;
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
-        zipDataUrl = await browserAPI.runtime.sendMessage({
+        zipDataUrl = await safeRuntimeMessage({
           action: "fetchUgoiraZip",
           url: ugoiraPayload.zipUrl
+        }, {
+          timeout: 30000,  // 30s timeout for large zip files
+          retries: 1,
+          onServiceWorkerSleep: () => {
+            console.warn('Service worker sleeping, ugoira playback unavailable');
+            return null;
+          }
         });
+        
         if (zipDataUrl) break;
       } catch (e) {
         console.warn(`Ugoira ZIP fetch attempt ${attempt + 1} failed:`, e);
       }
+      
       if (attempt < MAX_RETRIES - 1) {
-        // Exponential backoff: 1s, 2s, 3s
         await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
       }
     }
@@ -780,7 +843,7 @@ import { unzipSync } from "../shared/fflate.module.js";
       }, 8000); // 8s timeout
     };
 
-    return () => {
+    return async () => {
       if (isRequestInProgress) {
         return;
       }
@@ -789,46 +852,42 @@ import { unzipSync } from "../shared/fflate.module.js";
       setRefreshing(true);
       showSpinnerIfBlank();
       startLoadTimeout();
-      browserAPI.runtime.sendMessage({ action: "requestArtwork" }, (res) => {
-        const lastError = browserAPI.runtime.lastError;
-        if (lastError) {
-          if (lastError.message && lastError.message.includes('Could not establish connection')) {
-            // 静默忽略 Manifest V3 service worker 休眠导致的错误
-            clearTimeout(loadTimeoutId);
-            setRefreshing(false);
-            isRequestInProgress = false;
-            return;
-          }
-          console.warn("Extension messaging error:", lastError.message);
+      
+      const res = await safeRuntimeMessage({ action: "requestArtwork" }, {
+        timeout: 15000,
+        retries: 1,
+        onServiceWorkerSleep: () => {
+          console.log('Service worker sleeping during artwork request');
           clearTimeout(loadTimeoutId);
           setRefreshing(false);
           isRequestInProgress = false;
-          return;
+          return null;
         }
-        // Update failure indicator based on response (null indicates failure)
-        try {
-          if (!res) {
-            setLoadFailedState(true);
-            enableReverseProxyIfNeeded();
-          } else {
-            setLoadFailedState(false);
-          }
-        } catch (e) {
-          // ignore if binding not ready
-        }
-
-        Promise.resolve(changeElement(res))
-          .catch(e => {
-            console.error("changeElement error:", e);
-            setLoadFailedState(true);
-            toggleSpinnerVisibility(false);
-          })
-          .finally(() => {
-            clearTimeout(loadTimeoutId);
-            setRefreshing(false);
-            isRequestInProgress = false;
-          });
       });
+
+      // Update failure indicator based on response (null indicates failure)
+      try {
+        if (!res) {
+          setLoadFailedState(true);
+          enableReverseProxyIfNeeded();
+        } else {
+          setLoadFailedState(false);
+        }
+      } catch (e) {
+        // ignore if binding not ready
+      }
+
+      Promise.resolve(changeElement(res))
+        .catch(e => {
+          console.error("changeElement error:", e);
+          setLoadFailedState(true);
+          toggleSpinnerVisibility(false);
+        })
+        .finally(() => {
+          clearTimeout(loadTimeoutId);
+          setRefreshing(false);
+          isRequestInProgress = false;
+        });
     };
   })();
 

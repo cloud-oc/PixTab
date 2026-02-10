@@ -103,6 +103,14 @@ function getRandomInt(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min);
 }
+
+// Timeout helper for preventing hanging operations
+function withTimeout(promise, timeoutMs, fallbackValue = null) {
+  return Promise.race([
+    promise,
+    new Promise((resolve) => setTimeout(() => resolve(fallbackValue), timeoutMs))
+  ]);
+}
 class ArtworkQueue {
   constructor(maxsize) {
     this.maxsize = maxsize;
@@ -1294,23 +1302,21 @@ browserAPI.runtime.onMessage.addListener(function (
           sendResponse(null);
           return;
         }
-        let sent = false;
+        
         try {
-          const blob = await fetchImage(url);
+          // Add 30s timeout to prevent indefinite hanging
+          const blob = await withTimeout(fetchImage(url), 30000, null);
+          
           if (blob) {
             const dataUrl = await blobToDataUrl(blob);
             sendResponse(dataUrl);
-            sent = true;
           } else {
-            // Log specifically if null returned (retries failed)
-            console.warn("fetchImage returned null for Ugoira URL:", url);
+            console.warn("fetchImage returned null or timed out for Ugoira URL:", url);
+            sendResponse(null);
           }
         } catch (e) {
-          console.warn("Fetch Ugoira Zip failed exception:", e);
-        } finally {
-          if (!sent) {
-            try { sendResponse(null); } catch (e) { }
-          }
+          console.warn("Fetch Ugoira Zip failed:", e);
+          sendResponse(null);
         }
       } else if (action === "enableReverseProxyAuto") {
         try {
