@@ -3,7 +3,18 @@ import { buildKeywordQuery } from "../shared/keyword-builder.js";
 import { loadPreferences } from "../shared/storage.js";
 import browserAPI, { getExtensionId, storageSessionGet, storageSessionSet, IS_FIREFOX } from "../shared/browser-polyfill.js";
 
-browserAPI.runtime.onInstalled.addListener((details) => {
+// 全局错误处理
+self.addEventListener('error', (event) => {
+  console.error('Uncaught error in Service Worker:', event.error);
+  event.preventDefault();
+});
+
+self.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled promise rejection in Service Worker:', event.reason);
+  event.preventDefault();
+});
+
+browserAPI.runtime.onInstalled.addListener(async (details) => {
   const RESOURCE_TYPES = ["xmlhttprequest", "image", "media", "other"];
   
   const RULE = [
@@ -92,10 +103,17 @@ browserAPI.runtime.onInstalled.addListener((details) => {
       }
     }
   ];
-  browserAPI.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: [1, 2, 3, 4, 5],
-    addRules: RULE,
-  });
+  
+  try {
+    await browserAPI.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: [1, 2, 3, 4, 5],
+      addRules: RULE,
+    });
+    console.log("Dynamic rules updated successfully");
+  } catch (e) {
+    console.error("Failed to update declarativeNetRequest rules:", e.message || String(e));
+    // 即使规则更新失败，也允许扩展继续运行
+  }
 });
 
 function getRandomInt(min, max) {
@@ -1329,8 +1347,8 @@ browserAPI.runtime.onMessage.addListener(function (
             sendResponse({ success: false, reason: "already_enabled" });
           }
         } catch (e) {
-          console.warn("Failed to auto-enable reverse proxy:", e);
-          sendResponse({ success: false, error: e.message });
+          console.error("Failed to auto-enable reverse proxy:", e.message || String(e), e);
+          sendResponse({ success: false, error: e.message || String(e) });
         }
       } else {
         // 其他分支，确保 sendResponse 被调用
