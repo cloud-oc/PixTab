@@ -16,7 +16,7 @@ self.addEventListener('unhandledrejection', (event) => {
 
 browserAPI.runtime.onInstalled.addListener(async (details) => {
   const RESOURCE_TYPES = ["xmlhttprequest", "image", "media", "other"];
-  
+
   const RULE = [
     {
       "id": 1,
@@ -103,7 +103,7 @@ browserAPI.runtime.onInstalled.addListener(async (details) => {
       }
     }
   ];
-  
+
   try {
     await browserAPI.declarativeNetRequest.updateDynamicRules({
       removeRuleIds: [1, 2, 3, 4, 5],
@@ -183,7 +183,7 @@ async function probePixivConnectivity() {
     clearTimeout(timeoutId);
     isPixivReachable = true;
     dbg("Pixiv connectivity check: UP");
-    
+
     // "Back to native" logic: If reachable and using the default auto-proxy, switch back
     const config = await loadPreferences();
     if (config.reverseProxyDomain === "i.pixiv.re") {
@@ -1269,90 +1269,108 @@ browserAPI.runtime.onMessage.addListener(function (
   sender,
   sendResponse
 ) {
+  let hasResponded = false;
+  const respondOnce = (payload) => {
+    if (hasResponded) {
+      return;
+    }
+    hasResponded = true;
+    try {
+      sendResponse(payload);
+    } catch (e) {
+      dbg("sendResponse failed:", e);
+    }
+  };
+
   (
     async () => {
-      await initPromise;
-      const action = legacyActionMap.get(message.action) || message.action;
-      if (action === MessageChannel.requestArtwork) {
-        let res = artworkQueue.pop();
-        if (!res) {
-          res = await searchSource.getRandomIllust();
-        }
-        if (res) {
-          sendResponse(res);
-          let { profileImageUrl, imageObjectUrl, ...filteredRes } = res;
-          console.log(filteredRes);
-          browserAPI.runtime.sendMessage({ action: 'artworkLoadSucceeded' })
-            .catch(e => {
-              if (e && e.message && e.message.includes('Could not establish connection')) {
-                // 静默忽略 Manifest V3 service worker 休眠导致的错误
-              } else {
-                dbg('Background sendMessage error:', e);
+      try {
+        await initPromise;
+        const action = legacyActionMap.get(message.action) || message.action;
+        if (action === MessageChannel.requestArtwork) {
+          let res = artworkQueue.pop();
+          if (!res) {
+            res = await searchSource.getRandomIllust();
+          }
+          if (res) {
+            respondOnce(res);
+            let { profileImageUrl, imageObjectUrl, ...filteredRes } = res;
+            console.log(filteredRes);
+            browserAPI.runtime.sendMessage({ action: 'artworkLoadSucceeded' })
+              .catch(e => {
+                if (e && e.message && e.message.includes('Could not establish connection')) {
+                  // 静默忽略 Manifest V3 service worker 休眠导致的错误
+                } else {
+                  dbg('Background sendMessage error:', e);
+                }
+              });
+          } else {
+            // Fail case: trigger connectivity probe to see if we should auto-enable proxy
+            probePixivConnectivity().then((reachable) => {
+              if (!reachable) {
+                dbg("Artwork request failed and Pixiv found unreachable, proxy may be needed");
               }
             });
-        } else {
-          // Fail case: trigger connectivity probe to see if we should auto-enable proxy
-          probePixivConnectivity().then((reachable) => {
-            if (!reachable) {
-              dbg("Artwork request failed and Pixiv found unreachable, proxy may be needed");
+            browserAPI.runtime.sendMessage({ action: 'artworkLoadFailed' })
+              .catch(e => {
+                if (e && e.message && e.message.includes('Could not establish connection')) {
+                  // 静默忽略 Manifest V3 service worker 休眠导致的错误
+                } else {
+                  dbg('Background sendMessage error:', e);
+                }
+              });
+            respondOnce(null);
+          }
+          fillQueue();
+        } else if (action === MessageChannel.refreshPreferences) {
+          await reloadConfig();
+          respondOnce();
+        } else if (action === MessageChannel.checkPixivLogin) {
+          const status = await checkPixivLogin();
+          respondOnce(status);
+        } else if (action === MessageChannel.fetchUgoiraZip) {
+          const url = message.url;
+          if (!url) {
+            respondOnce(null);
+            return;
+          }
+
+          try {
+            // Add 30s timeout to prevent indefinite hanging
+            const blob = await withTimeout(fetchImage(url), 30000, null);
+
+            if (blob) {
+              const dataUrl = await blobToDataUrl(blob);
+              respondOnce(dataUrl);
+            } else {
+              console.warn("fetchImage returned null or timed out for Ugoira URL:", url);
+              respondOnce(null);
             }
-          });
-          browserAPI.runtime.sendMessage({ action: 'artworkLoadFailed' })
-            .catch(e => {
-              if (e && e.message && e.message.includes('Could not establish connection')) {
-                // 静默忽略 Manifest V3 service worker 休眠导致的错误
-              } else {
-                dbg('Background sendMessage error:', e);
-              }
-            });
-          sendResponse(null);
-        }
-        fillQueue();
-      } else if (action === MessageChannel.refreshPreferences) {
-        await reloadConfig();
-        sendResponse();
-      } else if (action === MessageChannel.checkPixivLogin) {
-        const status = await checkPixivLogin();
-        sendResponse(status);
-      } else if (action === MessageChannel.fetchUgoiraZip) {
-        const url = message.url;
-        if (!url) {
-          sendResponse(null);
-          return;
-        }
-        
-        try {
-          // Add 30s timeout to prevent indefinite hanging
-          const blob = await withTimeout(fetchImage(url), 30000, null);
-          
-          if (blob) {
-            const dataUrl = await blobToDataUrl(blob);
-            sendResponse(dataUrl);
-          } else {
-            console.warn("fetchImage returned null or timed out for Ugoira URL:", url);
-            sendResponse(null);
+          } catch (e) {
+            console.warn("Fetch Ugoira Zip failed:", e);
+            respondOnce(null);
           }
-        } catch (e) {
-          console.warn("Fetch Ugoira Zip failed:", e);
-          sendResponse(null);
-        }
-      } else if (action === "enableReverseProxyAuto") {
-        try {
-          const config = await loadPreferences();
-          if (!config.reverseProxyDomain || config.reverseProxyDomain.trim() === '') {
-            await browserAPI.storage.local.set({ reverseProxyDomain: "i.pixiv.re" });
-            dbg("Auto-enabled reverse proxy: i.pixiv.re");
-            sendResponse({ success: true });
-          } else {
-            sendResponse({ success: false, reason: "already_enabled" });
+        } else if (action === "enableReverseProxyAuto") {
+          try {
+            const config = await loadPreferences();
+            if (!config.reverseProxyDomain || config.reverseProxyDomain.trim() === '') {
+              await browserAPI.storage.local.set({ reverseProxyDomain: "i.pixiv.re" });
+              dbg("Auto-enabled reverse proxy: i.pixiv.re");
+              respondOnce({ success: true });
+            } else {
+              respondOnce({ success: false, reason: "already_enabled" });
+            }
+          } catch (e) {
+            console.error("Failed to auto-enable reverse proxy:", e.message || String(e), e);
+            respondOnce({ success: false, error: e.message || String(e) });
           }
-        } catch (e) {
-          console.error("Failed to auto-enable reverse proxy:", e.message || String(e), e);
-          sendResponse({ success: false, error: e.message || String(e) });
+        } else {
+          // 其他分支，确保 sendResponse 被调用
+          respondOnce();
         }
-      } else {
-        // 其他分支，确保 sendResponse 被调用
-        sendResponse();
+      } catch (e) {
+        console.error("Unhandled onMessage error:", e);
+        respondOnce(null);
       }
     }
   )();

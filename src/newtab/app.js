@@ -27,7 +27,7 @@ import { unzipSync } from "../shared/fflate.module.js";
       try {
         const response = await Promise.race([
           browserAPI.runtime.sendMessage(message),
-          new Promise((_, reject) => 
+          new Promise((_, reject) =>
             setTimeout(() => reject(new Error('MESSAGE_TIMEOUT')), timeout)
           )
         ]);
@@ -36,10 +36,15 @@ import { unzipSync } from "../shared/fflate.module.js";
         const lastError = browserAPI.runtime.lastError || e;
         const errorMsg = lastError?.message || e?.message || '';
         lastErrorMsg = errorMsg;
-        
-        // Service worker sleeping - this is expected in MV3
-        if (errorMsg.includes('Could not establish connection') || 
-            errorMsg.includes('Extension context invalidated')) {
+
+        const isChannelClosedAsyncResponse =
+          errorMsg.includes('A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received');
+
+        // Service worker sleeping or channel closed while awaiting async response
+        // - both are expected transient cases in MV3 and should be handled quietly.
+        if (errorMsg.includes('Could not establish connection') ||
+          errorMsg.includes('Extension context invalidated') ||
+          isChannelClosedAsyncResponse) {
           if (attempt < retries) {
             console.log('Service worker sleeping, retrying...');
             await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
@@ -51,14 +56,14 @@ import { unzipSync } from "../shared/fflate.module.js";
           }
           return null;
         }
-        
+
         // Timeout or other errors - retry if attempts remain
         if (attempt < retries) {
           // Silent retry for timeout and transient errors
           await new Promise(r => setTimeout(r, 300 * (attempt + 1)));
           continue;
         }
-        
+
         // Only warn on final failure, and only if it's not a timeout (those are expected)
         if (errorMsg !== 'MESSAGE_TIMEOUT') {
           console.warn('Runtime message failed after retries:', errorMsg);
@@ -169,12 +174,12 @@ import { unzipSync } from "../shared/fflate.module.js";
             return null;
           }
         });
-        
+
         if (zipDataUrl) break;
       } catch (e) {
         console.warn(`Ugoira ZIP fetch attempt ${attempt + 1} failed:`, e);
       }
-      
+
       if (attempt < MAX_RETRIES - 1) {
         await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
       }
@@ -852,7 +857,7 @@ import { unzipSync } from "../shared/fflate.module.js";
       setRefreshing(true);
       showSpinnerIfBlank();
       startLoadTimeout();
-      
+
       const res = await safeRuntimeMessage({ action: "requestArtwork" }, {
         timeout: 15000,
         retries: 1,
