@@ -269,7 +269,7 @@ function checkLoginStatus() {
 
     const lastError = browserAPI.runtime.lastError;
     if (lastError) {
-      dbg('Error checking login status:', lastError);
+      console.warn('Error checking login status:', lastError);
       updateLoginStatusDisplay(false);
       return;
     }
