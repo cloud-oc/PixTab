@@ -123,3 +123,4 @@ If you enjoy using PixTab, please consider supporting me. Your encouragement kee
 This project was inspired by:
 - [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
 - [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)
+- [Newtab-Random-Pixiv-Images](https://github.com/vauxe/Newtab-Random-Pixiv-Images)
