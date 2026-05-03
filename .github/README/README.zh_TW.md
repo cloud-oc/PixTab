@@ -18,16 +18,22 @@
   <p>
     <strong>◎ 讓 Pixiv 上的插畫成為你的瀏覽器新分頁！◎</strong>
   </p>
-
-  <p>
-    <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration:none;">
-      <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/edge/edge_48x48.png" width="24" height="24" alt="Edge" style="vertical-align: middle; margin-bottom: 2px;"> Edge
+<table align="center" style="border-collapse: collapse; margin: 0 auto;">
+<tr>
+  <td align="center" style="padding: 12px 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration: none;">
+      <img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/edge/edge_48x48.png" width="32" height="32" alt="Edge" style="display: block; margin: 0 auto 8px;"><br>
+      Edge
     </a>
-    &nbsp;&nbsp;&nbsp;
-    <a href="https://addons.mozilla.org/firefox/addon/pixtab/" style="text-decoration:none;">
-      <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox_48x48.png" width="24" height="24" alt="Firefox" style="vertical-align: middle; margin-bottom: 2px;"> Firefox
+  </td>
+  <td align="center" style="padding: 12px 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <a href="https://addons.mozilla.org/firefox/addon/pixtab/" style="text-decoration: none;">
+      <img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/firefox/firefox_48x48.png" width="32" height="32" alt="Firefox" style="display: block; margin: 0 auto 8px;"><br>
+      Firefox
     </a>
-  </p>
+  </td>
+</tr>
+</table>
 </div>
 
 <br>
@@ -113,3 +119,4 @@
 本項目的靈感來源於以下項目：
 - [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)
 - [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
+- [Newtab-Random-Pixiv-Images](https://github.com/vauxe/Newtab-Random-Pixiv-Images)
