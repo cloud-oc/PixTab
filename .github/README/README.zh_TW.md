@@ -111,5 +111,5 @@
 ## 🌟 致謝
 
 本項目的靈感來源於以下項目：
-- [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
 - [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)
+- [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
