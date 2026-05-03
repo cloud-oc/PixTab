@@ -18,24 +18,23 @@
   <p>
     <strong>◎ 讓 Pixiv 上的插畫成為你的瀏覽器新分頁！◎</strong>
   </p>
-<table align="center" style="border-collapse: collapse; margin: 0 auto;">
-<tr>
-  <td align="center" style="padding: 12px 20px; border: 1px solid #ddd; border-radius: 8px;">
-    <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration: none;">
-      <img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/edge/edge_48x48.png" width="32" height="32" alt="Edge" style="display: block; margin: 0 auto 8px;"><br>
-      Edge
-    </a>
-  </td>
-  <td align="center" style="padding: 12px 20px; border: 1px solid #ddd; border-radius: 8px;">
-    <a href="https://addons.mozilla.org/firefox/addon/pixtab/" style="text-decoration: none;">
-      <img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/firefox/firefox_48x48.png" width="32" height="32" alt="Firefox" style="display: block; margin: 0 auto 8px;"><br>
-      Firefox
-    </a>
-  </td>
-</tr>
-</table>
+  <table align="center" style="border-collapse: collapse; margin: 0 auto;">
+    <tr>
+      <td align="center" style="padding: 12px 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration: none;">
+          <img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/edge/edge_48x48.png" width="32" height="32" alt="Edge" style="display: block; margin: 0 auto 8px;"><br>
+          Edge
+        </a>
+      </td>
+      <td align="center" style="padding: 12px 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <a href="https://addons.mozilla.org/firefox/addon/pixtab/" style="text-decoration: none;">
+          <img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/firefox/firefox_48x48.png" width="32" height="32" alt="Firefox" style="display: block; margin: 0 auto 8px;"><br>
+          Firefox
+        </a>
+      </td>
+    </tr>
+  </table>
 </div>
-
 <br>
 
 ## 📖 簡介

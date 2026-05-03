@@ -18,18 +18,23 @@
   <p>
     <strong>◎ Pixiv의 일러스트가 브라우저의 새 탭 페이지가 되게 하세요!◎</strong>
   </p>
-
-  <p>
-    <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration:none;">
-      <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/edge/edge_48x48.png" width="24" height="24" alt="Edge" style="vertical-align: middle; margin-bottom: 2px;"> Edge
-    </a>
-    &nbsp;&nbsp;&nbsp;
-    <a href="https://addons.mozilla.org/firefox/addon/pixtab/" style="text-decoration:none;">
-      <img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox_48x48.png" width="24" height="24" alt="Firefox" style="vertical-align: middle; margin-bottom: 2px;"> Firefox
-    </a>
-  </p>
+  <table align="center" style="border-collapse: collapse; margin: 0 auto;">
+    <tr>
+      <td align="center" style="padding: 12px 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration: none;">
+          <img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/edge/edge_48x48.png" width="32" height="32" alt="Edge" style="display: block; margin: 0 auto 8px;"><br>
+          Edge
+        </a>
+      </td>
+      <td align="center" style="padding: 12px 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <a href="https://addons.mozilla.org/firefox/addon/pixtab/" style="text-decoration: none;">
+          <img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/firefox/firefox_48x48.png" width="32" height="32" alt="Firefox" style="display: block; margin: 0 auto 8px;"><br>
+          Firefox
+        </a>
+      </td>
+    </tr>
+  </table>
 </div>
-
 <br>
 
 ## 📖 개요
@@ -115,5 +120,6 @@ PixTab이 마음에 드셨다면, 작은 후원이라도 저에게는 큰 힘이
 ## 🌟 감사의 말
 
 이 프로젝트는 다음 프로젝트들에서 영감을 받았습니다:
-- [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
 - [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)
+- [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
+- [Newtab-Random-Pixiv-Images](https://github.com/vauxe/Newtab-Random-Pixiv-Images)
