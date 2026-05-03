@@ -128,3 +128,4 @@
 本项目的灵感来源于以下项目：
 - [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)
 - [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
+- [Newtab-Random-Pixiv-Images](https://github.com/vauxe/Newtab-Random-Pixiv-Images)
