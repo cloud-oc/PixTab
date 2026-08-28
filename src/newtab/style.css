@@ -171,7 +171,7 @@ body[data-theme="dark"] #backgroundImage {
 
 #container.load-failed .pix-spinner__core {
   fill: var(--spinner-core-color-fail) !important;
-  filter: drop-shadow(0 10px 24px var(--spinner-core-glow-fail)) !important;
+  filter: drop-shadow(0 0 30px var(--spinner-core-glow-fail)) !important;
 }
 
 #loadingSpinner.hidden {
@@ -180,37 +180,18 @@ body[data-theme="dark"] #backgroundImage {
 
 .pix-spinner {
   position: relative;
-  width: 144px;
-  height: 144px;
+  width: 130px;
+  height: 130px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background:
-    linear-gradient(145deg, var(--liquid-surface-strong), var(--liquid-surface));
-  border: 1px solid var(--liquid-edge);
-  box-shadow:
-    0 24px 56px var(--liquid-shadow-deep),
-    inset 0 1px 0 rgba(255, 255, 255, 0.62),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(30px) saturate(var(--liquid-saturate));
-  -webkit-backdrop-filter: blur(30px) saturate(var(--liquid-saturate));
-}
-
-.pix-spinner::after {
-  content: "";
-  position: absolute;
-  inset: 8px 18px auto;
-  height: 32%;
-  border-radius: 50%;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.42), transparent);
-  filter: blur(5px);
-  pointer-events: none;
+  box-shadow: 0 24px 56px var(--liquid-shadow-deep);
 }
 
 .pix-spinner__frame {
-  width: 82%;
-  height: 82%;
+  width: 100%;
+  height: 100%;
   display: block;
 }
 
@@ -221,16 +202,15 @@ body[data-theme="dark"] #backgroundImage {
 
 .pix-spinner__core {
   fill: var(--spinner-core-color);
-  filter: drop-shadow(0 8px 20px var(--spinner-core-glow));
+  filter: drop-shadow(0 0 30px var(--spinner-core-glow));
   transform-origin: center;
   transform-box: fill-box;
   animation: spinnerPulse 1.8s ease-in-out infinite;
-  transition: fill 400ms var(--ease-liquid), filter 400ms var(--ease-liquid), opacity 400ms var(--ease-liquid);
+  transition: fill 600ms ease, filter 600ms ease, opacity 600ms ease;
 }
 
 @keyframes spinnerPulse {
-  0%,
-  100% {
+  0% {
     transform: scale(0.62);
     opacity: 0.55;
   }
@@ -238,6 +218,11 @@ body[data-theme="dark"] #backgroundImage {
   50% {
     transform: scale(1);
     opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.62);
+    opacity: 0.55;
   }
 }
 
@@ -645,7 +630,6 @@ body[data-theme="dark"] #backgroundImage {
   #illustInfo,
   .settings-overlay,
   .settings-overlay-panel,
-  .pix-spinner,
   .play-pause-btn,
   #refreshButton,
   #settingsButton,
@@ -676,7 +660,6 @@ body[data-theme="dark"] #backgroundImage {
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   #illustInfo,
   .settings-overlay-panel,
-  .pix-spinner,
   .play-pause-btn {
     background: var(--liquid-surface-strong);
   }

@@ -9,7 +9,6 @@
 const firefoxAPI = globalThis.browser;
 const chromeAPI = globalThis.chrome;
 const isFirefox = Boolean(firefoxAPI?.runtime?.id);
-const isChrome = Boolean(chromeAPI?.runtime?.id);
 
 // 导出统一的 API 对象
 // Firefox: 优先使用原生 browser 对象
@@ -18,9 +17,6 @@ export const browserAPI = isFirefox ? firefoxAPI : chromeAPI;
 
 // 检测是否是 Firefox 浏览器
 export const IS_FIREFOX = isFirefox;
-
-// 检测是否是 Chrome/Chromium 浏览器
-export const IS_CHROME = isChrome && !isFirefox;
 
 /**
  * Capture a browser-native function without later changing its receiver.
@@ -50,13 +46,6 @@ export function promisify(fn, ...args) {
 }
 
 /**
- * 获取扩展 ID（兼容 Chrome 和 Firefox）
- */
-export function getExtensionId() {
-    return browserAPI.runtime.id;
-}
-
-/**
  * 包装 storage.local.get 为 Promise
  */
 export function storageLocalGet(keys) {
@@ -79,7 +68,7 @@ export function storageLocalSet(items) {
 /**
  * 包装 storage.session.get 为 Promise (Firefox 115+)
  */
-export function storageSessionGet(keys) {
+function storageSessionGet(keys) {
     const storage = browserAPI.storage.session;
     if (!storage) {
         // session storage 不可用时使用 local storage 作为降级
@@ -94,7 +83,7 @@ export function storageSessionGet(keys) {
 /**
  * 包装 storage.session.set 为 Promise
  */
-export function storageSessionSet(items) {
+function storageSessionSet(items) {
     const storage = browserAPI.storage.session;
     if (!storage) {
         return storageLocalSet(items);

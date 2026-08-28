@@ -71,7 +71,7 @@
 2. 在浏览器地址栏输入 `chrome://extensions` 并打开。
 3. 开启右上角的 **开发者模式** (Developer mode)。
 4. **方法 A — 安装打包好的 ZIP (推荐):**
-    - 如果你下载了 `dist/` 目录下的发布包 (如 `dist/pixtab-0.9-chrome.zip`)，尝试直接将 `.zip` 文件拖入扩展管理页面。
+    - 如果你下载了 `dist/` 目录下的发布包 (如 `dist/pixtab-1.8-chrome.zip`)，尝试直接将 `.zip` 文件拖入扩展管理页面。
     - 如果拖拽无效，请解压该压缩包，然后点击 **加载已解压的扩展程序** (Load unpacked)，选择解压后的文件夹。
 5. **方法 B — 源码安装 (开发者):**
     - 点击 **加载已解压的扩展程序**，直接选择项目根目录。
@@ -85,7 +85,7 @@
 2. 使用 Firefox 140 或更高版本，访问 `about:debugging#/runtime/this-firefox`。
 3. 点击 **临时载入附加组件...** (Load Temporary Add-on)。
 4. **方法 A — 安装 XPI 包 (测试用):**
-    - 如果你下载了 `dist/*.xpi` (如 `dist/pixtab-0.9-firefox.xpi`)，打开 `about:addons`，点击齿轮图标 ⚙️ → **从文件安装附加组件...**，或直接将 `.xpi` 文件拖入页面。
+    - 如果你下载了 `dist/*.xpi` (如 `dist/pixtab-1.8-firefox.xpi`)，打开 `about:addons`，点击齿轮图标 ⚙️ → **从文件安装附加组件...**，或直接将 `.xpi` 文件拖入页面。
 5. **方法 B — 临时载入 (开发者):**
     - 点击 **临时载入附加组件...**，选择项目目录下的 `manifest.json` 文件。
 6. 打开新标签页，开始体验吧！✨

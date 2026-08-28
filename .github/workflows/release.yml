@@ -43,14 +43,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: npm
 
-      - name: Make build script executable
+      - name: Install dependencies
         if: steps.check_updates.outputs.SKIP != 'true'
-        run: chmod +x build/build.sh
+        run: npm ci
 
       - name: Build extension
         if: steps.check_updates.outputs.SKIP != 'true'
-        run: ./build/build.sh
+        run: npm run build
+
+      - name: Validate Firefox package
+        if: steps.check_updates.outputs.SKIP != 'true'
+        run: npm run lint:firefox
 
       - name: Get version from manifest.json
         if: steps.check_updates.outputs.SKIP != 'true'

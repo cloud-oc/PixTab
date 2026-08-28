@@ -16,6 +16,7 @@ PixTab에 관심을 가져주셔서 감사합니다! 버그 제보, 기능 요�
 # 저장소 복제
 git clone https://github.com/cloud-oc/PixTab.git
 cd PixTab
+npm install
 ```
 
 ### 테스트를 위한 확장 프로그램 로드
@@ -27,18 +28,21 @@ cd PixTab
 4. 새 탭을 열어 PixTab이 작동하는지 확인합니다.
 
 **Firefox:**
-1. `about:debugging#/runtime/this-firefox`를 엽니다.
-2. **임시 부가 기능 로드...**를 클릭합니다.
-3. 프로젝트 루트에 있는 `manifest.json` 파일을 선택합니다.
+1. `npm run build`를 실행합니다.
+2. `about:debugging#/runtime/this-firefox`를 엽니다.
+3. **임시 부가 기능 로드...**를 클릭합니다.
+4. `dist/firefox/manifest.json`을 선택합니다.
 
 ## 프로젝트 구조
 
 - `manifest.json`: 확장 프로그램 엔트리 포인트.
 - `src/`: 소스 코드.
-  - `newtab/`: 새 탭 페이지 로직.
-  - `options/`: 설정 패널 로직.
-  - `background/`: 백그라운드 작업용 서비스 워커.
-  - `shared/`: 유틸리티 및 공유 로직.
+  - `entrypoints/`: 간결한 브라우저 진입점.
+  - `application/`: 이미지 흐름 조정, 프리페치 및 메시지 라우팅.
+  - `domain/`: 환경 설정, 쿼리, 필터링 및 메시지 계약의 순수 로직.
+  - `infrastructure/`: 브라우저, 네트워크 및 Pixiv 어댑터.
+  - `ui/`: 새 탭과 옵션의 컨트롤러 및 뷰.
+  - `newtab/`과 `options/`: 정적 HTML/CSS 셸.
 - `_locales/`: 로컬라이즈 문자열.
 - `build/`: 빌드 및 패키징 스크립트.
 
@@ -47,14 +51,12 @@ cd PixTab
 웹 스토어 또는 Firefox AMO를 위해 확장 프로그램을 패키징하려면:
 
 ```bash
-# Windows
-.\build\build.bat
-
-# macOS/Linux
-chmod +x build/build.sh
-./build/build.sh
+npm run build
 ```
+
 출력물은 `dist/` 디렉토리에 생성됩니다(Git에서 무시됨).
+
+전체 검증은 `npm run check`로 실행할 수 있습니다. 단위 및 DOM 테스트, 두 브라우저용 빌드, Firefox manifest 검증, Playwright Chromium에서 패키지 로드를 수행합니다.
 
 ## 번역 추가
 

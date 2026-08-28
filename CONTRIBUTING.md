@@ -51,13 +51,9 @@ npm install
 To package the extension for the Web Store or Firefox AMO:
 
 ```bash
-# Windows
-.\build\build.bat
-
-# macOS/Linux
-chmod +x build/build.sh
-./build/build.sh
+npm run build
 ```
+
 The output will be generated in the `dist/` directory (ignored by Git).
 
 Run the complete verification suite with `npm run check`. It executes unit and

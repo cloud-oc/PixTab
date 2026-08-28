@@ -16,6 +16,7 @@ PixTab に興味を持っていただきありがとうございます！バグ�
 # リポジトリをクローン
 git clone https://github.com/cloud-oc/PixTab.git
 cd PixTab
+npm install
 ```
 
 ### テストのための拡張機能の読み込み
@@ -27,18 +28,21 @@ cd PixTab
 4. 新しいタブを開いて、PixTab の動作を確認します。
 
 **Firefox:**
-1. `about:debugging#/runtime/this-firefox` を開きます。
-2. **一時的なアドオンを読み込む...** をクリックします。
-3. プロジェクトルートにある `manifest.json` を選択します。
+1. `npm run build` を実行します。
+2. `about:debugging#/runtime/this-firefox` を開きます。
+3. **一時的なアドオンを読み込む...** をクリックします。
+4. `dist/firefox/manifest.json` を選択します。
 
 ## プロジェクト構造
 
 - `manifest.json`: 拡張機能のエントリポイント。
 - `src/`: ソースコード。
-  - `newtab/`: 新規タブページのロジック。
-  - `options/`: 設定パネルのロジック。
-  - `background/`: バックグラウンドタスク用サービスワーカー。
-  - `shared/`: ユーティリティと共有ロジック。
+  - `entrypoints/`: ブラウザー用の薄いエントリーポイント。
+  - `application/`: 画像取得の調整、プリフェッチ、メッセージルーティング。
+  - `domain/`: 設定、クエリ、フィルタリング、メッセージ契約の純粋なロジック。
+  - `infrastructure/`: ブラウザー、ネットワーク、Pixiv アダプター。
+  - `ui/`: 新規タブと設定画面のコントローラーおよびビュー。
+  - `newtab/` と `options/`: 静的な HTML/CSS シェル。
 - `_locales/`: ローカライズ文字列。
 - `build/`: ビルドおよびパッケージング用スクリプト。
 
@@ -47,14 +51,12 @@ cd PixTab
 Web ストアまたは Firefox AMO 用に拡張機能をパッケージ化する場合：
 
 ```bash
-# Windows
-.\build\build.bat
-
-# macOS/Linux
-chmod +x build/build.sh
-./build/build.sh
+npm run build
 ```
+
 出力は `dist/` ディレクトリに生成されます（Git では無視されます）。
+
+完全な検証は `npm run check` で実行できます。単体テストと DOM テスト、両ブラウザー向けビルド、Firefox manifest の検証、Playwright Chromium でのパッケージ読み込みを行います。
 
 ## 翻訳の追加
 

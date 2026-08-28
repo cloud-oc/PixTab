@@ -16,6 +16,7 @@
 # 克隆倉庫
 git clone https://github.com/cloud-oc/PixTab.git
 cd PixTab
+npm install
 ```
 
 ### 載入擴充功能測試
@@ -27,18 +28,21 @@ cd PixTab
 4. 打開新分頁即可看到 PixTab 效果。
 
 **Firefox:**
-1. 在網址列輸入 `about:debugging#/runtime/this-firefox`。
-2. 點擊 **載入暫時性附加組件...**。
-3. 選擇專案根目錄下的 `manifest.json` 文件。
+1. 執行 `npm run build`。
+2. 在網址列輸入 `about:debugging#/runtime/this-firefox`。
+3. 點擊 **載入暫時性附加組件...**。
+4. 選擇 `dist/firefox/manifest.json`。
 
 ## 專案結構
 
 - `manifest.json`: 擴充功能入口配置。
 - `src/`: 原始碼目錄。
-  - `newtab/`: 新分頁邏輯。
-  - `options/`: 設定面板邏輯。
-  - `background/`: 背景服務腳本 (Service Worker)。
-  - `shared/`: 通用工具和共享邏輯。
+  - `entrypoints/`: 精簡的瀏覽器進入點。
+  - `application/`: 圖片流程編排、預取與訊息路由。
+  - `domain/`: 純偏好、查詢、篩選與訊息契約。
+  - `infrastructure/`: 瀏覽器、網路與 Pixiv 轉接器。
+  - `ui/`: 新分頁與設定頁的控制器和檢視。
+  - `newtab/` 與 `options/`: 靜態 HTML/CSS 外殼。
 - `_locales/`: 多語言翻譯文件。
 - `build/`: 構建與打包腳本。
 
@@ -47,14 +51,12 @@ cd PixTab
 生成用於正式發佈的安裝包：
 
 ```bash
-# Windows
-.\build\build.bat
-
-# macOS/Linux
-chmod +x build/build.sh
-./build/build.sh
+npm run build
 ```
+
 打包結果將存放在 `dist/` 目錄中（該目錄已被 Git 忽略）。
+
+執行 `npm run check` 可完成所有驗證：單元與 DOM 測試、兩個瀏覽器的建置、Firefox manifest 驗證，以及用 Playwright Chromium 載入打包後的擴充功能。
 
 ## 添加翻譯貢獻
 

@@ -9,19 +9,11 @@
 </head>
 
 <body data-theme="light">
-  <!--
-    THESIS: Pixiv artwork owns the viewport; controls condense into optical lenses instead of occupying a dashboard.
-    OWN-WORLD: Adaptive Liquid Glass, cool spectral edges, deep image-aware shadows, system typography, and compact circular controls.
-    STORY: The artwork arrives first; attribution and refresh remain close, while settings materialize as a focused sheet.
-    FIRST VIEWPORT: Full-bleed artwork, one lower-right information lens, a centered loading lens, and no permanent navigation.
-    FORM: User-pinned Liquid Glass, grounded direction 1; seed aeaf05db.
-    FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
-  -->
   <div id="container" class="notReady">
     <div class="maskLayer"></div>
     <div id="wallpaper">
-      <div id="backgroundImage" class="bgImage"></div>
-      <div id="foregroundImage" class="fgImage"></div>
+      <div id="backgroundImage"></div>
+      <div id="foregroundImage"></div>
     </div>
     <div id="loadingSpinner" aria-hidden="true">
       <div class="pix-spinner" role="img" aria-label="Pix Tab loading">
@@ -63,7 +55,7 @@
               </g>
             </svg>
           </button>
-          <button id="settingsButton" class="icon-button" title="Settings" aria-label="Open settings" type="button">
+          <button id="settingsButton" title="Settings" aria-label="Open settings" type="button">
             <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
             </svg>
@@ -80,7 +72,7 @@
           <path d="M6 6l12 12M18 6L6 18" />
         </svg>
       </button>
-      <iframe id="settingsFrame" src="../options/options.html?embedded=1" title="Settings" frameborder="0"></iframe>
+      <iframe id="settingsFrame" src="../options/options.html?embedded=1" title="Settings"></iframe>
     </div>
   </div>
   <script type="module" src="../entrypoints/newtab.js"></script>

@@ -19,7 +19,6 @@ manifest.backup.json
 
 # Node tooling
 node_modules/
-dist/
 test-results/
 playwright-report/
 

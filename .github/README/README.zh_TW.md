@@ -71,7 +71,7 @@
 2. 在瀏覽器網址列輸入 `chrome://extensions` 並打開。
 3. 開啟右上角的 **開發者模式** (Developer mode)。
 4. **方法 A — 安裝打包好的 ZIP (推薦):**
-    - 如果你下載了 `dist/` 目錄下的發布包 (如 `dist/pixtab-0.9-chrome.zip`)，嘗試直接將 `.zip` 文件拖入擴充功能管理頁面。
+    - 如果你下載了 `dist/` 目錄下的發布包 (如 `dist/pixtab-1.8-chrome.zip`)，嘗試直接將 `.zip` 文件拖入擴充功能管理頁面。
     - 如果拖拽無效，請解壓該壓縮包，然後點擊 **載入已解壓的擴充功能** (Load unpacked)，選擇解壓後的文件夾。
 5. **方法 B — 源碼安裝 (開發者):**
     - 點擊 **載入已解壓的擴充功能**，直接選擇項目根目錄。
@@ -85,7 +85,7 @@
 2. 使用 Firefox 140 或更高版本，訪問 `about:debugging#/runtime/this-firefox`。
 3. 點擊 **臨時載入附加元件...** (Load Temporary Add-on)。
 4. **方法 A — 安裝 XPI 包 (測試用):**
-    - 如果你下載了 `dist/*.xpi` (如 `dist/pixtab-0.9-firefox.xpi`)，打開 `about:addons`，點擊齒輪圖標 ⚙️ → **從文件安裝附加元件...**，或直接將 `.xpi` 文件拖入頁面。
+    - 如果你下載了 `dist/*.xpi` (如 `dist/pixtab-1.8-firefox.xpi`)，打開 `about:addons`，點擊齒輪圖標 ⚙️ → **從文件安裝附加元件...**，或直接將 `.xpi` 文件拖入頁面。
 5. **方法 B — 臨時載入 (開發者):**
     - 點擊 **臨時載入附加元件...**，選擇項目目錄下的 `manifest.json` 文件。
 6. 打開新分頁，開始體驗吧！✨
