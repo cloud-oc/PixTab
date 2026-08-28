@@ -5,14 +5,12 @@ export class ProxyPolicy {
     this.nativeReachable = true;
   }
 
-  apiOrigin(preferences) {
-    const domain = String(preferences.reverseProxyDomain || "").trim();
-    return !this.nativeReachable && domain ? `https://${domain}` : PIXIV_ORIGIN;
+  apiOrigin() {
+    return PIXIV_ORIGIN;
   }
 
-  rankingUrl(preferences) {
-    const domain = String(preferences.reverseProxyDomain || "").trim();
-    return domain ? `https://${domain}/ranking.php` : `${PIXIV_ORIGIN}/ranking.php`;
+  rankingUrl() {
+    return `${PIXIV_ORIGIN}/ranking.php`;
   }
 
   imageUrl(url, preferences) {

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { PrefetchPool } from "../src/application/prefetch-pool.js";
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -32,6 +32,42 @@ describe("PrefetchPool", () => {
     await tick();
     await tick();
     expect(pool.snapshot().items.map((item) => item.illustId)).toEqual(["new"]);
+  });
+
+  it("serves an in-flight prefetch instead of starting a duplicate foreground request", async () => {
+    let finish;
+    const pending = new Promise((resolve) => { finish = resolve; });
+    const producer = vi.fn(() => pending);
+    const store = { get: async () => ({}), set: async () => undefined };
+    const pool = new PrefetchPool({ capacity: 1, concurrency: 1, sessionStore: store });
+
+    pool.attachProducer(producer);
+    const result = pool.take();
+    await tick();
+    expect(producer).toHaveBeenCalledOnce();
+
+    finish({ illustId: "prefetched" });
+    await expect(result).resolves.toMatchObject({ illustId: "prefetched" });
+    expect(producer).toHaveBeenCalledTimes(2);
+  });
+
+  it("prioritizes one cold-start job before expanding prefetch concurrency", async () => {
+    let finishFirst;
+    const first = new Promise((resolve) => { finishFirst = resolve; });
+    const producer = vi.fn()
+      .mockReturnValueOnce(first)
+      .mockResolvedValue({ illustId: "later" });
+    const store = { get: async () => ({}), set: async () => undefined };
+    const pool = new PrefetchPool({ capacity: 4, eagerCapacity: 4, concurrency: 3, sessionStore: store });
+
+    pool.attachProducer(producer);
+    await tick();
+    expect(producer).toHaveBeenCalledOnce();
+
+    finishFirst({ illustId: "first" });
+    await tick();
+    await tick();
+    expect(producer.mock.calls.length).toBeGreaterThan(1);
   });
 
   it("deduplicates queued artwork and writes one budgeted cache copy", async () => {

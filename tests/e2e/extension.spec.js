@@ -86,6 +86,8 @@ test.describe("packaged PixTab", () => {
     const pageErrors = [];
     page.on("pageerror", (error) => pageErrors.push(error.message));
     await page.goto(`chrome-extension://${extensionId}/src/newtab/index.html`);
+    await expect(page.locator(".pix-spinner")).toHaveCSS("box-shadow", "none");
+    await expect(page.locator(".pix-spinner")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await page.locator("#container").evaluate((element) => element.classList.remove("notReady"));
     await expect(page.locator("#settingsButton")).toBeVisible();
     await page.locator("#settingsButton").click();

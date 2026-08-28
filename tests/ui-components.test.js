@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ArtworkView } from "../src/ui/newtab/artwork-view.js";
+import { NewTabController } from "../src/ui/newtab/newtab-controller.js";
 import { OptionsController } from "../src/ui/options/options-controller.js";
 import { OptionsView } from "../src/ui/options/options-view.js";
 
@@ -106,5 +107,41 @@ describe("ArtworkView", () => {
     expect(document.getElementById("refreshButton").classList.contains("loading")).toBe(false);
     expect(document.getElementById("refreshButton").getAttribute("aria-busy")).toBe("false");
     expect(document.getElementById("container").classList.contains("load-failed")).toBe(true);
+  });
+});
+
+describe("NewTabController", () => {
+  it("retries once when the connectivity probe already enabled the proxy", async () => {
+    vi.useFakeTimers();
+    const runtime = {
+      send: vi.fn()
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({ success: false, reason: "already_enabled" })
+        .mockResolvedValueOnce({ illustId: "42" })
+    };
+    const controller = new NewTabController({ doc: document, runtime });
+    const container = document.createElement("div");
+    container.className = "notReady";
+    controller.view = {
+      container,
+      refreshButton: document.createElement("button"),
+      setLoading: vi.fn(),
+      setFailure: vi.fn(),
+      render: vi.fn(() => container.classList.remove("notReady"))
+    };
+    controller.wallpaper = {};
+    controller.player = { stop: vi.fn(), load: vi.fn() };
+
+    const request = controller.requestArtwork();
+    await vi.advanceTimersByTimeAsync(500);
+    await request;
+
+    expect(runtime.send.mock.calls.map(([message]) => message.action)).toEqual([
+      "artwork.get",
+      "proxy.autoEnable",
+      "artwork.get"
+    ]);
+    expect(controller.view.render).toHaveBeenCalledWith({ illustId: "42" }, controller.wallpaper);
+    vi.useRealTimers();
   });
 });

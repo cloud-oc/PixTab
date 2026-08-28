@@ -4,6 +4,8 @@ import { chromium } from "playwright";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const extensionPath = path.join(root, "dist", "chrome");
+const pixivHost = /pixiv\.(?:net|re|cat|nl)|pximg\.net/;
+const reverseProxyDomain = process.env.PIXTAB_LIVE_PROXY_DOMAIN || "";
 const context = await chromium.launchPersistentContext("", {
   headless: true,
   channel: "chromium",
@@ -19,12 +21,12 @@ const report = {
 
 try {
   context.on("response", (response) => {
-    if (/pixiv\.net|pximg\.net/.test(response.url())) {
+    if (pixivHost.test(response.url())) {
       report.network.push({ status: response.status(), url: response.url() });
     }
   });
   context.on("requestfailed", (request) => {
-    if (/pixiv\.net|pximg\.net/.test(request.url())) {
+    if (pixivHost.test(request.url())) {
       report.failedRequests.push({ error: request.failure()?.errorText, url: request.url() });
     }
   });
@@ -36,7 +38,7 @@ try {
 
   const setup = await context.newPage();
   await setup.goto(`chrome-extension://${extensionId}/src/options/options.html`);
-  await setup.evaluate(async () => {
+  await setup.evaluate(async (proxyDomain) => {
     await chrome.storage.local.set({
       debugLogging: true,
       order: "ranking_daily",
@@ -46,9 +48,9 @@ try {
       bgt: null,
       minWidthPx: null,
       minHeightPx: null,
-      reverseProxyDomain: ""
+      reverseProxyDomain: proxyDomain
     });
-  });
+  }, reverseProxyDomain);
   report.rules = await setup.evaluate(async () => chrome.declarativeNetRequest.getDynamicRules());
   await setup.waitForTimeout(500);
   await setup.close();
@@ -74,8 +76,12 @@ try {
     spinnerClasses: document.querySelector("#loadingSpinner")?.className,
     title: document.querySelector("#illustTitle a")?.textContent,
     foreground: document.querySelector("#foregroundImage")?.style.backgroundImage.slice(0, 80),
-    refreshBusy: document.querySelector("#refreshButton")?.getAttribute("aria-busy")
+    refreshBusy: document.querySelector("#refreshButton")?.getAttribute("aria-busy"),
+    reverseProxyDomain: null
   }));
+  report.pageState.reverseProxyDomain = await page.evaluate(async () => (
+    await chrome.storage.local.get("reverseProxyDomain")
+  ).reverseProxyDomain || "");
   console.log(JSON.stringify(report, null, 2));
   process.exitCode = report.loaded ? 0 : 1;
 } finally {

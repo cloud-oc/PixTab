@@ -179,14 +179,11 @@ body[data-theme="dark"] #backgroundImage {
 }
 
 .pix-spinner {
-  position: relative;
   width: 130px;
   height: 130px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  box-shadow: 0 24px 56px var(--liquid-shadow-deep);
 }
 
 .pix-spinner__frame {

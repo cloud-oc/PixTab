@@ -32,8 +32,20 @@ export class RankingSource {
     return this.nextCandidate();
   }
 
-  async #loadPage(page) {
+  #loadPage(page) {
     if (this.pages.has(page)) return this.pages.get(page);
+    const request = this.#fetchPage(page).then((entries) => {
+      if (!entries && this.pages.get(page) === request) this.pages.delete(page);
+      return entries;
+    }, (error) => {
+      if (this.pages.get(page) === request) this.pages.delete(page);
+      throw error;
+    });
+    this.pages.set(page, request);
+    return request;
+  }
+
+  async #fetchPage(page) {
     const response = await this.client.ranking(this.rankingMode, page, this.date);
     if (!response?.contents) return null;
     this.date ||= response.date || null;
@@ -43,7 +55,6 @@ export class RankingSource {
       ? Math.max(1, Math.ceil(response.rank_total / itemsPerPage))
       : Math.max(1, page);
     const entries = response.contents.filter((entry) => summaryMatches(entry, this.preferences));
-    this.pages.set(page, entries);
     return entries;
   }
 }

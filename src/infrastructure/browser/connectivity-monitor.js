@@ -25,10 +25,6 @@ export class ConnectivityMonitor {
         signal: controller.signal
       });
       this.proxyPolicy.nativeReachable = true;
-      const preferences = await this.preferenceStore.read();
-      if (preferences.reverseProxyDomain === "i.pixiv.re") {
-        await this.preferenceStore.write({ reverseProxyDomain: "" });
-      }
     } catch {
       this.proxyPolicy.nativeReachable = false;
       const preferences = await this.preferenceStore.read();

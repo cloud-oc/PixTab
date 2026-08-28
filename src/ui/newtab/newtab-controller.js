@@ -44,13 +44,13 @@ export class NewTabController {
     try {
       const artwork = await this.runtime.send(
         { action: MessageType.requestArtwork },
-        { timeout: 15_000, retries: 1 }
+        { timeout: 60_000, retries: 0 }
       );
       if (!artwork) {
         this.view.setFailure(true);
         if (allowAutomaticProxy) {
           const enabled = await this.runtime.send({ action: MessageType.enableProxy });
-          if (enabled?.success) {
+          if (enabled?.success || enabled?.reason === "already_enabled") {
             this.requesting = false;
             await new Promise((resolve) => setTimeout(resolve, 500));
             return this.requestArtwork({ allowAutomaticProxy: false });

@@ -72,7 +72,12 @@ export class PrefetchPool {
   async take() {
     let value = this.#items.shift() || null;
     if (value) this.#forget(value);
-    else value = await this.producer?.();
+    while (!value && this.#jobs.size) {
+      await Promise.race(this.#jobs);
+      value = this.#items.shift() || null;
+      if (value) this.#forget(value);
+    }
+    if (!value) value = await this.producer?.();
     this.#schedulePersist();
     this.#deepFillActive = false;
     this.refill();
@@ -82,23 +87,28 @@ export class PrefetchPool {
   refill() {
     if (!this.producer) return;
     const target = this.#deepFillActive ? this.capacity : this.eagerCapacity;
-    while (this.#jobs.size < this.concurrency && this.#items.length + this.#jobs.size < target) {
+    const concurrency = this.#items.length ? this.concurrency : 1;
+    while (this.#jobs.size < concurrency && this.#items.length + this.#jobs.size < target) {
       const generation = this.#generation;
       const producer = this.producer;
-      const job = Promise.resolve().then(() => producer());
       let accepted = false;
+      let job;
+      job = Promise.resolve()
+        .then(() => producer())
+        .then((value) => {
+          if (value && generation === this.#generation && this.#items.length < this.capacity && !this.#isDuplicate(value)) {
+            this.#items.push(value);
+            this.#remember(value);
+            accepted = true;
+            this.#schedulePersist();
+          }
+        })
+        .catch(() => undefined)
+        .finally(() => {
+          this.#jobs.delete(job);
+          if (generation !== this.#generation || accepted) this.refill();
+        });
       this.#jobs.add(job);
-      job.then((value) => {
-        if (value && generation === this.#generation && this.#items.length < this.capacity && !this.#isDuplicate(value)) {
-          this.#items.push(value);
-          this.#remember(value);
-          accepted = true;
-          this.#schedulePersist();
-        }
-      }).catch(() => undefined).finally(() => {
-        this.#jobs.delete(job);
-        if (generation !== this.#generation || accepted) this.refill();
-      });
     }
     const queued = this.#items.length + this.#jobs.size;
     if (!this.#deepFillActive && queued >= this.eagerCapacity && queued < this.capacity) this.#scheduleDeepFill();

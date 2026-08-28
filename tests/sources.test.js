@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { SourceCatalog } from "../src/application/source-catalog.js";
 import { defaultPreferences } from "../src/domain/preferences.js";
 import { ProxyPolicy } from "../src/infrastructure/pixiv/proxy-policy.js";
@@ -44,9 +44,29 @@ describe("ProxyPolicy", () => {
     const policy = new ProxyPolicy();
     const preferences = { reverseProxyDomain: "i.pixiv.re" };
     expect(policy.apiOrigin(preferences)).toBe("https://www.pixiv.net");
-    expect(policy.rankingUrl(preferences)).toBe("https://i.pixiv.re/ranking.php");
+    expect(policy.rankingUrl(preferences)).toBe("https://www.pixiv.net/ranking.php");
     expect(policy.imageUrl("https://i.pximg.net/img.jpg", preferences)).toBe("https://i.pixiv.re/img.jpg");
     policy.nativeReachable = false;
-    expect(policy.apiOrigin(preferences)).toBe("https://i.pixiv.re");
+    expect(policy.apiOrigin(preferences)).toBe("https://www.pixiv.net");
+  });
+});
+
+describe("RankingSource", () => {
+  it("deduplicates concurrent requests for the same ranking page", async () => {
+    const ranking = vi.fn(async () => ({
+      date: "20260828",
+      rank_total: 1,
+      contents: [{ illust_id: "42" }]
+    }));
+    const source = new RankingSource({
+      client: { ranking, detail: async () => ({ body: { illustId: "42" } }) },
+      preferences: defaultPreferences,
+      rankingMode: "daily",
+      random: () => 0
+    });
+
+    await Promise.all([source.nextCandidate(), source.nextCandidate()]);
+
+    expect(ranking).toHaveBeenCalledOnce();
   });
 });
