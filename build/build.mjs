@@ -25,7 +25,8 @@ for (const target of ["chrome", "firefox"]) {
     cp(path.join(root, "THIRD_PARTY_NOTICES"), path.join(directory, "THIRD_PARTY_NOTICES")),
     cp(path.join(root, "src", "newtab", "index.html"), path.join(directory, "src", "newtab", "index.html")),
     cp(path.join(root, "src", "newtab", "style.css"), path.join(directory, "src", "newtab", "style.css")),
-    cp(path.join(root, "src", "options", "options.html"), path.join(directory, "src", "options", "options.html"))
+    cp(path.join(root, "src", "options", "options.html"), path.join(directory, "src", "options", "options.html")),
+    cp(path.join(root, "src", "options", "options.css"), path.join(directory, "src", "options", "options.css"))
   ]);
 
   const targetManifest = structuredClone(manifest);

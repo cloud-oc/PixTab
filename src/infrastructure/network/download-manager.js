@@ -1,4 +1,5 @@
 import { abortableDelay, abortReason, createTimedSignal } from "./abort.js";
+import { safeCallable } from "../../shared/browser-polyfill.js";
 
 export class DownloadManager {
   #active = 0;
@@ -6,7 +7,7 @@ export class DownloadManager {
   #inFlight = new Map();
 
   constructor({ fetchImpl = fetch, concurrency = 4, retries = 3, timeoutMs = 20000 } = {}) {
-    this.fetchImpl = (...args) => fetchImpl(...args);
+    this.fetchImpl = safeCallable(fetchImpl);
     this.concurrency = concurrency;
     this.retries = retries;
     this.timeoutMs = timeoutMs;

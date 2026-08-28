@@ -4,11 +4,11 @@ import { PrefetchPool } from "./prefetch-pool.js";
 import { PixivAuthService } from "../infrastructure/browser/auth-service.js";
 import { ConnectivityMonitor } from "../infrastructure/browser/connectivity-monitor.js";
 import { PreferenceStore } from "../infrastructure/browser/preference-store.js";
-import { sessionStore } from "../infrastructure/browser/session-store.js";
 import { DownloadManager } from "../infrastructure/network/download-manager.js";
 import { RequestScheduler } from "../infrastructure/network/request-scheduler.js";
 import { PixivClient } from "../infrastructure/pixiv/client.js";
 import { ProxyPolicy } from "../infrastructure/pixiv/proxy-policy.js";
+import { sessionStore } from "../shared/browser-polyfill.js";
 
 export class BackgroundApplication {
   constructor(browserAPI) {

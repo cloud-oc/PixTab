@@ -16,12 +16,13 @@ export class OptionsController {
   }
 
   async initialize() {
+    this.localization = new LocalizationController({ doc: this.doc });
+    this.localization.initialize(() => this.view.refreshLoginStatus());
     const values = await storageLocalGet(defaultPreferences);
     this.view.apply(values);
     this.#bindForm();
     this.#bindNavigation();
     this.#bindTheme();
-    new LocalizationController({ doc: this.doc }).initialize(() => this.refreshLogin());
     await this.refreshLogin();
   }
 
@@ -44,13 +45,21 @@ export class OptionsController {
     this.view.setLoginLoading();
     let dots = 1;
     clearInterval(this.loginTimer);
-    this.loginTimer = setInterval(() => {
+    const timer = setInterval(() => {
       const element = this.doc.getElementById("loginStatusValue");
       if (element) element.textContent = "·".repeat(dots = dots % 3 + 1);
     }, 400);
-    const status = await this.runtime.send({ action: MessageType.checkLogin });
-    clearInterval(this.loginTimer);
-    this.view.setLoginStatus(status);
+    this.loginTimer = timer;
+    try {
+      const status = await this.runtime.send({ action: MessageType.checkLogin });
+      this.view.setLoginStatus(status);
+    } catch (error) {
+      console.error("Pixiv login check failed", error);
+      this.view.setLoginStatus({ loggedIn: false });
+    } finally {
+      clearInterval(timer);
+      if (this.loginTimer === timer) this.loginTimer = null;
+    }
   }
 
   #bindForm() {

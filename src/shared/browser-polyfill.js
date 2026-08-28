@@ -6,19 +6,30 @@
  */
 
 // 检测当前浏览器环境
-const isFirefox = typeof browser !== 'undefined' && browser.runtime?.id;
-const isChrome = typeof chrome !== 'undefined' && chrome.runtime?.id;
+const firefoxAPI = globalThis.browser;
+const chromeAPI = globalThis.chrome;
+const isFirefox = Boolean(firefoxAPI?.runtime?.id);
+const isChrome = Boolean(chromeAPI?.runtime?.id);
 
 // 导出统一的 API 对象
 // Firefox: 优先使用原生 browser 对象
 // Chrome: 使用 chrome 对象
-export const browserAPI = isFirefox ? browser : chrome;
+export const browserAPI = isFirefox ? firefoxAPI : chromeAPI;
 
 // 检测是否是 Firefox 浏览器
 export const IS_FIREFOX = isFirefox;
 
 // 检测是否是 Chrome/Chromium 浏览器
 export const IS_CHROME = isChrome && !isFirefox;
+
+/**
+ * Capture a browser-native function without later changing its receiver.
+ * This also keeps injected test doubles independent from their owner object.
+ */
+export function safeCallable(fn) {
+    if (typeof fn !== "function") return null;
+    return (...args) => fn(...args);
+}
 
 /**
  * 将 Chrome 风格的回调 API 包装成 Promise
@@ -93,6 +104,11 @@ export function storageSessionSet(items) {
     }
     return promisify(storage.set.bind(storage), items);
 }
+
+export const sessionStore = Object.freeze({
+    get: storageSessionGet,
+    set: storageSessionSet
+});
 
 // 默认导出 browserAPI 以便直接使用
 export default browserAPI;

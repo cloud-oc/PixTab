@@ -4,909 +4,22 @@
 <head>
   <meta charset="utf-8">
   <title>Pix Tab Options</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --panel-bg: rgba(10, 10, 10, 0.78);
-      --panel-border-color: rgba(255, 255, 255, 0.18);
-      --panel-text-color: #f4f4f4;
-      --panel-label-color: #f6f6f6;
-      --heading-color: #ffffff;
-      --input-bg: rgba(255, 255, 255, 0.08);
-      --input-border-color: rgba(255, 255, 255, 0.18);
-      --tip-color: #bbbbbb;
-      --helper-color: #c7c7c7;
-      --placeholder-color: rgba(255, 255, 255, 0.55);
-      --button-bg: #ffffff;
-      --button-hover-bg: rgba(255, 255, 255, 0.88);
-      --button-text-color: #15161a;
-      --button-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      --select-option-bg: #2a2a2a;
-      --select-option-text: #f4f4f4;
-    }
-
-    body[data-theme="dark"] {
-      color-scheme: dark;
-    }
-
-    body[data-theme="light"] {
-      --panel-bg: rgba(255, 255, 255, 0.75);
-      --panel-border-color: rgba(0, 0, 0, 0.12);
-      --panel-text-color: #1c1b1f;
-      --panel-label-color: #15161a;
-      --heading-color: #15161a;
-      --input-bg: rgba(0, 0, 0, 0.05);
-      --input-border-color: rgba(0, 0, 0, 0.12);
-      --tip-color: #5e5e5e;
-      --helper-color: #4a4a4f;
-      --placeholder-color: rgba(0, 0, 0, 0.35);
-      --button-bg: #050505;
-      --button-hover-bg: rgba(5, 5, 5, 0.8);
-      --button-text-color: #fefefe;
-      --button-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      --select-option-bg: #ffffff;
-      --select-option-text: #1c1b1f;
-      color-scheme: light;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.5;
-      background: transparent;
-      color: var(--panel-text-color);
-      padding: 32px;
-      min-height: 100vh;
-      position: relative;
-      color-scheme: dark;
-      /* Default fallback */
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-
-    .container {
-      position: relative;
-      z-index: 1;
-      max-width: 820px;
-      margin: 0 auto;
-      border-radius: 18px;
-      padding: 36px;
-      background: transparent;
-    }
-
-    .settings-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--panel-border-color);
-    }
-
-    h1 {
-      margin-bottom: 0;
-      padding-bottom: 0;
-      font-size: 26px;
-      text-align: left;
-      color: var(--heading-color);
-      letter-spacing: 0.03em;
-      border-bottom: none;
-    }
-
-    .theme-switcher {
-      display: flex;
-      gap: 2px;
-      background: var(--input-bg);
-      border: 1px solid var(--input-border-color);
-      border-radius: 6px;
-      padding: 3px;
-      flex-shrink: 0;
-    }
-
-    .theme-switcher button {
-      width: 30px;
-      height: 30px;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: transparent;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      color: var(--panel-text-color);
-      opacity: 0.6;
-      transition: opacity 0.3s, background-color 0.3s;
-      box-shadow: none;
-    }
-
-    .theme-switcher button:hover {
-      opacity: 0.9;
-      background: rgba(255, 255, 255, 0.1);
-      transform: none;
-      box-shadow: none;
-    }
-
-    .theme-switcher button.active {
-      opacity: 1;
-      background: var(--button-bg);
-      color: var(--button-text-color);
-    }
-
-    .theme-switcher button .icon {
-      width: 18px;
-      height: 18px;
-      display: block;
-    }
-
-    .group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 14px;
-      line-height: 20px;
-      min-height: 20px;
-      font-weight: bold;
-      color: var(--panel-label-color);
-    }
-
-    .group.inline-field,
-    .group-inline-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .group.inline-field.column {
-      align-items: flex-start;
-    }
-
-    .group.inline-field label,
-    .group-inline-row label {
-      flex: 0 0 200px;
-      margin-bottom: 0;
-    }
-
-    .group.inline-field select,
-    .group.inline-field input[type="text"],
-    .group.inline-field input[type="number"],
-    .group.inline-field input[type="date"],
-    .group.inline-field textarea,
-    .group-inline-row select,
-    .group-inline-row input[type="text"],
-    .group-inline-row input[type="number"],
-    .group-inline-row input[type="date"],
-    .group-inline-row textarea {
-      flex: 1;
-    }
-
-    .group.inline-field .field-body,
-    .group-inline-row .field-body,
-    .group-inline-row .bookmarks-range-row,
-    .group-inline-row .resolution-field-body,
-    .group-inline-row .field-row {
-      flex: 1;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    select {
-      width: 100%;
-      padding: 10px 12px;
-      line-height: 20px;
-      height: 42px;
-      border: 1px solid var(--input-border-color);
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.3s, background-color 0.3s;
-      background-color: var(--input-bg);
-      color: var(--panel-text-color);
-    }
-
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    input[type="date"]:focus,
-    select:focus {
-      border-color: rgba(101, 180, 255, 0.85);
-      background-color: rgba(255, 255, 255, 0.15);
-    }
-
-    select {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      padding-right: 38px;
-      background-image:
-        linear-gradient(45deg, transparent 50%, var(--panel-text-color) 50%),
-        linear-gradient(-45deg, transparent 50%, var(--panel-text-color) 50%);
-      background-position:
-        calc(100% - 18px) 55%,
-        calc(100% - 13px) 55%;
-      background-size: 6px 6px, 6px 6px;
-      background-repeat: no-repeat;
-    }
-
-    /* Style for select options - fallback for browsers that don't fully support color-scheme */
-    select option {
-      background-color: var(--select-option-bg);
-      color: var(--select-option-text);
-    }
-
-    input[readonly] {
-      background-color: var(--input-bg);
-      color: var(--tip-color);
-    }
-
-    .tip {
-      font-size: 12px;
-      color: var(--tip-color);
-      margin-top: 5px;
-    }
-
-    .helper {
-      font-size: 12px;
-      color: var(--helper-color);
-      margin: 4px 0 8px;
-    }
-
-    .section-label {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--panel-label-color);
-    }
-
-    .group.inline-field .section-label {
-      margin-bottom: 0;
-    }
-
-    .display-settings-grid {
-      display: flex;
-      flex-wrap: nowrap;
-      align-items: center;
-    }
-
-    .display-settings-grid .control-block {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      position: relative;
-    }
-
-    .display-settings-grid .control-block:not(:first-child)::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 1px;
-      height: 28px;
-      background: var(--panel-border-color);
-      opacity: 0.6;
-    }
-
-    .display-settings-grid .control-block label {
-      margin-bottom: 0;
-      flex: 0 0 80px;
-      line-height: 42px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .display-settings-grid .control-block select {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .control-block {
-      flex: 1 1 220px;
-      min-width: 220px;
-    }
-
-    .resolution-row .field-body {
-      display: flex;
-      align-items: center;
-      width: 100%;
-    }
-
-    .resolution-field-body {
-      flex: 1;
-    }
-
-    .resolution-inputs {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      width: 100%;
-      align-items: center;
-      min-height: 40px;
-    }
-
-    .resolution-input {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .resolution-input input {
-      width: 100%;
-      height: 40px;
-    }
-
-    .resolution-multiply {
-      font-size: 20px;
-      color: var(--panel-text-color);
-      line-height: 1;
-    }
-
-    .ai-filter-row .field-body {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-    }
-
-    .display-section {
-      margin: 20px 0 10px;
-    }
-
-    .display-settings-block {
-      margin-top: 12px;
-      padding: 16px;
-      border-radius: 14px;
-      border: 1px solid var(--panel-border-color);
-      background: rgba(255, 255, 255, 0.04);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .display-settings-block>* {
-      padding-bottom: 12px;
-      margin-bottom: 12px;
-      border-bottom: 1px solid var(--panel-border-color);
-    }
-
-    .display-settings-block>*:last-child {
-      padding-bottom: 0;
-      margin-bottom: 0;
-      border-bottom: none;
-    }
-
-    .filter-section {
-      margin: 24px 0;
-    }
-
-    .filter-settings-block {
-      margin-top: 12px;
-      padding: 16px;
-      border-radius: 14px;
-      border: 1px solid var(--panel-border-color);
-      background: rgba(255, 255, 255, 0.04);
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .filter-settings-block .group {
-      margin-bottom: 0;
-    }
-
-    .filter-settings-block .group-inline-row {
-      padding: 12px 0;
-      border-bottom: 1px solid var(--panel-border-color);
-      min-height: 44px;
-    }
-
-    .filter-settings-block .group-inline-row>label {
-      display: flex;
-      align-items: center;
-      min-height: 40px;
-    }
-
-    .filter-settings-block .group-inline-row:first-child {
-      padding-top: 0;
-    }
-
-    .filter-settings-block .group-inline-row:last-child {
-      padding-bottom: 0;
-      border-bottom: none;
-    }
-
-    .language-block {
-      width: 100%;
-      flex: 0 0 auto;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .language-block label {
-      margin-bottom: 0;
-      flex: 0 0 200px;
-    }
-
-    .language-block select {
-      flex: 1;
-    }
-
-    .panel-base {
-      position: absolute;
-      top: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: clamp(360px, calc(100% - 80px), 900px);
-      min-height: max(520px, calc(100% - 80px));
-      border-radius: 26px;
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border-color);
-      backdrop-filter: blur(26px);
-      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    button {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      background: var(--button-bg);
-      color: var(--button-text-color);
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
-      margin-top: 20px;
-      box-shadow: var(--button-shadow);
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-      background: var(--button-hover-bg);
-      box-shadow: var(--button-shadow);
-    }
-
-    .action-buttons {
-      margin-top: 20px;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .action-buttons button {
-      flex: 1;
-      margin-top: 0;
-      min-width: 0;
-    }
-
-    .sub_group {
-      padding-left: 10px;
-      margin-top: 10px;
-    }
-
-    .sub_group.two-column {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px 20px;
-    }
-
-    .keyword-sub-section {
-      padding: 12px 16px;
-      margin-top: 0;
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: 10px;
-      display: block;
-    }
-
-    .keyword-sub-section .sub-section-heading,
-    .keyword-sub-section .tip {
-      flex: 0 0 200px;
-      margin-bottom: 8px;
-    }
-
-    .keyword-sub-section.hidden {
-      display: none;
-    }
-
-    .keyword-sub-section .sub-section-heading {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--panel-label-color);
-      margin-bottom: 8px;
-      opacity: 0.9;
-    }
-
-    .keyword-sub-section .tip {
-      font-size: 12px;
-      color: var(--panel-text-color);
-      opacity: 0.7;
-      margin-bottom: 10px;
-    }
-
-    .keyword-sub-section .field-row {
-      padding: 10px 0;
-      margin-top: 0;
-      min-height: 40px;
-    }
-
-    .keyword-sub-section .field-row:first-of-type {
-      padding-top: 0;
-    }
-
-    .keyword-sub-section .field-row:last-child {
-      padding-bottom: 0;
-    }
-
-    .paired-field label {
-      margin-bottom: 6px;
-    }
-
-    .sub_field {
-      margin-top: 12px;
-    }
-
-    .sub_field label {
-      margin-bottom: 6px;
-      display: block;
-    }
-
-    .field-body.single-control {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .field-body.single-control input[type="checkbox"] {
-      width: auto;
-      height: auto;
-    }
-
-    input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      accent-color: rgba(101, 180, 255, 0.85);
-    }
-
-    .field-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-
-    .field-row label {
-      flex: 0 0 200px;
-      margin-bottom: 0;
-    }
-
-    .field-row input[type="text"],
-    .field-row input[type="number"],
-    .field-row input[type="date"],
-    .field-row select,
-    .field-row textarea {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .keyword-mode-row label {
-      flex: 0 0 200px;
-    }
-
-    .paired-field.field-row {
-      margin-top: 0;
-    }
-
-    .bookmarks-row .field-body {
-      display: flex;
-      align-items: center;
-      width: 100%;
-    }
-
-    .bookmarks-field-body {
-      flex: 1;
-    }
-
-    .bookmarks-inputs {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      width: 100%;
-      align-items: center;
-      min-height: 40px;
-    }
-
-    .bookmarks-input {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .bookmarks-input input {
-      width: 100%;
-      height: 40px;
-    }
-
-    .bookmarks-range-separator {
-      font-size: 20px;
-      color: var(--panel-text-color);
-      line-height: 1;
-    }
-
-    ::placeholder {
-      color: var(--placeholder-color);
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
-    }
-
-    /* Responsive styles for narrow screens */
-    @media screen and (max-width: 600px) {
-      body {
-        padding: 16px;
-      }
-
-      .container {
-        padding: 20px;
-      }
-
-      h1 {
-        font-size: 20px;
-      }
-
-      .settings-header {
-        gap: 8px;
-      }
-
-      /* Stack inline fields vertically */
-      .group.inline-field,
-      .group-inline-row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-      }
-
-      .group.inline-field label,
-      .group-inline-row label {
-        flex: none;
-        width: 100%;
-      }
-
-      /* Stack display settings grid vertically */
-      .display-settings-grid {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .display-settings-grid .control-block {
-        flex: none;
-        width: 100%;
-        padding: 12px 0;
-        flex-direction: row;
-        justify-content: space-between;
-      }
-
-      .display-settings-grid .control-block:not(:first-child)::before {
-        display: none;
-      }
-
-      .display-settings-grid .control-block:not(:last-child) {
-        border-bottom: 1px solid var(--panel-border-color);
-      }
-
-      .display-settings-grid .control-block select {
-        flex: 1;
-        max-width: 180px;
-      }
-
-      /* Language block */
-      .language-block {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-      }
-
-      .language-block label {
-        flex: none;
-        width: 100%;
-      }
-
-      /* Field rows */
-      .field-row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-      }
-
-      .field-row label {
-        flex: none;
-        width: 100%;
-      }
-
-      .field-row input[type="text"],
-      .field-row input[type="number"],
-      .field-row select {
-        min-width: 100%;
-      }
-
-      /* Bookmarks inputs */
-      .bookmarks-inputs {
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .bookmarks-range-separator {
-        display: none;
-      }
-
-      .bookmarks-input {
-        width: 100%;
-      }
-
-      /* Resolution inputs */
-      .resolution-inputs {
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .resolution-multiply {
-        display: none;
-      }
-
-      .resolution-input {
-        width: 100%;
-      }
-
-      /* Action buttons */
-      .action-buttons {
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .action-buttons button {
-        width: 100%;
-      }
-
-      /* Control block min-width override */
-      .control-block {
-        min-width: 0;
-      }
-
-      /* Panel base for narrow screens */
-      .panel-base {
-        top: 20px;
-        width: calc(100% - 32px);
-        min-height: calc(100% - 40px);
-        border-radius: 18px;
-      }
-    }
-
-    /* Medium screens */
-    @media screen and (min-width: 601px) and (max-width: 800px) {
-      .display-settings-grid {
-        flex-wrap: wrap;
-      }
-
-      .display-settings-grid .control-block {
-        flex: 1 1 45%;
-        min-width: 200px;
-      }
-
-      .group.inline-field label,
-      .group-inline-row label {
-        flex: 0 0 150px;
-      }
-
-      .field-row label {
-        flex: 0 0 150px;
-      }
-
-      .language-block label {
-        flex: 0 0 150px;
-      }
-    }
-
-    /* Account section styles */
-    .account-section {
-      margin: 24px 0;
-    }
-
-    .login-status-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .login-status-value {
-      font-weight: 600;
-      padding: 10px 12px;
-      border-radius: 8px;
-      background: var(--input-bg);
-      min-width: 80px;
-      text-align: center;
-      border: 1px solid var(--input-border-color);
-      cursor: pointer;
-      transition: background-color 0.3s, border-color 0.3s;
-      font-size: 14px;
-      color: var(--panel-text-color);
-      box-shadow: none;
-      margin-top: 0;
-      line-height: normal;
-    }
-
-    .login-status-value:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(101, 180, 255, 0.5);
-    }
-
-    .login-status-value.logged-in {
-      color: #4ade80;
-    }
-
-    .login-status-value.not-logged-in {
-      color: #f87171;
-    }
-
-    .login-status-value.loading {
-      color: rgba(101, 180, 255, 0.85);
-      min-width: 60px;
-      font-weight: 600;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 2px;
-    }
-
-    .secondary-button {
-      padding: 8px 16px;
-      font-size: 14px;
-      background: var(--input-bg);
-      color: var(--panel-text-color);
-      border: 1px solid var(--input-border-color);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s, border-color 0.3s;
-      margin-top: 0;
-      width: auto;
-      box-shadow: none;
-    }
-
-    .secondary-button:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(101, 180, 255, 0.5);
-      transform: none;
-    }
-  </style>
+  <link rel="stylesheet" href="options.css">
 </head>
 
 <body data-theme="dark">
+  <!--
+    THESIS: Dense extension preferences behave like a native grouped form inside one stable optical sheet, not a stack of floating cards.
+    OWN-WORLD: Adaptive Liquid Glass shell, quiet tinted groups, precise focus rings, system typography, and compact segmented controls.
+    STORY: Users scan display, filtering, account, and network settings in a predictable sequence with immediate state feedback.
+    FIRST VIEWPORT: A centered glass sheet holds a clear title, theme segment, and grouped controls with no decorative content.
+    FORM: User-pinned Liquid Glass, grounded direction 1; seed aeaf05db.
+    FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+  -->
   <div class="panel-base" aria-hidden="true"></div>
   <div class="container">
     <div class="settings-header">
-      <h1 id="settingsHeading"></h1>
+      <h1 id="settingsHeading" data-i18n="settingsHeading"></h1>
       <div class="theme-switcher">
         <button id="themeLightBtn" type="button" title="Light Theme" aria-label="Light Theme">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -930,10 +43,10 @@
     </div>
 
     <div class="group display-section">
-      <h2 class="section-label" id="displaySettingsLabel"></h2>
+      <h2 class="section-label" id="displaySettingsLabel" data-i18n="displaySettingsLabel"></h2>
       <div class="display-settings-block">
         <div class="control-block language-block">
-          <label id="languageLabel" for="languageSelect"></label>
+          <label id="languageLabel" data-i18n="languageLabel" for="languageSelect"></label>
           <select id="languageSelect">
             <option value="en">English</option>
             <option value="zh-CN">中文（简体）</option>
@@ -945,34 +58,34 @@
         </div>
         <div class="display-settings-grid">
           <div class="control-block">
-            <label id="sizeLabel" for="size"></label>
+            <label id="sizeLabel" data-i18n-title="sizeHelper" data-i18n="sizeLabel" for="size"></label>
             <select id="size" name="size">
-              <option id="sizeOriginalOption" value="original"></option>
-              <option id="sizeFullOption" value="full"></option>
-              <option id="sizeBestFitOption" value="best_fit"></option>
+              <option id="sizeOriginalOption" data-i18n="sizeOriginalOption" value="original"></option>
+              <option id="sizeFullOption" data-i18n="sizeFullOption" value="full"></option>
+              <option id="sizeBestFitOption" data-i18n="sizeBestFitOption" value="best_fit"></option>
             </select>
           </div>
           <div class="control-block">
-            <label id="alignLabel" for="align"></label>
+            <label id="alignLabel" data-i18n-title="alignHelper" data-i18n="alignLabel" for="align"></label>
             <select id="align" name="align">
-              <option id="alignTopLeftOption" value="top_left"></option>
-              <option id="alignTopOption" value="top"></option>
-              <option id="alignTopRightOption" value="top_right"></option>
-              <option id="alignLeftOption" value="left"></option>
-              <option id="alignCenterOption" value="center"></option>
-              <option id="alignRightOption" value="right"></option>
-              <option id="alignBottomLeftOption" value="bottom_left"></option>
-              <option id="alignBottomOption" value="bottom"></option>
-              <option id="alignBottomRightOption" value="bottom_right"></option>
+              <option id="alignTopLeftOption" data-i18n="alignTopLeftOption" value="top_left"></option>
+              <option id="alignTopOption" data-i18n="alignTopOption" value="top"></option>
+              <option id="alignTopRightOption" data-i18n="alignTopRightOption" value="top_right"></option>
+              <option id="alignLeftOption" data-i18n="alignLeftOption" value="left"></option>
+              <option id="alignCenterOption" data-i18n="alignCenterOption" value="center"></option>
+              <option id="alignRightOption" data-i18n="alignRightOption" value="right"></option>
+              <option id="alignBottomLeftOption" data-i18n="alignBottomLeftOption" value="bottom_left"></option>
+              <option id="alignBottomOption" data-i18n="alignBottomOption" value="bottom"></option>
+              <option id="alignBottomRightOption" data-i18n="alignBottomRightOption" value="bottom_right"></option>
             </select>
           </div>
           <div class="control-block">
-            <label id="tilingLabel" for="tiling"></label>
+            <label id="tilingLabel" data-i18n-title="tilingHelper" data-i18n="tilingLabel" for="tiling"></label>
             <select id="tiling" name="tiling">
-              <option id="tilingTileOption" value="tile"></option>
-              <option id="tilingHorizontalOption" value="horizontal"></option>
-              <option id="tilingVerticalOption" value="vertical"></option>
-              <option id="tilingNoneOption" value="none"></option>
+              <option id="tilingTileOption" data-i18n="tilingTileOption" value="tile"></option>
+              <option id="tilingHorizontalOption" data-i18n="tilingHorizontalOption" value="horizontal"></option>
+              <option id="tilingVerticalOption" data-i18n="tilingVerticalOption" value="vertical"></option>
+              <option id="tilingNoneOption" data-i18n="tilingNoneOption" value="none"></option>
             </select>
           </div>
         </div>
@@ -982,87 +95,87 @@
 
 
     <div class="group filter-section">
-      <h2 class="section-label" id="filterSettingsLabel"></h2>
+      <h2 class="section-label" id="filterSettingsLabel" data-i18n="filterSettingsLabel"></h2>
       <div class="filter-settings-block">
         <div class="group group-inline-row inline-field">
-          <label id="orderLabel" for="order"></label>
+          <label id="orderLabel" data-i18n="orderLabel" for="order"></label>
           <select id="order" name="order">
-            <option id="dailyRankingOrder" value="ranking_daily"></option>
-            <option id="weeklyRankingOrder" value="ranking_weekly"></option>
-            <option id="monthlyRankingOrder" value="ranking_monthly"></option>
-            <option id="rookieRankingOrder" value="ranking_rookie"></option>
-            <option id="originalRankingOrder" value="ranking_original"></option>
-            <option id="popular_dOrder" value="popular_d"></option>
-            <option id="popular_male_dOrder" value="popular_male_d"></option>
-            <option id="popular_female_dOrder" value="popular_female_d"></option>
-            <option id="artistOrder" value="artist"></option>
-            <option id="followingOrder" value="following"></option>
-            <option id="bookmarksOrder" value="bookmarks"></option>
-            <option id="recommendationsOrder" value="recommendations"></option>
+            <option id="dailyRankingOrder" data-i18n="dailyRankingOrder" value="ranking_daily"></option>
+            <option id="weeklyRankingOrder" data-i18n="weeklyRankingOrder" value="ranking_weekly"></option>
+            <option id="monthlyRankingOrder" data-i18n="monthlyRankingOrder" value="ranking_monthly"></option>
+            <option id="rookieRankingOrder" data-i18n="rookieRankingOrder" value="ranking_rookie"></option>
+            <option id="originalRankingOrder" data-i18n="originalRankingOrder" value="ranking_original"></option>
+            <option id="popular_dOrder" data-i18n="popular_dOrder" value="popular_d"></option>
+            <option id="popular_male_dOrder" data-i18n="popular_male_dOrder" value="popular_male_d"></option>
+            <option id="popular_female_dOrder" data-i18n="popular_female_dOrder" value="popular_female_d"></option>
+            <option id="artistOrder" data-i18n="artistOrder" value="artist"></option>
+            <option id="followingOrder" data-i18n="followingOrder" value="following"></option>
+            <option id="bookmarksOrder" data-i18n="bookmarksOrder" value="bookmarks"></option>
+            <option id="recommendationsOrder" data-i18n="recommendationsOrder" value="recommendations"></option>
           </select>
         </div>
 
         <div id="keywordSettingsGroup" class="group group-inline-row keyword-sub-section">
           <input type="hidden" id="keywords" name="keywords" />
-          <div class="sub-section-heading" id="keywordsSectionHeading"></div>
-          <div id="keywordsTip" class="tip"></div>
+          <div class="sub-section-heading" id="keywordsSectionHeading" data-i18n="keywordsSectionHeading"></div>
+          <div id="keywordsTip" data-i18n="keywordsTip" class="tip"></div>
           <div class="field-row">
-            <label id="andKeywordsLabel" for="andKeywords"></label>
+            <label id="andKeywordsLabel" data-i18n="andKeywordsLabel" for="andKeywords"></label>
             <input type="text" id="andKeywords" name="andKeywords" />
           </div>
           <div class="field-row">
-            <label id="orKeywordsLabel" for="orKeywords"></label>
+            <label id="orKeywordsLabel" data-i18n="orKeywordsLabel" for="orKeywords"></label>
             <input type="text" id="orKeywords" name="orKeywords" />
           </div>
           <div class="field-row">
-            <label id="minusKeywordsLabel" for="minusKeywords"></label>
+            <label id="minusKeywordsLabel" data-i18n="minusKeywordsLabel" for="minusKeywords"></label>
             <input type="text" id="minusKeywords" name="minusKeywords" />
           </div>
           <div class="field-row keyword-mode-row">
-            <label id="s_modeLabel" for="s_mode"></label>
+            <label id="s_modeLabel" data-i18n="s_modeLabel" for="s_mode"></label>
             <select id="s_mode" name="s_mode">
-              <option id="s_tagOption" value="s_tag"></option>
-              <option id="s_tag_fullOption" value="s_tag_full"></option>
+              <option id="s_tagOption" data-i18n="s_tagOption" value="s_tag"></option>
+              <option id="s_tag_fullOption" data-i18n="s_tag_fullOption" value="s_tag_full"></option>
             </select>
           </div>
         </div>
 
         <div class="group group-inline-row inline-field" id="artistIdGroup">
-          <label id="artistIdLabel" for="artistId"></label>
+          <label id="artistIdLabel" data-i18n="artistIdLabel" for="artistId"></label>
           <div class="field-body">
             <input type="text" id="artistId" name="artistId" data-i18n-placeholder="artistIdLabel" />
-            <div id="artistIdHelper" class="helper"></div>
+            <div id="artistIdHelper" data-i18n="artistIdHelper" class="helper"></div>
           </div>
         </div>
 
         <div class="group group-inline-row inline-field">
-          <label id="modeLabel" for="mode"></label>
+          <label id="modeLabel" data-i18n="modeLabel" for="mode"></label>
           <select id="mode" name="mode">
-            <option id="allMode" value="all"></option>
-            <option id="r18Mode" value="r18"></option>
-            <option id="safeMode" value="safe"></option>
+            <option id="allMode" data-i18n="allMode" value="all"></option>
+            <option id="r18Mode" data-i18n="r18Mode" value="r18"></option>
+            <option id="safeMode" data-i18n="safeMode" value="safe"></option>
           </select>
         </div>
 
         <div class="group group-inline-row inline-field">
-          <label id="aiTypeLabel" for="aiType"></label>
+          <label id="aiTypeLabel" data-i18n-title="aiTypeHelper" data-i18n="aiTypeLabel" for="aiType"></label>
           <select id="aiType" name="aiType">
-            <option id="aiTypeDisplayOption" value="display"></option>
-            <option id="aiTypeHideOption" value="hide"></option>
+            <option id="aiTypeDisplayOption" data-i18n="aiTypeDisplayOption" value="display"></option>
+            <option id="aiTypeHideOption" data-i18n="aiTypeHideOption" value="hide"></option>
           </select>
         </div>
 
         <div class="group group-inline-row inline-field bookmarks-row">
-          <label id="bookmarksLabel" for="blt"></label>
+          <label id="bookmarksLabel" data-i18n="bookmarksLabel" for="blt"></label>
           <div class="field-body bookmarks-field-body">
             <div class="bookmarks-inputs">
               <div class="bookmarks-input">
-                <label id="bltLabel" class="sr-only" for="blt"></label>
+                <label id="bltLabel" data-i18n="bltLabel" class="sr-only" for="blt"></label>
                 <input type="number" id="blt" name="blt" data-i18n-placeholder="bltLabel" />
               </div>
               <span class="bookmarks-range-separator" aria-hidden="true">~</span>
               <div class="bookmarks-input">
-                <label id="bgtLabel" class="sr-only" for="bgt"></label>
+                <label id="bgtLabel" data-i18n="bgtLabel" class="sr-only" for="bgt"></label>
                 <input type="number" id="bgt" name="bgt" data-i18n-placeholder="bgtLabel" />
               </div>
             </div>
@@ -1070,27 +183,27 @@
         </div>
 
         <div class="group group-inline-row inline-field">
-          <label id="typeLabel" for="type"></label>
+          <label id="typeLabel" data-i18n="typeLabel" for="type"></label>
           <select id="type" name="type">
-            <option id="allTypeLabel" value="all"></option>
-            <option id="illust_and_ugoiraTypeLabel" value="illust_and_ugoira"></option>
-            <option id="illustTypeLabel" value="illust"></option>
-            <option id="mangaTypeLabel" value="manga"></option>
-            <option id="ugoiraTypeLabel" value="ugoira"></option>
+            <option id="allTypeLabel" data-i18n="allTypeLabel" value="all"></option>
+            <option id="illust_and_ugoiraTypeLabel" data-i18n="illust_and_ugoiraTypeLabel" value="illust_and_ugoira"></option>
+            <option id="illustTypeLabel" data-i18n="illustTypeLabel" value="illust"></option>
+            <option id="mangaTypeLabel" data-i18n="mangaTypeLabel" value="manga"></option>
+            <option id="ugoiraTypeLabel" data-i18n="ugoiraTypeLabel" value="ugoira"></option>
           </select>
         </div>
 
         <div class="group group-inline-row inline-field resolution-row">
-          <label id="resolutionLabel" for="minWidthPx"></label>
+          <label id="resolutionLabel" data-i18n-title="resolutionHelper" data-i18n="resolutionLabel" for="minWidthPx"></label>
           <div class="field-body resolution-field-body">
             <div class="resolution-inputs">
               <div class="resolution-input">
-                <label id="minWidthLabel" class="sr-only" for="minWidthPx"></label>
+                <label id="minWidthLabel" data-i18n="minWidthLabel" class="sr-only" for="minWidthPx"></label>
                 <input type="number" id="minWidthPx" name="minWidthPx" min="0" data-i18n-placeholder="minWidthLabel" />
               </div>
               <span class="resolution-multiply" aria-hidden="true">×</span>
               <div class="resolution-input">
-                <label id="minHeightLabel" class="sr-only" for="minHeightPx"></label>
+                <label id="minHeightLabel" data-i18n="minHeightLabel" class="sr-only" for="minHeightPx"></label>
                 <input type="number" id="minHeightPx" name="minHeightPx" min="0"
                   data-i18n-placeholder="minHeightLabel" />
               </div>
@@ -1101,48 +214,48 @@
     </div>
 
     <div class="group account-section">
-      <h2 class="section-label" id="pixivAccountSection"></h2>
+      <h2 class="section-label" id="pixivAccountSection" data-i18n="pixivAccountSection"></h2>
       <div class="filter-settings-block">
         <div class="group group-inline-row inline-field">
-          <label id="loginStatusLabel" for="loginStatusValue"></label>
+          <label id="loginStatusLabel" data-i18n="loginStatusLabel" for="loginStatusValue"></label>
           <div class="field-body login-status-row">
             <!-- Hidden spans for localization lookup -->
-            <span id="loginStatusLoggedIn" style="display:none;"></span>
-            <span id="loginStatusNotLoggedIn" style="display:none;"></span>
+            <span id="loginStatusLoggedIn" data-i18n="loginStatusLoggedIn" style="display:none;"></span>
+            <span id="loginStatusNotLoggedIn" data-i18n="loginStatusNotLoggedIn" style="display:none;"></span>
             <button type="button" id="loginStatusValue" class="login-status-value"></button>
           </div>
         </div>
         <div class="group group-inline-row inline-field">
-          <label id="loginFallbackModeLabel" for="loginFallbackMode"></label>
+          <label id="loginFallbackModeLabel" data-i18n="loginFallbackModeLabel" for="loginFallbackMode"></label>
           <select id="loginFallbackMode" name="loginFallbackMode">
-            <option id="fallbackDailyRanking" value="ranking_daily"></option>
-            <option id="fallbackWeeklyRanking" value="ranking_weekly"></option>
-            <option id="fallbackMonthlyRanking" value="ranking_monthly"></option>
-            <option id="fallbackRookieRanking" value="ranking_rookie"></option>
-            <option id="fallbackOriginalRanking" value="ranking_original"></option>
-            <option id="fallbackPopularD" value="popular_d"></option>
-            <option id="fallbackPopularMaleD" value="popular_male_d"></option>
-            <option id="fallbackPopularFemaleD" value="popular_female_d"></option>
+            <option id="fallbackDailyRanking" data-i18n="fallbackDailyRanking" value="ranking_daily"></option>
+            <option id="fallbackWeeklyRanking" data-i18n="fallbackWeeklyRanking" value="ranking_weekly"></option>
+            <option id="fallbackMonthlyRanking" data-i18n="fallbackMonthlyRanking" value="ranking_monthly"></option>
+            <option id="fallbackRookieRanking" data-i18n="fallbackRookieRanking" value="ranking_rookie"></option>
+            <option id="fallbackOriginalRanking" data-i18n="fallbackOriginalRanking" value="ranking_original"></option>
+            <option id="fallbackPopularD" data-i18n="fallbackPopularD" value="popular_d"></option>
+            <option id="fallbackPopularMaleD" data-i18n="fallbackPopularMaleD" value="popular_male_d"></option>
+            <option id="fallbackPopularFemaleD" data-i18n="fallbackPopularFemaleD" value="popular_female_d"></option>
           </select>
         </div>
       </div>
     </div>
 
     <div class="group advanced-section">
-      <h2 class="section-label" id="advancedSettingsLabel"></h2>
+      <h2 class="section-label" id="advancedSettingsLabel" data-i18n="advancedSettingsLabel"></h2>
       <div class="filter-settings-block">
         <div class="group group-inline-row inline-field">
-          <label id="reverseProxyDomainLabel" for="reverseProxyDomain"></label>
+          <label id="reverseProxyDomainLabel" data-i18n="reverseProxyDomainLabel" for="reverseProxyDomain"></label>
           <div class="field-body">
             <input type="text" id="reverseProxyDomain" name="reverseProxyDomain" placeholder="i.pixiv.re" />
-            <div id="reverseProxyDomainHelper" class="helper"></div>
+            <div id="reverseProxyDomainHelper" data-i18n="reverseProxyDomainHelper" class="helper"></div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="action-buttons">
-      <button id="reset" type="button">Reset</button>
+      <button id="reset" data-i18n="reset" type="button">Reset</button>
     </div>
   </div>
   <script type="module" src="../entrypoints/options.js"></script>

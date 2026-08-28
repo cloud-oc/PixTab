@@ -28,7 +28,7 @@ test.describe("packaged PixTab", () => {
 
   test.afterAll(async () => context?.close());
 
-  test("loads the options controller and preserves the current layout", async () => {
+  test("loads the options controller and preserves the current layout", async ({}, testInfo) => {
     const initialRuntimeErrorCount = runtimeErrors.length;
     const page = await context.newPage();
     const pageErrors = [];
@@ -36,8 +36,12 @@ test.describe("packaged PixTab", () => {
     await page.goto(`chrome-extension://${extensionId}/src/options/options.html`);
     await expect(page.locator("#order")).toBeVisible();
     await expect(page.locator("#themeAutoBtn")).toBeVisible();
+    await expect(page.locator("#settingsHeading")).toHaveText("Settings");
+    await expect(page.locator("#orderLabel")).toHaveText("Update Mode");
+    await expect(page.locator("#dailyRankingOrder")).toHaveText("Daily Ranking");
+    await expect(page.locator("#reset")).toHaveText("Reset to default settings");
     await page.screenshot({
-      path: path.join(root, "tests", "visual-baseline", "options.png"),
+      path: testInfo.outputPath("options.png"),
       fullPage: true,
       animations: "disabled"
     });
@@ -45,6 +49,16 @@ test.describe("packaged PixTab", () => {
     await page.waitForTimeout(650);
     const storedMinimum = await page.evaluate(async () => (await chrome.storage.local.get("blt")).blt);
     expect(storedMinimum).toBe(123);
+    await page.locator("#languageSelect").selectOption("zh-CN");
+    await expect(page.locator("#settingsHeading")).toHaveText("设置");
+    await expect(page.locator("#orderLabel")).toHaveText("更新模式");
+    expect(await page.evaluate(() => localStorage.getItem("language"))).toBe("zh-CN");
+    await page.locator("#themeLightBtn").click();
+    await expect(page.locator("body")).toHaveAttribute("data-theme", "light");
+    expect(await page.evaluate(() => localStorage.getItem("themePreference"))).toBe("light");
+    await page.locator("#reset").click();
+    await expect(page.locator("#blt")).toHaveValue("");
+    await expect.poll(() => page.evaluate(async () => (await chrome.storage.local.get("blt")).blt)).toBeNull();
     await page.waitForTimeout(250);
     const networkRules = await page.evaluate(async () => chrome.declarativeNetRequest.getDynamicRules());
     expect(networkRules.map((rule) => rule.id).sort()).toEqual([1, 2, 3, 4, 5]);
@@ -67,7 +81,7 @@ test.describe("packaged PixTab", () => {
     await page.close();
   });
 
-  test("loads the new-tab controller and settings overlay", async () => {
+  test("loads the new-tab controller and settings overlay", async ({}, testInfo) => {
     const page = await context.newPage();
     const pageErrors = [];
     page.on("pageerror", (error) => pageErrors.push(error.message));
@@ -76,12 +90,18 @@ test.describe("packaged PixTab", () => {
     await expect(page.locator("#settingsButton")).toBeVisible();
     await page.locator("#settingsButton").click();
     await expect(page.locator("#settingsOverlay")).toHaveClass(/visible/);
+    await expect(page.locator("#container")).toHaveJSProperty("inert", true);
+    await expect(page.locator("#settingsCloseButton")).toBeFocused();
     await page.addStyleTag({ content: "*,*::before,*::after{animation:none!important;transition:none!important}" });
     await page.screenshot({
-      path: path.join(root, "tests", "visual-baseline", "newtab-settings.png"),
+      path: testInfo.outputPath("newtab-settings.png"),
       fullPage: true,
       animations: "disabled"
     });
+    await page.locator("#settingsCloseButton").click();
+    await expect(page.locator("#settingsOverlay")).not.toHaveClass(/visible/);
+    await expect(page.locator("#container")).toHaveJSProperty("inert", false);
+    await expect(page.locator("#settingsButton")).toBeFocused();
     expect(pageErrors).toEqual([]);
     await page.close();
   });

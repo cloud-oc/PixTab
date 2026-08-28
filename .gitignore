@@ -22,3 +22,7 @@ node_modules/
 dist/
 test-results/
 playwright-report/
+
+# Local UI review artifacts
+.impeccable/config.local.json
+.impeccable/review/

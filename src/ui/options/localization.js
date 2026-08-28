@@ -1,14 +1,31 @@
+import { browserAPI, safeCallable } from "../../shared/browser-polyfill.js";
+
+const SUPPORTED_LANGUAGES = Object.freeze(["en", "zh-CN", "zh-TW", "ja", "ko", "ru"]);
+
 export class LocalizationController {
-  constructor({ doc = document, storage = localStorage, fetchImpl = fetch }) {
+  constructor({
+    doc = document,
+    storage = localStorage,
+    fetchImpl = fetch,
+    i18n = browserAPI?.i18n,
+    runtime = browserAPI?.runtime,
+    navigatorImpl = navigator,
+    logger = console
+  } = {}) {
     this.doc = doc;
     this.storage = storage;
-    this.fetchImpl = fetchImpl;
-    this.languages = ["en", "zh-CN", "zh-TW", "ja", "ko", "ru"];
+    this.fetchImpl = safeCallable(fetchImpl);
+    this.getMessage = i18n?.getMessage?.bind(i18n) || (() => "");
+    this.getURL = runtime?.getURL?.bind(runtime) || ((path) => `../../${path}`);
+    this.navigator = navigatorImpl;
+    this.logger = logger;
+    this.languages = SUPPORTED_LANGUAGES;
   }
 
   initialize(onApplied = () => {}) {
     const select = this.doc.getElementById("languageSelect");
     if (!select) return;
+    this.#applyBrowserMessages();
     const language = this.#savedLanguage() || this.#browserLanguage();
     select.value = Array.from(select.options).some((option) => option.value === language) ? language : "en";
     if (!this.storage.getItem("language")) this.storage.setItem("language", select.value);
@@ -20,31 +37,43 @@ export class LocalizationController {
   }
 
   async apply(language) {
-    const names = [language.replace("-", "_"), language];
-    let messages = null;
-    for (const name of names) {
+    const paths = [...new Set([language.replaceAll("-", "_"), language, "en"])]
+      .map((name) => `_locales/${name}/messages.json`);
+    const errors = [];
+    for (const path of paths) {
       try {
-        const response = await this.fetchImpl(`../../_locales/${name}/messages.json`);
-        if (response.ok) {
-          messages = await response.json();
-          break;
-        }
-      } catch { /* try next path */ }
+        if (!this.fetchImpl) throw new Error("fetch is unavailable");
+        const response = await this.fetchImpl(this.getURL(path));
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const messages = await response.json();
+        if (!messages || typeof messages !== "object") throw new Error("invalid locale payload");
+        this.#applyMessages((key) => messages[key]?.message);
+        return true;
+      } catch (error) {
+        errors.push(`${path}: ${error instanceof Error ? error.message : String(error)}`);
+      }
     }
-    if (!messages) return;
-    this.doc.querySelectorAll("[id]").forEach((element) => {
-      if (messages[element.id]) element.textContent = messages[element.id].message;
+    this.#applyBrowserMessages();
+    this.logger.error?.(`Unable to load PixTab locale '${language}'. ${errors.join("; ")}`);
+    return false;
+  }
+
+  #applyBrowserMessages() {
+    this.#applyMessages((key) => this.getMessage(key));
+  }
+
+  #applyMessages(resolveMessage) {
+    this.doc.querySelectorAll("[data-i18n]").forEach((element) => {
+      const message = resolveMessage(element.dataset.i18n);
+      if (message) element.textContent = message;
     });
     this.doc.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
-      const message = messages[element.dataset.i18nPlaceholder];
-      if (message) element.placeholder = message.message;
+      const message = resolveMessage(element.dataset.i18nPlaceholder);
+      if (message) element.placeholder = message;
     });
-    const back = this.doc.getElementById("backToNewTabButton");
-    if (back) back.title = this.doc.getElementById("backToNewTabLabel")?.textContent || "";
-    const helperIds = ["size", "align", "tiling", "resolution", "aiType"];
-    helperIds.forEach((name) => {
-      const target = this.doc.getElementById(`${name}Label`);
-      if (target) target.title = messages[`${name}Helper`]?.message || "";
+    this.doc.querySelectorAll("[data-i18n-title]").forEach((element) => {
+      const message = resolveMessage(element.dataset.i18nTitle);
+      if (message) element.title = message;
     });
   }
 
@@ -55,7 +84,7 @@ export class LocalizationController {
   }
 
   #browserLanguage() {
-    for (const raw of navigator.languages || [navigator.language || "en"]) {
+    for (const raw of this.navigator.languages || [this.navigator.language || "en"]) {
       const [language, region = ""] = raw.replace("_", "-").split("-");
       if (language.toLowerCase() === "zh") return ["tw", "hk", "mo"].includes(region.toLowerCase()) ? "zh-TW" : "zh-CN";
       const exact = `${language}${region ? `-${region}` : ""}`;

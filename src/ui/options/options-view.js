@@ -1,4 +1,4 @@
-import { buildKeywordQuery } from "../../shared/keyword-builder.js";
+import { composeKeywordExpression } from "../../domain/search-query.js";
 import { preferenceFields } from "./form-schema.js";
 
 const KEYWORD_ORDERS = new Set(["popular_d", "popular_male_d", "popular_female_d"]);
@@ -6,6 +6,7 @@ const KEYWORD_ORDERS = new Set(["popular_d", "popular_male_d", "popular_female_d
 export class OptionsView {
   constructor(doc = document) {
     this.doc = doc;
+    this.loginStatus = null;
   }
 
   read() {
@@ -42,11 +43,11 @@ export class OptionsView {
   }
 
   updateKeywordPreview() {
-    const keyword = buildKeywordQuery(
-      this.doc.getElementById("andKeywords")?.value,
-      this.doc.getElementById("orKeywords")?.value,
-      this.doc.getElementById("minusKeywords")?.value
-    );
+    const keyword = composeKeywordExpression({
+      andKeywords: this.doc.getElementById("andKeywords")?.value,
+      orKeywords: this.doc.getElementById("orKeywords")?.value,
+      minusKeywords: this.doc.getElementById("minusKeywords")?.value
+    });
     const preview = this.doc.getElementById("keywords");
     if (preview) preview.value = keyword;
   }
@@ -63,6 +64,7 @@ export class OptionsView {
   }
 
   setLoginStatus(status) {
+    this.loginStatus = status;
     const element = this.doc.getElementById("loginStatusValue");
     if (!element) return;
     const loggedInText = this.doc.getElementById("loginStatusLoggedIn")?.textContent || "Logged In";
@@ -74,6 +76,10 @@ export class OptionsView {
       element.textContent = loggedOutText;
       element.className = "login-status-value not-logged-in";
     }
+  }
+
+  refreshLoginStatus() {
+    if (this.loginStatus !== null) this.setLoginStatus(this.loginStatus);
   }
 
   setLoginLoading() {

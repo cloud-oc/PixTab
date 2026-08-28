@@ -1,4 +1,5 @@
 import { abortableDelay, abortReason, createTimedSignal } from "./abort.js";
+import { safeCallable } from "../../shared/browser-polyfill.js";
 
 export class RequestScheduler {
   #tail = Promise.resolve();
@@ -12,10 +13,7 @@ export class RequestScheduler {
     timeoutMs = 12000,
     now = Date.now
   } = {}) {
-    // Native fetch requires the global scope as its receiver in Chrome workers.
-    // Keep the injected callable behind an arrow so `this.fetchImpl()` cannot
-    // accidentally invoke the native function with this instance as receiver.
-    this.fetchImpl = (...args) => fetchImpl(...args);
+    this.fetchImpl = safeCallable(fetchImpl);
     this.intervalMs = intervalMs;
     this.rateLimitDelayMs = rateLimitDelayMs;
     this.retries = retries;

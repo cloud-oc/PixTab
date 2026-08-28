@@ -7,6 +7,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:visual": "node tests/capture-ui.mjs",
     "test:live": "node tests/live-extension.mjs",
     "lint:firefox": "node build/validate-firefox.mjs",
     "build": "node build/build.mjs",

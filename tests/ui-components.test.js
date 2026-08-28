@@ -1,5 +1,6 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ArtworkView } from "../src/ui/newtab/artwork-view.js";
+import { OptionsController } from "../src/ui/options/options-controller.js";
 import { OptionsView } from "../src/ui/options/options-view.js";
 
 describe("OptionsView", () => {
@@ -41,6 +42,34 @@ describe("OptionsView", () => {
     maximum.value = "20";
     view.enforceBookmarkRange(minimum);
     expect(maximum.value).toBe("30");
+  });
+
+  it("re-renders a cached login result after localization changes", () => {
+    document.body.innerHTML = `
+      <span id="loginStatusLoggedIn">Logged In</span>
+      <span id="loginStatusNotLoggedIn">Not Logged In</span>
+      <button id="loginStatusValue"></button>`;
+    const view = new OptionsView(document);
+    view.setLoginStatus({ loggedIn: true, userName: "Pixiv User" });
+    document.getElementById("loginStatusLoggedIn").textContent = "已登录";
+    view.refreshLoginStatus();
+    expect(document.getElementById("loginStatusValue").textContent).toBe("已登录 (Pixiv User)");
+  });
+});
+
+describe("OptionsController", () => {
+  it("clears the loading state when the login request fails", async () => {
+    document.body.innerHTML = `<button id="loginStatusValue"></button>`;
+    const view = { setLoginLoading: vi.fn(), setLoginStatus: vi.fn() };
+    const runtime = { send: vi.fn().mockRejectedValue(new Error("worker unavailable")) };
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    const controller = new OptionsController({ doc: document, view, runtime });
+
+    await controller.refreshLogin();
+
+    expect(view.setLoginLoading).toHaveBeenCalledOnce();
+    expect(view.setLoginStatus).toHaveBeenCalledWith({ loggedIn: false });
+    expect(consoleError).toHaveBeenCalledOnce();
   });
 });
 
