@@ -129,3 +129,5 @@ This project was inspired by:
 - [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)
 - [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
 - [Newtab-Random-Pixiv-Images](https://github.com/vauxe/Newtab-Random-Pixiv-Images)
+
+Third-party code and license details are documented in [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES).

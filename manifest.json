@@ -32,7 +32,7 @@
     "newtab": "src/newtab/index.html"
   },
   "background": {
-    "service_worker": "src/background/runtime.js",
+    "service_worker": "src/entrypoints/background.js",
     "type": "module"
   },
   "permissions": [

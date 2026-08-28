@@ -1,0 +1,191 @@
+export class PrefetchPool {
+  #items = [];
+  #knownIds = new Set();
+  #jobs = new Set();
+  #generation = 0;
+  #persistTimer = null;
+  #persistTask = Promise.resolve();
+  #deepFillTimer = null;
+  #deepFillActive = false;
+
+  constructor({
+    capacity = 8,
+    eagerCapacity = 4,
+    concurrency = 3,
+    backgroundDelayMs = 1500,
+    persistDelayMs = 250,
+    maxPersistBytes = 7_000_000,
+    sessionStore,
+    cacheKey = "artworkQueueCache",
+    setTimer = setTimeout,
+    clearTimer = clearTimeout
+  }) {
+    this.capacity = capacity;
+    this.eagerCapacity = Math.min(eagerCapacity, capacity);
+    this.concurrency = concurrency;
+    this.backgroundDelayMs = backgroundDelayMs;
+    this.persistDelayMs = persistDelayMs;
+    this.maxPersistBytes = maxPersistBytes;
+    this.sessionStore = sessionStore;
+    this.cacheKey = cacheKey;
+    // Browser timer functions are Web IDL methods in some extension contexts.
+    // Calling a stored native function as `this.setTimer()` changes its receiver
+    // and can throw `TypeError: Illegal invocation` in Chrome service workers.
+    this.setTimer = (...args) => setTimer(...args);
+    this.clearTimer = (...args) => clearTimer(...args);
+    this.producer = null;
+  }
+
+  async restore() {
+    const state = await this.sessionStore.get({ [this.cacheKey]: null, illustQueue: null });
+    const cached = state[this.cacheKey] || state.illustQueue;
+    const items = Array.isArray(cached) ? cached : cached?.items || cached?.array;
+    this.#items = [];
+    this.#knownIds.clear();
+    for (const item of Array.isArray(items) ? items : []) {
+      if (this.#items.length >= this.capacity || this.#isDuplicate(item)) continue;
+      this.#items.push(item);
+      this.#remember(item);
+    }
+  }
+
+  invalidate() {
+    this.#generation += 1;
+    this.producer = null;
+    this.#items = [];
+    this.#knownIds.clear();
+    this.#cancelDeepFill();
+    this.#schedulePersist();
+  }
+
+  replaceProducer(producer) {
+    this.invalidate();
+    this.producer = producer;
+    this.refill();
+  }
+
+  attachProducer(producer) {
+    this.producer = producer;
+    this.refill();
+  }
+
+  async take() {
+    let value = this.#items.shift() || null;
+    if (value) this.#forget(value);
+    else value = await this.producer?.();
+    this.#schedulePersist();
+    this.#deepFillActive = false;
+    this.refill();
+    return value || null;
+  }
+
+  refill() {
+    if (!this.producer) return;
+    const target = this.#deepFillActive ? this.capacity : this.eagerCapacity;
+    while (this.#jobs.size < this.concurrency && this.#items.length + this.#jobs.size < target) {
+      const generation = this.#generation;
+      const producer = this.producer;
+      const job = Promise.resolve().then(() => producer());
+      let accepted = false;
+      this.#jobs.add(job);
+      job.then((value) => {
+        if (value && generation === this.#generation && this.#items.length < this.capacity && !this.#isDuplicate(value)) {
+          this.#items.push(value);
+          this.#remember(value);
+          accepted = true;
+          this.#schedulePersist();
+        }
+      }).catch(() => undefined).finally(() => {
+        this.#jobs.delete(job);
+        if (generation !== this.#generation || accepted) this.refill();
+      });
+    }
+    const queued = this.#items.length + this.#jobs.size;
+    if (!this.#deepFillActive && queued >= this.eagerCapacity && queued < this.capacity) this.#scheduleDeepFill();
+    if (this.#deepFillActive && queued >= this.capacity) this.#deepFillActive = false;
+  }
+
+  snapshot() {
+    return { capacity: this.capacity, items: [...this.#items] };
+  }
+
+  async flushPersistence() {
+    if (this.#persistTimer) {
+      this.clearTimer(this.#persistTimer);
+      this.#persistTimer = null;
+    }
+    await this.#persist();
+  }
+
+  #scheduleDeepFill() {
+    if (this.#deepFillTimer) return;
+    this.#deepFillTimer = this.setTimer(() => {
+      this.#deepFillTimer = null;
+      this.#deepFillActive = true;
+      this.refill();
+    }, this.backgroundDelayMs);
+  }
+
+  #cancelDeepFill() {
+    if (this.#deepFillTimer) this.clearTimer(this.#deepFillTimer);
+    this.#deepFillTimer = null;
+    this.#deepFillActive = false;
+  }
+
+  #schedulePersist() {
+    if (this.#persistTimer) return;
+    this.#persistTimer = this.setTimer(() => {
+      this.#persistTimer = null;
+      void this.#persist();
+    }, this.persistDelayMs);
+  }
+
+  async #persist() {
+    const snapshot = this.#persistentSnapshot();
+    this.#persistTask = this.#persistTask
+      .catch(() => undefined)
+      .then(() => this.#writeSnapshot(snapshot));
+    await this.#persistTask;
+  }
+
+  async #writeSnapshot(snapshot) {
+    try {
+      await Promise.resolve(this.sessionStore.set({ [this.cacheKey]: snapshot, illustQueue: null }));
+    } catch {
+      if (snapshot.items.length < 2) return;
+      const reduced = { ...snapshot, items: snapshot.items.slice(0, Math.ceil(snapshot.items.length / 2)) };
+      await Promise.resolve(this.sessionStore.set({ [this.cacheKey]: reduced, illustQueue: null })).catch(() => undefined);
+    }
+  }
+
+  #persistentSnapshot() {
+    const items = [];
+    let bytes = 64;
+    for (const item of this.#items) {
+      const itemBytes = JSON.stringify(item).length * 2;
+      if (bytes + itemBytes > this.maxPersistBytes) break;
+      items.push(item);
+      bytes += itemBytes;
+    }
+    return { capacity: this.capacity, items };
+  }
+
+  #identity(item) {
+    return item?.illustId == null ? null : String(item.illustId);
+  }
+
+  #isDuplicate(item) {
+    const id = this.#identity(item);
+    return id ? this.#knownIds.has(id) : false;
+  }
+
+  #remember(item) {
+    const id = this.#identity(item);
+    if (id) this.#knownIds.add(id);
+  }
+
+  #forget(item) {
+    const id = this.#identity(item);
+    if (id) this.#knownIds.delete(id);
+  }
+}

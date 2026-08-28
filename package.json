@@ -1,0 +1,22 @@
+{
+  "name": "pixtab",
+  "version": "1.8.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:live": "node tests/live-extension.mjs",
+    "lint:firefox": "node build/validate-firefox.mjs",
+    "build": "node build/build.mjs",
+    "check": "npm run test && npm run build && npm run lint:firefox && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "archiver": "^7.0.1",
+    "esbuild": "^0.25.9",
+    "jsdom": "^26.1.0",
+    "vitest": "^3.2.4"
+  }
+}

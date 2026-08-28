@@ -16,6 +16,7 @@ Thank you for your interest in contributing to PixTab! We welcome bug reports, f
 # Clone the repository
 git clone https://github.com/cloud-oc/PixTab.git
 cd PixTab
+npm install
 ```
 
 ### Loading the Extension for Testing
@@ -27,18 +28,21 @@ cd PixTab
 4. Open a new tab to see PixTab in action.
 
 **Firefox:**
-1. Open `about:debugging#/runtime/this-firefox`.
-2. Click **Load Temporary Add-on...**.
-3. Select the `manifest.json` file in the project root.
+1. Run `npm run build`.
+2. Open `about:debugging#/runtime/this-firefox`.
+3. Click **Load Temporary Add-on...**.
+4. Select `dist/firefox/manifest.json`.
 
 ## Project Structure
 
 - `manifest.json`: Extension entry point.
 - `src/`: Source code.
-  - `newtab/`: Logic for the new tab page.
-  - `options/`: Logic for the settings panel.
-  - `background/`: Service worker for background tasks.
-  - `shared/`: Utilities and shared logic.
+  - `entrypoints/`: Thin browser entry points.
+  - `application/`: Artwork orchestration, prefetching, and message routing.
+  - `domain/`: Pure preferences, query, filtering, and message contracts.
+  - `infrastructure/`: Browser, network, and Pixiv adapters.
+  - `ui/`: New-tab and options controllers/views.
+  - `newtab/` and `options/`: Static HTML/CSS shells.
 - `_locales/`: Localization strings.
 - `build/`: Build and packaging scripts.
 
@@ -55,6 +59,10 @@ chmod +x build/build.sh
 ./build/build.sh
 ```
 The output will be generated in the `dist/` directory (ignored by Git).
+
+Run the complete verification suite with `npm run check`. It executes unit and
+DOM tests, builds both browser packages, validates the Firefox manifest, and
+loads the packaged extension in Playwright Chromium.
 
 ## Adding Translations
 
