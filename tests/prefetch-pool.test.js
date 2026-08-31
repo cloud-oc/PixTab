@@ -4,10 +4,10 @@ import { PrefetchPool } from "../src/application/prefetch-pool.js";
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe("PrefetchPool", () => {
-  it("restores legacy cache and replenishes after take", async () => {
+  it("restores the current cache and replenishes after take", async () => {
     const writes = [];
     const store = {
-      get: async () => ({ artworkQueueCache: { maxsize: 8, array: [{ illustId: "cached" }] } }),
+      get: async () => ({ artworkQueueCache: { capacity: 8, items: [{ illustId: "cached" }] } }),
       set: async (value) => writes.push(value)
     };
     let sequence = 0;
@@ -27,7 +27,8 @@ describe("PrefetchPool", () => {
     const store = { get: async () => ({}), set: async () => undefined };
     const pool = new PrefetchPool({ capacity: 1, concurrency: 1, sessionStore: store });
     pool.attachProducer(() => oldResult);
-    pool.replaceProducer(async () => ({ illustId: "new" }));
+    pool.invalidate();
+    pool.attachProducer(async () => ({ illustId: "new" }));
     finishOld({ illustId: "old" });
     await tick();
     await tick();
@@ -93,7 +94,7 @@ describe("PrefetchPool", () => {
     expect(pool.snapshot().items.map((item) => item.illustId)).toEqual(["1", "2"]);
     await pool.flushPersistence();
     const lastWrite = writes.at(-1);
-    expect(lastWrite.illustQueue).toBeNull();
+    expect(Object.keys(lastWrite)).toEqual(["artworkQueueCache"]);
     expect(lastWrite.artworkQueueCache.items).toHaveLength(1);
   });
 

@@ -111,6 +111,57 @@ describe("ArtworkView", () => {
 });
 
 describe("NewTabController", () => {
+  it("does not load the Ugoira module for static artwork", async () => {
+    const playerLoader = vi.fn();
+    const runtime = { send: vi.fn().mockResolvedValue({ illustId: "42" }) };
+    const controller = new NewTabController({ doc: document, runtime, playerLoader });
+    const container = document.createElement("div");
+    controller.view = {
+      container,
+      refreshButton: document.createElement("button"),
+      setLoading: vi.fn(),
+      setFailure: vi.fn(),
+      render: vi.fn()
+    };
+    controller.wallpaper = {};
+
+    await controller.requestArtwork();
+
+    expect(playerLoader).not.toHaveBeenCalled();
+    expect(controller.view.render).toHaveBeenCalledOnce();
+  });
+
+  it("loads and binds one Ugoira player on first demand", async () => {
+    const bind = vi.fn();
+    const load = vi.fn();
+    const stop = vi.fn();
+    class TestPlayer {
+      bind() { bind(); }
+      load(payload) { load(payload); }
+      stop() { stop(); }
+    }
+    const playerLoader = vi.fn().mockResolvedValue({ UgoiraPlayer: TestPlayer });
+    const artwork = { illustId: "42", ugoira: { zipUrl: "frames.zip", frames: [{ file: "1.jpg", delay: 60 }] } };
+    const runtime = { send: vi.fn().mockResolvedValue(artwork) };
+    const controller = new NewTabController({ doc: document, runtime, playerLoader });
+    controller.view = {
+      container: document.createElement("div"),
+      refreshButton: document.createElement("button"),
+      setLoading: vi.fn(),
+      setFailure: vi.fn(),
+      render: vi.fn()
+    };
+    controller.wallpaper = {};
+
+    await controller.requestArtwork();
+    await controller.requestArtwork();
+
+    expect(playerLoader).toHaveBeenCalledOnce();
+    expect(bind).toHaveBeenCalledOnce();
+    expect(load).toHaveBeenCalledTimes(2);
+    expect(stop).toHaveBeenCalledOnce();
+  });
+
   it("retries once when the connectivity probe already enabled the proxy", async () => {
     vi.useFakeTimers();
     const runtime = {

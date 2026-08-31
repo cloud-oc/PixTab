@@ -40,12 +40,7 @@ for (const target of ["chrome", "firefox"]) {
   }
   await writeFile(path.join(directory, "manifest.json"), `${JSON.stringify(targetManifest, null, 2)}\n`);
 
-  await build({
-    entryPoints: {
-      background: path.join(root, "src", "entrypoints", "background.js"),
-      newtab: path.join(root, "src", "entrypoints", "newtab.js"),
-      options: path.join(root, "src", "entrypoints", "options.js")
-    },
+  const buildOptions = {
     entryNames: "[name]",
     outdir: path.join(directory, "src", "entrypoints"),
     bundle: true,
@@ -55,7 +50,22 @@ for (const target of ["chrome", "firefox"]) {
     minify: true,
     sourcemap: false,
     legalComments: "eof"
-  });
+  };
+  await Promise.all([
+    build({
+      ...buildOptions,
+      entryPoints: {
+        background: path.join(root, "src", "entrypoints", "background.js"),
+        options: path.join(root, "src", "entrypoints", "options.js")
+      }
+    }),
+    build({
+      ...buildOptions,
+      entryPoints: { newtab: path.join(root, "src", "entrypoints", "newtab.js") },
+      splitting: true,
+      chunkNames: "chunks/[name]-[hash]"
+    })
+  ]);
 }
 
 await Promise.all([

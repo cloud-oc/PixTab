@@ -1,9 +1,12 @@
+import { readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, expect, test } from "@playwright/test";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const extensionPath = path.join(root, "dist", "chrome");
+const ugoiraChunk = readdirSync(path.join(extensionPath, "src", "entrypoints", "chunks"))
+  .find((file) => file.startsWith("ugoira-player-") && file.endsWith(".js"));
 
 test.describe("packaged PixTab", () => {
   let context;
@@ -86,6 +89,14 @@ test.describe("packaged PixTab", () => {
     const pageErrors = [];
     page.on("pageerror", (error) => pageErrors.push(error.message));
     await page.goto(`chrome-extension://${extensionId}/src/newtab/index.html`);
+    const startupResources = await page.evaluate(() => performance.getEntriesByType("resource").map(({ name }) => name));
+    expect(startupResources.some((url) => url.includes("/chunks/"))).toBe(false);
+    expect(ugoiraChunk).toBeTruthy();
+    const chunkExportsPlayer = await page.evaluate(async (url) => {
+      const module = await import(url);
+      return typeof module.UgoiraPlayer === "function";
+    }, `chrome-extension://${extensionId}/src/entrypoints/chunks/${ugoiraChunk}`);
+    expect(chunkExportsPlayer).toBe(true);
     await expect(page.locator(".pix-spinner")).toHaveCSS("box-shadow", "none");
     await expect(page.locator(".pix-spinner")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await page.locator("#container").evaluate((element) => element.classList.remove("notReady"));

@@ -1,14 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { acceptsArtwork, createArtworkDto, createUgoiraDto, normalizeArtworkType } from "../src/domain/artwork.js";
-import { canonicalMessageType, MessageType } from "../src/domain/messages.js";
-import { defaultPreferences, normalizePreferences, resolveRankingName } from "../src/domain/preferences.js";
+import { MessageType } from "../src/domain/messages.js";
+import { AIGCDisplay, defaultPreferences, KeywordStrategy, normalizePreferences, RankingMode, resolveRankingName } from "../src/domain/preferences.js";
 import { composeKeywordExpression, createKeywordSearchPath, encodeRfc3986 } from "../src/domain/search-query.js";
 
 describe("preferences", () => {
-  it("keeps the persisted schema and migrates legacy values", () => {
-    const { preferences, changes } = normalizePreferences({ order: "date_d", s_mode: "s_tc", aiType: "hide" });
-    expect(preferences).toMatchObject({ order: "ranking_daily", s_mode: "s_tag", aiType: null });
-    expect(changes).toEqual({ order: "ranking_daily", s_mode: "s_tag", aiType: null });
+  it("normalizes the current persisted schema for background use", () => {
+    const preferences = normalizePreferences({
+      order: RankingMode.weekly,
+      s_mode: KeywordStrategy.exact,
+      aiType: AIGCDisplay.hide
+    });
+    expect(preferences).toMatchObject({ order: RankingMode.weekly, s_mode: KeywordStrategy.exact, aiType: 1 });
+    expect(normalizePreferences({ aiType: AIGCDisplay.display }).aiType).toBeNull();
     expect(defaultPreferences.reverseProxyDomain).toBe("");
   });
 
@@ -71,11 +75,13 @@ describe("artwork contract", () => {
   });
 });
 
-describe("message compatibility", () => {
-  it("accepts both old and new actions", () => {
-    expect(canonicalMessageType("fetchImage")).toBe(MessageType.requestArtwork);
-    expect(canonicalMessageType("requestArtwork")).toBe(MessageType.requestArtwork);
-    expect(canonicalMessageType(MessageType.requestArtwork)).toBe(MessageType.requestArtwork);
-    expect(canonicalMessageType("updateConfig")).toBe(MessageType.refreshPreferences);
+describe("message contract", () => {
+  it("uses only the current actions", () => {
+    expect(MessageType).toEqual({
+      requestArtwork: "artwork.get",
+      checkLogin: "auth.status",
+      fetchUgoira: "ugoira.fetch",
+      enableProxy: "proxy.autoEnable"
+    });
   });
 });

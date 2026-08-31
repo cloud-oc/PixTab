@@ -4,9 +4,7 @@ import { storageLocalGet, storageLocalSet } from "../../shared/browser-polyfill.
 export class PreferenceStore {
   async read() {
     const stored = await storageLocalGet(defaultPreferences);
-    const normalized = normalizePreferences(stored);
-    if (Object.keys(normalized.changes).length) await storageLocalSet(normalized.changes);
-    return normalized.preferences;
+    return normalizePreferences(stored);
   }
 
   write(values) {

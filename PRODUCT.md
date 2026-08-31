@@ -24,7 +24,7 @@ Users encounter the product repeatedly in short desktop sessions: opening a new 
 
 ## Capabilities and Constraints
 
-- Preserve existing storage keys, defaults, migration behavior, message actions, Artwork DTO fields, permissions, locale resources, and Chrome/Edge/Firefox manifests.
+- Preserve current storage keys, defaults, message actions, Artwork DTO fields, permissions, locale resources, and Chrome/Edge/Firefox manifests.
 - Preserve keyword, ranking, artist, following, bookmarks, recommendations, content/AIGC/R18 filters, proxy fallback, retry, prefetch, attribution, theme, i18n, and Ugoira behavior.
 - Continue using native JavaScript ESM and the current esbuild packaging pipeline.
 - Artwork and controls must remain usable over unpredictable bright, dark, and highly detailed images.

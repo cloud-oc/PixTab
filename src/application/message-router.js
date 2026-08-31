@@ -1,14 +1,13 @@
-import { canonicalMessageType, MessageType } from "../domain/messages.js";
+import { MessageType } from "../domain/messages.js";
 import { blobToDataUrl } from "../infrastructure/network/download-manager.js";
 
 export class MessageRouter {
-  constructor({ browserAPI, pool, auth, client, connectivity, reload }) {
+  constructor({ browserAPI, pool, auth, client, connectivity }) {
     this.browserAPI = browserAPI;
     this.pool = pool;
     this.auth = auth;
     this.client = client;
     this.connectivity = connectivity;
-    this.reload = reload;
   }
 
   listen(ready) {
@@ -25,16 +24,13 @@ export class MessageRouter {
   }
 
   async #dispatch(message = {}) {
-    switch (canonicalMessageType(message.action)) {
+    switch (message.action) {
       case MessageType.requestArtwork: {
         const artwork = await this.pool.take();
         void this.#notify(artwork ? "artworkLoadSucceeded" : "artworkLoadFailed");
         if (!artwork) void this.connectivity.probe({ force: true });
         return artwork;
       }
-      case MessageType.refreshPreferences:
-        await this.reload();
-        return undefined;
       case MessageType.checkLogin:
         return this.auth.status();
       case MessageType.fetchUgoira: {

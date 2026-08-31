@@ -65,18 +65,9 @@ export function resolveRankingName(order, contentFilter) {
 }
 
 export function normalizePreferences(input = {}) {
-  const merged = { ...defaultPreferences, ...input };
-  const changes = {};
-  if (merged.order === "date" || merged.order === "date_d") {
-    merged.order = RankingMode.daily;
-    changes.order = merged.order;
-  }
-  if (!Object.values(KeywordStrategy).includes(merged.s_mode)) {
-    merged.s_mode = KeywordStrategy.partial;
-    changes.s_mode = merged.s_mode;
-  }
-  const aiType = merged.aiType === 1 || merged.aiType === "1" ? 1 : null;
-  if (aiType !== merged.aiType) changes.aiType = aiType;
-  merged.aiType = aiType;
-  return { preferences: merged, changes };
+  const preferences = { ...defaultPreferences, ...input };
+  if (!Object.values(RankingMode).includes(preferences.order)) preferences.order = defaultPreferences.order;
+  if (!Object.values(KeywordStrategy).includes(preferences.s_mode)) preferences.s_mode = defaultPreferences.s_mode;
+  preferences.aiType = preferences.aiType === AIGCDisplay.hide ? 1 : null;
+  return preferences;
 }

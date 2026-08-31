@@ -1,12 +1,12 @@
 import { unzipSync } from "../../shared/fflate.module.js";
-import { MessageType } from "../../domain/messages.js";
 
 export class UgoiraPlayer {
   #cache = new Map();
 
-  constructor({ doc = document, runtime, cacheLimit = 2 }) {
+  constructor({ doc = document, runtime, fetchAction, cacheLimit = 2 }) {
     this.doc = doc;
     this.runtime = runtime;
+    this.fetchAction = fetchAction;
     this.frames = [];
     this.index = 0;
     this.playing = false;
@@ -128,7 +128,7 @@ export class UgoiraPlayer {
       return cached;
     }
     const dataUrl = await this.runtime.send(
-      { action: MessageType.fetchUgoira, url: payload.zipUrl },
+      { action: this.fetchAction, url: payload.zipUrl },
       { timeout: 30_000, retries: 3 }
     );
     if (!dataUrl) throw new Error("UGOIRA_DOWNLOAD_FAILED");

@@ -59,8 +59,7 @@ export class BackgroundApplication {
       pool: this.pool,
       auth: this.auth,
       client: this.client,
-      connectivity: this.connectivity,
-      reload: () => this.reload()
+      connectivity: this.connectivity
     });
     router.listen(ready);
   }

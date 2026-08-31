@@ -37,9 +37,8 @@ export class PrefetchPool {
   }
 
   async restore() {
-    const state = await this.sessionStore.get({ [this.cacheKey]: null, illustQueue: null });
-    const cached = state[this.cacheKey] || state.illustQueue;
-    const items = Array.isArray(cached) ? cached : cached?.items || cached?.array;
+    const state = await this.sessionStore.get({ [this.cacheKey]: null });
+    const items = state[this.cacheKey]?.items;
     this.#items = [];
     this.#knownIds.clear();
     for (const item of Array.isArray(items) ? items : []) {
@@ -56,12 +55,6 @@ export class PrefetchPool {
     this.#knownIds.clear();
     this.#cancelDeepFill();
     this.#schedulePersist();
-  }
-
-  replaceProducer(producer) {
-    this.invalidate();
-    this.producer = producer;
-    this.refill();
   }
 
   attachProducer(producer) {
@@ -160,11 +153,11 @@ export class PrefetchPool {
 
   async #writeSnapshot(snapshot) {
     try {
-      await Promise.resolve(this.sessionStore.set({ [this.cacheKey]: snapshot, illustQueue: null }));
+      await Promise.resolve(this.sessionStore.set({ [this.cacheKey]: snapshot }));
     } catch {
       if (snapshot.items.length < 2) return;
       const reduced = { ...snapshot, items: snapshot.items.slice(0, Math.ceil(snapshot.items.length / 2)) };
-      await Promise.resolve(this.sessionStore.set({ [this.cacheKey]: reduced, illustQueue: null })).catch(() => undefined);
+      await Promise.resolve(this.sessionStore.set({ [this.cacheKey]: reduced })).catch(() => undefined);
     }
   }
 
