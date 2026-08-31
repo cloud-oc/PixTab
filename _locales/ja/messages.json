@@ -279,6 +279,6 @@
     "message": "リバースプロキシを使用"
   },
   "reverseProxyDomainHelper": {
-    "message": "特定の地域で画像のダウンロードを高速化します。プロキシドメイン（例：i.pixiv.re、i.pixiv.cat、i.pixiv.nl）を入力するか、空白のままにして無効化します。"
+    "message": "特定の地域で画像のダウンロードを高速化します。\nプロキシドメイン（例：i.pixiv.re、i.pixiv.cat、i.pixiv.nl）を入力するか、空白のままにして無効化します。"
   }
 }

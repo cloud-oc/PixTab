@@ -457,6 +457,7 @@ select option {
 .helper {
   max-width: 68ch;
   margin: 6px 0 2px;
+  white-space: pre-line;
 }
 
 .display-settings-grid {

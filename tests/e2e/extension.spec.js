@@ -140,6 +140,7 @@ test.describe("packaged PixTab", () => {
     await expect(page.locator("#settingsButton")).toHaveAttribute("aria-expanded", "true");
     await expect(page.locator("#settingsButton")).toHaveAttribute("aria-label", "Close settings");
     await expect(page.locator("#settingsButton")).toBeFocused();
+    await page.mouse.move(0, 0);
     await page.waitForTimeout(100);
     const motionToggleBox = await page.locator("#settingsButton").boundingBox();
     expect(Math.abs((motionToggleBox.x + motionToggleBox.width / 2) - (compactToggleBox.x + compactToggleBox.width / 2))).toBeLessThanOrEqual(0.75);

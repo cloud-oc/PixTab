@@ -353,6 +353,10 @@ body[data-theme="dark"] #backgroundImage {
 
 #avatar {
   display: block;
+  transform-origin: center;
+  transition:
+    transform 220ms var(--ease-liquid),
+    filter 180ms var(--ease-liquid);
 }
 
 #avatarImage {
@@ -363,6 +367,23 @@ body[data-theme="dark"] #backgroundImage {
   box-shadow:
     0 7px 18px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  transition: box-shadow 180ms var(--ease-liquid);
+}
+
+#avatar:hover {
+  transform: translateY(-2px) scale(1.08);
+  filter: saturate(1.08);
+}
+
+#avatar:hover #avatarImage {
+  box-shadow:
+    0 11px 24px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62);
+}
+
+#avatar:active {
+  transform: translateY(0) scale(0.94);
+  transition-duration: 90ms;
 }
 
 #description {
@@ -419,7 +440,7 @@ body[data-theme="dark"] #backgroundImage {
   align-items: center;
   justify-content: center;
   transition:
-    transform 160ms var(--ease-liquid),
+    transform 220ms var(--ease-liquid),
     background-color 180ms var(--ease-liquid),
     box-shadow 180ms var(--ease-liquid);
 }
@@ -427,6 +448,13 @@ body[data-theme="dark"] #backgroundImage {
 #refreshButton:hover,
 #settingsButton:hover {
   background: var(--liquid-control-hover);
+}
+
+#settingsButton:hover {
+  transform: scale(1.08);
+  box-shadow:
+    0 11px 24px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62);
 }
 
 #refreshButton:hover {
@@ -439,8 +467,9 @@ body[data-theme="dark"] #backgroundImage {
 }
 
 #settingsButton:active {
+  transform: scale(0.92);
   background: var(--liquid-surface-strong);
-  transition-duration: 80ms;
+  transition-duration: 90ms;
 }
 
 #refreshButton svg,
@@ -571,7 +600,7 @@ body[data-theme="dark"] #backgroundImage {
   transition:
     color 160ms var(--ease-liquid),
     background-color 160ms var(--ease-liquid),
-    transform 200ms cubic-bezier(0.2, 1.45, 0.4, 1);
+    transform 200ms var(--ease-liquid);
 }
 
 .overlay-theme-switcher button:hover {
@@ -737,6 +766,16 @@ body[data-theme="dark"] #backgroundImage {
   #illustInfo.unfocused,
   #illustInfo.focused {
     filter: none;
+  }
+
+  #avatar:hover,
+  #settingsButton:hover {
+    transform: scale(1.02);
+  }
+
+  #avatar:active,
+  #settingsButton:active {
+    transform: scale(0.98);
   }
 }
 

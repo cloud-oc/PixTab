@@ -279,6 +279,6 @@
     "message": "Use Reverse Proxy"
   },
   "reverseProxyDomainHelper": {
-    "message": "Accelerate image downloads in certain regions. Enter proxy domain (e.g., i.pixiv.re, i.pixiv.cat, i.pixiv.nl) or leave empty to disable."
+    "message": "Accelerate image downloads in certain regions.\nEnter proxy domain (e.g., i.pixiv.re, i.pixiv.cat, i.pixiv.nl) or leave empty to disable."
   }
 }
