@@ -69,7 +69,6 @@ html.is-scrolling {
 
 html[data-embedded="true"] {
   background: transparent;
-  color-scheme: normal;
 }
 
 body {
@@ -94,7 +93,6 @@ body[data-embedded="true"] {
   min-height: auto;
   padding: 20px 26px 28px;
   background: transparent;
-  color-scheme: normal;
 }
 
 ::selection {

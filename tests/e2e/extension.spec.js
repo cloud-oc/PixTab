@@ -180,6 +180,10 @@ test.describe("packaged PixTab", () => {
     await page.locator('#overlayThemeSwitcher [data-theme-value="dark"]').click();
     await expect(page.locator("body")).toHaveAttribute("data-theme", "dark");
     await expect(page.frameLocator("#settingsFrame").locator("body")).toHaveAttribute("data-theme", "dark");
+    await expect(page.frameLocator("#settingsFrame").locator("body")).toHaveCSS("color-scheme", "dark");
+    await page.locator('#overlayThemeSwitcher [data-theme-value="light"]').click();
+    await expect(page.frameLocator("#settingsFrame").locator("body")).toHaveCSS("color-scheme", "light");
+    await page.locator('#overlayThemeSwitcher [data-theme-value="dark"]').click();
     await page.addStyleTag({ content: "*,*::before,*::after{animation:none!important;transition:none!important}" });
     await page.screenshot({
       path: testInfo.outputPath("newtab-settings.png"),
