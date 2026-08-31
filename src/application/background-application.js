@@ -59,9 +59,19 @@ export class BackgroundApplication {
       pool: this.pool,
       auth: this.auth,
       client: this.client,
-      connectivity: this.connectivity
+      connectivity: this.connectivity,
+      requestArtwork: (options) => this.requestArtwork(options)
     });
     router.listen(ready);
+  }
+
+  async requestArtwork(options) {
+    for (;;) {
+      if (this.reloadTask) await this.reloadTask;
+      const revision = this.reloadRevision;
+      const artwork = await this.pool.take(options);
+      if (revision === this.reloadRevision) return artwork;
+    }
   }
 
   async #drainReloads() {

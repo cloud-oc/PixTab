@@ -1,12 +1,13 @@
 import { MessageType } from "../domain/messages.js";
 
 export class MessageRouter {
-  constructor({ browserAPI, pool, auth, client, connectivity }) {
+  constructor({ browserAPI, pool, auth, client, connectivity, requestArtwork = (options) => pool.take(options) }) {
     this.browserAPI = browserAPI;
     this.pool = pool;
     this.auth = auth;
     this.client = client;
     this.connectivity = connectivity;
+    this.requestArtwork = requestArtwork;
   }
 
   listen(ready) {
@@ -25,8 +26,7 @@ export class MessageRouter {
   async #dispatch(message = {}) {
     switch (message.action) {
       case MessageType.requestArtwork: {
-        const artwork = await this.pool.take();
-        void this.#notify(artwork ? "artworkLoadSucceeded" : "artworkLoadFailed");
+        const artwork = await this.requestArtwork({ advance: message.advance === true });
         if (!artwork) void this.connectivity.probe({ force: true });
         return artwork;
       }
@@ -39,11 +39,4 @@ export class MessageRouter {
     }
   }
 
-  async #notify(action) {
-    try {
-      await this.browserAPI.runtime.sendMessage({ action });
-    } catch {
-      // New-tab listeners are optional.
-    }
-  }
 }

@@ -177,6 +177,43 @@ describe("WallpaperRenderer", () => {
 });
 
 describe("NewTabController", () => {
+  it("marks only an explicit card-button request as an artwork advance", async () => {
+    const runtime = { send: vi.fn().mockResolvedValue({ illustId: "42", imageObjectUrl: "image" }) };
+    const tabStore = { getItem: vi.fn(() => null), setItem: vi.fn() };
+    const api = { storage: { onChanged: { addListener: vi.fn() } } };
+    const controller = new NewTabController({ doc: document, runtime, tabStore, api });
+    controller.view = {
+      container: document.createElement("div"), refreshButton: document.createElement("button"),
+      setLoading: vi.fn(), setFailure: vi.fn(), render: vi.fn()
+    };
+    controller.wallpaper = {};
+
+    await controller.requestArtwork();
+    await controller.requestArtwork({ advance: true });
+
+    expect(runtime.send.mock.calls.filter(([message]) => message.action === "artwork.get").map(([message]) => message.advance))
+      .toEqual([false, true]);
+  });
+
+  it("restores a tab-local artwork on reload without requesting another one", async () => {
+    const artwork = { illustId: "saved", imageObjectUrl: "image" };
+    const runtime = { send: vi.fn() };
+    const tabStore = { getItem: vi.fn(() => JSON.stringify(artwork)), setItem: vi.fn() };
+    const api = { storage: { onChanged: { addListener: vi.fn() } } };
+    const controller = new NewTabController({ doc: document, runtime, tabStore, api });
+    controller.wallpaper = { loadPreferences: vi.fn() };
+    controller.overlay = { bind: vi.fn() };
+    controller.view = {
+      container: document.createElement("div"), refreshButton: document.createElement("button"),
+      setLoading: vi.fn(), setFailure: vi.fn(), render: vi.fn()
+    };
+
+    await controller.initialize();
+
+    expect(controller.view.render).toHaveBeenCalledWith(artwork, controller.wallpaper);
+    expect(runtime.send).not.toHaveBeenCalled();
+  });
+
   it("does not load the Ugoira module for static artwork", async () => {
     const playerLoader = vi.fn();
     const runtime = { send: vi.fn().mockResolvedValue({ illustId: "42" }) };

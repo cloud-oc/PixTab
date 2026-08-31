@@ -4,6 +4,36 @@ import { PrefetchPool } from "../src/application/prefetch-pool.js";
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe("PrefetchPool", () => {
+  it("shares one initial artwork without consuming a new item until explicitly advanced", async () => {
+    const store = { get: async () => ({}), set: async () => undefined };
+    let sequence = 0;
+    const pool = new PrefetchPool({ capacity: 2, concurrency: 1, sessionStore: store });
+    pool.attachProducer(async () => ({ illustId: String(++sequence) }));
+
+    const firstTab = await pool.take({ advance: false });
+    const secondTab = await pool.take({ advance: false });
+    const manuallyAdvanced = await pool.take({ advance: true });
+
+    expect(firstTab.illustId).toBe("1");
+    expect(secondTab).toBe(firstTab);
+    expect(manuallyAdvanced.illustId).not.toBe(firstTab.illustId);
+    expect(pool.snapshot().current).toBe(firstTab);
+  });
+
+  it("restores and invalidates the browser-session initial artwork", async () => {
+    const current = { illustId: "shared" };
+    const store = {
+      get: async () => ({ artworkQueueCache: { current, items: [] } }),
+      set: async () => undefined
+    };
+    const pool = new PrefetchPool({ capacity: 1, sessionStore: store });
+    await pool.restore();
+
+    expect(await pool.take({ advance: false })).toBe(current);
+    pool.invalidate();
+    expect(pool.snapshot().current).toBeNull();
+  });
+
   it("restores the current cache and replenishes after take", async () => {
     const writes = [];
     const store = {

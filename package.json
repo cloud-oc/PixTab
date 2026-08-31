@@ -10,6 +10,8 @@
     "test:visual": "node tests/capture-ui.mjs",
     "test:live": "node tests/live-extension.mjs",
     "test:live:ugoira": "node tests/live-ugoira.mjs",
+    "test:live:ugoira:lifecycle": "node tests/live-ugoira-lifecycle.mjs",
+    "test:live:tabs": "node tests/live-tab-isolation.mjs",
     "lint:firefox": "node build/validate-firefox.mjs",
     "build": "node build/build.mjs",
     "check": "npm run test && npm run build && npm run lint:firefox && npm run test:e2e"

@@ -1,4 +1,5 @@
 export class PrefetchPool {
+  #current = null;
   #items = [];
   #knownIds = new Set();
   #jobs = new Set();
@@ -38,9 +39,11 @@ export class PrefetchPool {
 
   async restore() {
     const state = await this.sessionStore.get({ [this.cacheKey]: null });
+    this.#current = state[this.cacheKey]?.current || null;
     const items = state[this.cacheKey]?.items;
     this.#items = [];
     this.#knownIds.clear();
+    if (this.#current) this.#remember(this.#current);
     for (const item of Array.isArray(items) ? items : []) {
       if (this.#items.length >= this.capacity || this.#isDuplicate(item)) continue;
       this.#items.push(item);
@@ -51,6 +54,7 @@ export class PrefetchPool {
   invalidate() {
     this.#generation += 1;
     this.producer = null;
+    this.#current = null;
     this.#items = [];
     this.#knownIds.clear();
     this.#cancelDeepFill();
@@ -62,7 +66,8 @@ export class PrefetchPool {
     this.refill();
   }
 
-  async take() {
+  async take({ advance = true } = {}) {
+    if (!advance && this.#current) return this.#current;
     let value = this.#items.shift() || null;
     if (value) this.#forget(value);
     while (!value && this.#jobs.size) {
@@ -71,6 +76,10 @@ export class PrefetchPool {
       if (value) this.#forget(value);
     }
     if (!value) value = await this.producer?.();
+    if (!advance && value) {
+      this.#current = value;
+      this.#remember(value);
+    }
     this.#schedulePersist();
     this.#deepFillActive = false;
     this.refill();
@@ -109,7 +118,7 @@ export class PrefetchPool {
   }
 
   snapshot() {
-    return { capacity: this.capacity, items: [...this.#items] };
+    return { capacity: this.capacity, current: this.#current, items: [...this.#items] };
   }
 
   async flushPersistence() {
@@ -164,13 +173,21 @@ export class PrefetchPool {
   #persistentSnapshot() {
     const items = [];
     let bytes = 64;
+    let current = null;
+    if (this.#current) {
+      const currentBytes = this.#estimateItemBytes(this.#current);
+      if (bytes + currentBytes <= this.maxPersistBytes) {
+        current = this.#current;
+        bytes += currentBytes;
+      }
+    }
     for (const item of this.#items) {
       const itemBytes = this.#estimateItemBytes(item);
       if (bytes + itemBytes > this.maxPersistBytes) break;
       items.push(item);
       bytes += itemBytes;
     }
-    return { capacity: this.capacity, items };
+    return { capacity: this.capacity, current, items };
   }
 
   #estimateItemBytes(item) {
