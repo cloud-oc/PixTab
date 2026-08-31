@@ -6,9 +6,19 @@ import { ArtistSource } from "../src/infrastructure/pixiv/sources/artist-source.
 import { BookmarkSource, FollowingSource, RecommendationSource } from "../src/infrastructure/pixiv/sources/account-sources.js";
 import { KeywordSource } from "../src/infrastructure/pixiv/sources/keyword-source.js";
 import { RankingSource } from "../src/infrastructure/pixiv/sources/ranking-source.js";
+import { summaryMatches } from "../src/infrastructure/pixiv/sources/source-support.js";
 
 const client = {};
 const auth = {};
+
+describe("source filtering", () => {
+  it("uses available summary type fields to reject static work in Ugoira mode", () => {
+    const preferences = { ...defaultPreferences, type: "ugoira" };
+    expect(summaryMatches({ illustType: 2 }, preferences)).toBe(true);
+    expect(summaryMatches({ illust_type: "2" }, preferences)).toBe(true);
+    expect(summaryMatches({ type: "illust" }, preferences)).toBe(false);
+  });
+});
 
 describe("SourceCatalog", () => {
   it.each([
@@ -68,5 +78,23 @@ describe("RankingSource", () => {
     await Promise.all([source.nextCandidate(), source.nextCandidate()]);
 
     expect(ranking).toHaveBeenCalledOnce();
+  });
+
+  it("uses the Ugoira ranking instead of randomly sampling the illustration ranking", async () => {
+    const ranking = vi.fn(async () => ({
+      date: "20260830",
+      rank_total: 1,
+      contents: [{ illust_id: "49", illust_type: "2" }]
+    }));
+    const source = new RankingSource({
+      client: { ranking, detail: async () => ({ body: { illustId: "49", illustType: 2 } }) },
+      preferences: { ...defaultPreferences, type: "ugoira" },
+      rankingMode: "daily",
+      random: () => 0
+    });
+
+    await source.nextCandidate();
+
+    expect(ranking).toHaveBeenCalledWith("daily", 1, null, { content: "ugoira" });
   });
 });

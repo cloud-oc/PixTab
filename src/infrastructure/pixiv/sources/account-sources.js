@@ -1,9 +1,10 @@
-import { randomInteger, randomItem, repeatUntilValue } from "./source-support.js";
+import { randomInteger, randomItem, repeatUntilValue, summaryMatches } from "./source-support.js";
 
 class AuthenticatedSource {
-  constructor({ client, auth, random = Math.random }) {
+  constructor({ client, auth, preferences, random = Math.random }) {
     this.client = client;
     this.auth = auth;
+    this.preferences = preferences;
     this.random = random;
   }
 
@@ -38,7 +39,8 @@ export class BookmarkSource extends AuthenticatedSource {
     return repeatUntilValue(5, async () => {
       const offset = randomInteger(0, 200, this.random);
       const listing = await this.client.json(`/ajax/user/${userId}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=show`);
-      const work = randomItem(listing?.body?.works, this.random);
+      const works = listing?.body?.works?.filter((entry) => summaryMatches(entry, this.preferences));
+      const work = randomItem(works, this.random);
       if (!work?.id) return null;
       const response = await this.client.detail(work.id);
       return response?.body ? { detail: response.body, profileUrl: work.profileImageUrl || null } : null;
@@ -52,7 +54,8 @@ export class RecommendationSource extends AuthenticatedSource {
     if (!userId) return { loginRequired: true };
     return repeatUntilValue(5, async () => {
       const listing = await this.client.json("/ajax/top/illust?mode=all&lang=en");
-      const thumbnails = listing?.body?.thumbnails?.illust || [];
+      const thumbnails = (listing?.body?.thumbnails?.illust || [])
+        .filter((entry) => summaryMatches(entry, this.preferences));
       const summary = randomItem(thumbnails, this.random);
       const recommendedId = summary?.id || randomItem(listing?.body?.page?.recommend?.ids, this.random);
       if (!recommendedId) return null;

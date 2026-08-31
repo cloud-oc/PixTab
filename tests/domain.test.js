@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { acceptsArtwork, createArtworkDto, createUgoiraDto, normalizeArtworkType } from "../src/domain/artwork.js";
 import { MessageType } from "../src/domain/messages.js";
 import { AIGCDisplay, defaultPreferences, KeywordStrategy, normalizePreferences, RankingMode, resolveRankingName } from "../src/domain/preferences.js";
-import { composeKeywordExpression, createKeywordSearchPath, encodeRfc3986 } from "../src/domain/search-query.js";
+import { composeKeywordExpression, createKeywordSearchPath, createRankingQuery, encodeRfc3986 } from "../src/domain/search-query.js";
 
 describe("preferences", () => {
   it("normalizes the current persisted schema for background use", () => {
@@ -34,6 +34,11 @@ describe("search query", () => {
     expect(encodeRfc3986("a(b)!~")).toBe("a%28b%29%21%7E");
     expect(createKeywordSearchPath({ ...input, order: "popular_d", mode: "safe", s_mode: "s_tag" }, 3))
       .toContain("?word=cat%20blue%20-AI%20-manga%20%28sky%20OR%20sea%29&order=popular_d&mode=safe&p=3&s_mode=s_tag");
+  });
+
+  it("requests the dedicated Pixiv Ugoira ranking when selected", () => {
+    expect(createRankingQuery("daily", 2, null, "ugoira"))
+      .toBe("mode=daily&format=json&p=2&content=ugoira");
   });
 });
 
@@ -80,7 +85,6 @@ describe("message contract", () => {
     expect(MessageType).toEqual({
       requestArtwork: "artwork.get",
       checkLogin: "auth.status",
-      fetchUgoira: "ugoira.fetch",
       enableProxy: "proxy.autoEnable"
     });
   });

@@ -1,8 +1,9 @@
-import { randomItem, repeatUntilValue } from "./source-support.js";
+import { randomItem, repeatUntilValue, summaryMatches } from "./source-support.js";
 
 export class ArtistSource {
   constructor({ client, preferences, random = Math.random }) {
     this.client = client;
+    this.preferences = preferences;
     this.random = random;
     this.artistIds = String(preferences.artistId || "").split(",").map((id) => id.trim()).filter(Boolean);
   }
@@ -15,7 +16,10 @@ export class ArtistSource {
         this.client.json(`/ajax/user/${artistId}/profile/all`),
         this.client.json(`/ajax/user/${artistId}?full=1`)
       ]);
-      const illustId = randomItem(Object.keys(works?.body?.illusts || {}), this.random);
+      const candidates = Object.entries(works?.body?.illusts || {})
+        .filter(([, entry]) => !entry || summaryMatches(entry, this.preferences))
+        .map(([id]) => id);
+      const illustId = randomItem(candidates, this.random);
       if (!illustId) return null;
       const response = await this.client.detail(illustId);
       if (!response?.body) return null;

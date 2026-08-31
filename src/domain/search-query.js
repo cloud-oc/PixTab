@@ -32,8 +32,9 @@ export function createKeywordSearchPath(preferences, page = 1) {
   return `${encodeURIComponent(expression)}?${query}`;
 }
 
-export function createRankingQuery(mode, page, date = null) {
+export function createRankingQuery(mode, page, date = null, content = null) {
   const params = new URLSearchParams({ mode, format: "json", p: String(page) });
   if (date) params.set("date", date);
+  if (content) params.set("content", content);
   return params.toString();
 }

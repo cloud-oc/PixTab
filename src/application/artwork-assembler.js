@@ -20,7 +20,8 @@ export class ArtworkAssembler {
     if (!imageUrl) return null;
 
     const avatarUrl = profileImageUrl(detail, candidate.profileUrl);
-    const metadataRequest = normalizeArtworkType(detail.illustType ?? detail.type) === "ugoira"
+    const isUgoira = normalizeArtworkType(detail.illustType ?? detail.type) === "ugoira";
+    const metadataRequest = isUgoira
       ? this.client.ugoira(detail.illustId)
       : Promise.resolve(null);
     const [imageBlob, avatarBlob, metadata] = await Promise.all([
@@ -39,6 +40,8 @@ export class ArtworkAssembler {
         avatarData = avatarUrl || "";
       }
     }
-    return createArtworkDto(detail, imageData, avatarData, createUgoiraDto(metadata?.body));
+    const ugoira = createUgoiraDto(metadata?.body);
+    if (isUgoira && !ugoira) return null;
+    return createArtworkDto(detail, imageData, avatarData, ugoira);
   }
 }

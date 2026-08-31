@@ -71,7 +71,7 @@ export class NewTabController {
       this.view.render(artwork, this.wallpaper);
       if (artwork.ugoira) {
         const player = await this.#getPlayer();
-        if (player) await player.load(artwork.ugoira);
+        if (player) void player.load(artwork.ugoira);
       }
     } catch (error) {
       console.error("Artwork refresh failed", error);
@@ -89,9 +89,7 @@ export class NewTabController {
       this.playerTask = this.playerLoader().then(({ UgoiraPlayer }) => {
         if (this.destroyed) return null;
         const player = new UgoiraPlayer({
-          doc: this.doc,
-          runtime: this.runtime,
-          fetchAction: MessageType.fetchUgoira
+          doc: this.doc
         });
         player.bind();
         this.player = player;

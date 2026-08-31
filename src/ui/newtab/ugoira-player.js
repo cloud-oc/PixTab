@@ -1,12 +1,12 @@
 import { unzipSync } from "../../shared/fflate.module.js";
+import { storageLocalGet } from "../../shared/browser-api.js";
+import { safeCallable } from "../../shared/callable.js";
 
 export class UgoiraPlayer {
-  #cache = new Map();
-
-  constructor({ doc = document, runtime, fetchAction, cacheLimit = 2 }) {
+  constructor({ doc = document, fetchImpl = fetch, storageGet = storageLocalGet }) {
     this.doc = doc;
-    this.runtime = runtime;
-    this.fetchAction = fetchAction;
+    this.fetchImpl = safeCallable(fetchImpl);
+    this.storageGet = storageGet;
     this.frames = [];
     this.index = 0;
     this.playing = false;
@@ -14,7 +14,6 @@ export class UgoiraPlayer {
     this.animationFrame = null;
     this.canvas = null;
     this.context = null;
-    this.cacheLimit = cacheLimit;
     this.resizeCanvas = () => {
       if (!this.canvas) return;
       const bounds = this.doc.body.getBoundingClientRect();
@@ -36,15 +35,21 @@ export class UgoiraPlayer {
 
   async load(payload) {
     this.stop();
-    this.frames = [];
-    this.index = 0;
     if (!payload?.zipUrl || !payload.frames?.length) return;
+    const loadToken = this.token;
+    let frames = [];
     try {
-      this.frames = await this.#decode(payload);
-      await Promise.all(this.frames.slice(0, 1).map(({ image }) => this.#waitForImage(image)));
+      frames = await this.#decode(payload);
+      if (loadToken !== this.token) return this.#releaseFrames(frames);
+      await this.#waitForImage(frames[0].image);
+      if (loadToken !== this.token) return this.#releaseFrames(frames);
+      this.frames = frames;
       this.play();
       this.#setButtonAvailable(true);
     } catch (error) {
+      this.#releaseFrames(frames);
+      if (loadToken !== this.token) return;
+      this.frames = [];
       console.warn("Ugoira playback unavailable", error);
       this.#setButtonAvailable(false);
     }
@@ -55,13 +60,16 @@ export class UgoiraPlayer {
     if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
     this.animationFrame = null;
     this.playing = false;
-    this.#renderButton();
-    if (this.canvas && this.context) {
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.#setButtonAvailable(false);
+    if (this.canvas) {
+      this.context?.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.canvas.style.display = "none";
     }
     this.doc.getElementById("backgroundImage")?.classList.remove("animating");
     this.doc.getElementById("foregroundImage")?.classList.remove("animating");
+    this.#releaseFrames(this.frames);
+    this.frames = [];
+    this.index = 0;
   }
 
   pause() {
@@ -73,10 +81,11 @@ export class UgoiraPlayer {
   }
 
   play() {
-    if (!this.frames.length) return;
+    if (!this.frames.length || this.playing) return;
+    const canvas = this.#getCanvas();
+    if (!this.context) throw new Error("UGOIRA_CANVAS_UNAVAILABLE");
     this.playing = true;
     this.#renderButton();
-    const canvas = this.#getCanvas();
     canvas.style.display = "block";
     const bounds = this.doc.body.getBoundingClientRect();
     canvas.width = bounds.width || window.innerWidth;
@@ -91,9 +100,12 @@ export class UgoiraPlayer {
       previous = timestamp;
       const frame = this.frames[this.index];
       const delay = Math.max(1, Number(frame.delay) || 60);
-      if (elapsed >= delay && this.frames[(this.index + 1) % this.frames.length].image.complete) {
-        elapsed %= delay;
-        this.index = (this.index + 1) % this.frames.length;
+      if (elapsed >= delay) {
+        const nextIndex = this.#nextDrawableIndex();
+        if (nextIndex != null) {
+          elapsed %= delay;
+          this.index = nextIndex;
+        }
       }
       if (this.#draw(this.frames[this.index].image)) {
         this.doc.getElementById("backgroundImage")?.classList.add("animating");
@@ -112,28 +124,13 @@ export class UgoiraPlayer {
   destroy() {
     this.stop();
     window.removeEventListener("resize", this.resizeCanvas);
-    for (const frames of this.#cache.values()) this.#releaseFrames(frames);
-    this.#cache.clear();
-    this.frames = [];
     this.canvas?.remove();
     this.canvas = null;
     this.context = null;
   }
 
   async #decode(payload) {
-    if (this.#cache.has(payload.zipUrl)) {
-      const cached = this.#cache.get(payload.zipUrl);
-      this.#cache.delete(payload.zipUrl);
-      this.#cache.set(payload.zipUrl, cached);
-      return cached;
-    }
-    const dataUrl = await this.runtime.send(
-      { action: this.fetchAction, url: payload.zipUrl },
-      { timeout: 30_000, retries: 3 }
-    );
-    if (!dataUrl) throw new Error("UGOIRA_DOWNLOAD_FAILED");
-    const binary = atob(dataUrl.split(",")[1]);
-    const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    const bytes = await this.#downloadArchive(payload.zipUrl);
     const archive = unzipSync(bytes);
     const frames = payload.frames.flatMap(({ file, delay }) => {
       const contents = archive[file];
@@ -145,21 +142,49 @@ export class UgoiraPlayer {
       return [{ image, url, delay: delay || 60 }];
     });
     if (!frames.length) throw new Error("UGOIRA_EMPTY_ARCHIVE");
-    while (this.#cache.size >= this.cacheLimit) {
-      const oldestKey = this.#cache.keys().next().value;
-      this.#releaseFrames(this.#cache.get(oldestKey));
-      this.#cache.delete(oldestKey);
-    }
-    this.#cache.set(payload.zipUrl, frames);
     return frames;
   }
 
+  async #downloadArchive(url) {
+    const preferences = await this.storageGet({ reverseProxyDomain: "" }).catch(() => ({}));
+    const domain = String(preferences.reverseProxyDomain || "").trim();
+    const proxied = domain && url.includes("i.pximg.net") ? url.replace("i.pximg.net", domain) : null;
+    const candidates = [...new Set([proxied, url].filter(Boolean))];
+    for (const candidate of candidates) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(new DOMException("UGOIRA_TIMEOUT", "TimeoutError")), 90_000);
+      try {
+        const response = await this.fetchImpl(candidate, { signal: controller.signal });
+        if (!response.ok) continue;
+        const buffer = await response.arrayBuffer();
+        if (buffer.byteLength) return new Uint8Array(buffer);
+      } catch {
+        // A configured mirror may be unavailable; retry the original Pixiv URL.
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    throw new Error("UGOIRA_DOWNLOAD_FAILED");
+  }
+
   #waitForImage(image) {
-    if (image.complete) return Promise.resolve();
-    return new Promise((resolve) => {
+    if (image.complete) {
+      return image.naturalWidth ? Promise.resolve() : Promise.reject(new Error("UGOIRA_FRAME_DECODE_FAILED"));
+    }
+    return new Promise((resolve, reject) => {
       image.addEventListener("load", resolve, { once: true });
-      image.addEventListener("error", resolve, { once: true });
+      image.addEventListener("error", () => reject(new Error("UGOIRA_FRAME_DECODE_FAILED")), { once: true });
     });
+  }
+
+  #nextDrawableIndex() {
+    for (let offset = 1; offset <= this.frames.length; offset += 1) {
+      const index = (this.index + offset) % this.frames.length;
+      const image = this.frames[index].image;
+      if (!image.complete) return null;
+      if (image.naturalWidth) return index;
+    }
+    return null;
   }
 
   #getCanvas() {
@@ -191,11 +216,16 @@ export class UgoiraPlayer {
     const contain = imageRatio > canvasRatio
       ? { width, height: width / imageRatio, x: 0, y: (height - width / imageRatio) / 2 }
       : { width: height * imageRatio, height, x: (width - height * imageRatio) / 2, y: 0 };
-    this.context.filter = "blur(18px)";
-    this.context.drawImage(image, cover.x, cover.y, cover.width, cover.height);
-    this.context.filter = "none";
-    this.context.drawImage(image, contain.x, contain.y, contain.width, contain.height);
-    return true;
+    try {
+      this.context.filter = "blur(18px)";
+      this.context.drawImage(image, cover.x, cover.y, cover.width, cover.height);
+      this.context.filter = "none";
+      this.context.drawImage(image, contain.x, contain.y, contain.width, contain.height);
+      return true;
+    } catch {
+      this.context.filter = "none";
+      return false;
+    }
   }
 
   #renderButton() {

@@ -46,7 +46,8 @@ export class RankingSource {
   }
 
   async #fetchPage(page) {
-    const response = await this.client.ranking(this.rankingMode, page, this.date);
+    const content = this.preferences.type === "ugoira" ? "ugoira" : null;
+    const response = await this.client.ranking(this.rankingMode, page, this.date, { content });
     if (!response?.contents) return null;
     this.date ||= response.date || null;
     this.previousDate = response.prev_date || null;

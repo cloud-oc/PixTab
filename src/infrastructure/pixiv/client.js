@@ -36,9 +36,9 @@ export class PixivClient {
     return this.json(`/ajax/illust/${id}/ugoira_meta`, options);
   }
 
-  ranking(mode, page, date = null, { signal } = {}) {
+  ranking(mode, page, date = null, { signal, content = null } = {}) {
     const endpoint = this.proxyPolicy.rankingUrl(this.getPreferences());
-    return this.#sharedJson(`${endpoint}?${createRankingQuery(mode, page, date)}`, signal, false);
+    return this.#sharedJson(`${endpoint}?${createRankingQuery(mode, page, date, content)}`, signal, false);
   }
 
   image(url, { signal } = {}) {
@@ -85,6 +85,8 @@ class ScopedPixivClient {
   search(preferences, page) { return this.client.search(preferences, page, { signal: this.signal }); }
   detail(id) { return this.client.detail(id, { signal: this.signal }); }
   ugoira(id) { return this.client.ugoira(id, { signal: this.signal }); }
-  ranking(mode, page, date = null) { return this.client.ranking(mode, page, date, { signal: this.signal }); }
+  ranking(mode, page, date = null, options = {}) {
+    return this.client.ranking(mode, page, date, { ...options, signal: this.signal });
+  }
   image(url) { return this.client.image(url, { signal: this.signal }); }
 }

@@ -1,5 +1,4 @@
 import { MessageType } from "../domain/messages.js";
-import { blobToDataUrl } from "../infrastructure/network/download-manager.js";
 
 export class MessageRouter {
   constructor({ browserAPI, pool, auth, client, connectivity }) {
@@ -33,19 +32,6 @@ export class MessageRouter {
       }
       case MessageType.checkLogin:
         return this.auth.status();
-      case MessageType.fetchUgoira: {
-        if (!message.url) return null;
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(new DOMException("UGOIRA_TIMEOUT", "TimeoutError")), 30_000);
-        try {
-          const blob = await this.client.image(message.url, { signal: controller.signal });
-          return blob ? blobToDataUrl(blob) : null;
-        } catch {
-          return null;
-        } finally {
-          clearTimeout(timer);
-        }
-      }
       case MessageType.enableProxy:
         return this.connectivity.enableDefaultProxy();
       default:
