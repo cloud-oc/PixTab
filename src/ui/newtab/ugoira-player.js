@@ -12,6 +12,7 @@ export class UgoiraPlayer {
     this.playing = false;
     this.token = 0;
     this.animationFrame = null;
+    this.downloadController = null;
     this.canvas = null;
     this.context = null;
     this.resizeCanvas = () => {
@@ -57,6 +58,8 @@ export class UgoiraPlayer {
 
   stop() {
     this.token += 1;
+    this.downloadController?.abort(new DOMException("UGOIRA_CANCELLED", "AbortError"));
+    this.downloadController = null;
     if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
     this.animationFrame = null;
     this.playing = false;
@@ -152,6 +155,7 @@ export class UgoiraPlayer {
     const candidates = [...new Set([proxied, url].filter(Boolean))];
     for (const candidate of candidates) {
       const controller = new AbortController();
+      this.downloadController = controller;
       const timer = setTimeout(() => controller.abort(new DOMException("UGOIRA_TIMEOUT", "TimeoutError")), 90_000);
       try {
         const response = await this.fetchImpl(candidate, { signal: controller.signal });
@@ -159,9 +163,11 @@ export class UgoiraPlayer {
         const buffer = await response.arrayBuffer();
         if (buffer.byteLength) return new Uint8Array(buffer);
       } catch {
+        if (controller.signal.reason?.name === "AbortError") throw controller.signal.reason;
         // A configured mirror may be unavailable; retry the original Pixiv URL.
       } finally {
         clearTimeout(timer);
+        if (this.downloadController === controller) this.downloadController = null;
       }
     }
     throw new Error("UGOIRA_DOWNLOAD_FAILED");
@@ -217,8 +223,14 @@ export class UgoiraPlayer {
       ? { width, height: width / imageRatio, x: 0, y: (height - width / imageRatio) / 2 }
       : { width: height * imageRatio, height, x: (width - height * imageRatio) / 2, y: 0 };
     try {
-      this.context.filter = "blur(18px)";
-      this.context.drawImage(image, cover.x, cover.y, cover.width, cover.height);
+      const sameGeometry = Math.abs(cover.x - contain.x) < 0.5
+        && Math.abs(cover.y - contain.y) < 0.5
+        && Math.abs(cover.width - contain.width) < 0.5
+        && Math.abs(cover.height - contain.height) < 0.5;
+      if (!sameGeometry) {
+        this.context.filter = "blur(18px)";
+        this.context.drawImage(image, cover.x, cover.y, cover.width, cover.height);
+      }
       this.context.filter = "none";
       this.context.drawImage(image, contain.x, contain.y, contain.width, contain.height);
       return true;

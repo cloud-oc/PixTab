@@ -65,7 +65,11 @@ describe("UgoiraPlayer", () => {
 
   it("does not restart a stale decode after playback has been stopped", async () => {
     let finishDownload;
-    const fetchImpl = vi.fn(() => new Promise((resolve) => { finishDownload = () => resolve(zipResponse()); }));
+    let downloadSignal;
+    const fetchImpl = vi.fn((url, options) => new Promise((resolve) => {
+      downloadSignal = options.signal;
+      finishDownload = () => resolve(zipResponse());
+    }));
     const player = new UgoiraPlayer({ doc: document, fetchImpl, storageGet: vi.fn(async () => ({})) });
     const loading = player.load({
       zipUrl: "https://i.pximg.net/slow-ugoira.zip",
@@ -74,6 +78,7 @@ describe("UgoiraPlayer", () => {
 
     await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
     player.stop();
+    expect(downloadSignal.aborted).toBe(true);
     finishDownload();
     await loading;
 
@@ -123,6 +128,31 @@ describe("UgoiraPlayer", () => {
       "https://i.pximg.net/ugoira.zip"
     ]);
     expect(player.playing).toBe(true);
+    player.destroy();
+  });
+
+  it("draws equal-aspect animation frames only once per render", async () => {
+    const callbacks = [];
+    vi.stubGlobal("requestAnimationFrame", vi.fn((callback) => {
+      callbacks.push(callback);
+      return callbacks.length;
+    }));
+    vi.spyOn(document.body, "getBoundingClientRect").mockReturnValue({ width: 100, height: 100 });
+    const context = { clearRect: vi.fn(), drawImage: vi.fn(), filter: "none" };
+    HTMLCanvasElement.prototype.getContext.mockReturnValue(context);
+    const player = new UgoiraPlayer({
+      doc: document,
+      fetchImpl: vi.fn().mockResolvedValue(zipResponse()),
+      storageGet: vi.fn(async () => ({}))
+    });
+
+    await player.load({
+      zipUrl: "https://i.pximg.net/ugoira.zip",
+      frames: [{ file: "000001.jpg", delay: 60 }]
+    });
+    callbacks[0](performance.now());
+
+    expect(context.drawImage).toHaveBeenCalledOnce();
     player.destroy();
   });
 });

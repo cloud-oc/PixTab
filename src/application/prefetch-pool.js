@@ -165,12 +165,21 @@ export class PrefetchPool {
     const items = [];
     let bytes = 64;
     for (const item of this.#items) {
-      const itemBytes = JSON.stringify(item).length * 2;
+      const itemBytes = this.#estimateItemBytes(item);
       if (bytes + itemBytes > this.maxPersistBytes) break;
       items.push(item);
       bytes += itemBytes;
     }
     return { capacity: this.capacity, items };
+  }
+
+  #estimateItemBytes(item) {
+    const image = typeof item?.imageObjectUrl === "string" ? item.imageObjectUrl : "";
+    const avatar = typeof item?.profileImageUrl === "string" ? item.profileImageUrl : "";
+    const metadata = { ...item };
+    if (typeof item?.imageObjectUrl === "string") metadata.imageObjectUrl = "";
+    if (typeof item?.profileImageUrl === "string") metadata.profileImageUrl = "";
+    return (JSON.stringify(metadata).length + image.length + avatar.length) * 2;
   }
 
   #identity(item) {
