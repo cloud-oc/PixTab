@@ -103,6 +103,11 @@ a:focus-visible {
   visibility: visible;
 }
 
+.has-tab-artwork #container.notReady #loadingSpinner {
+  display: none;
+  visibility: hidden;
+}
+
 #wallpaper,
 #backgroundImage,
 #foregroundImage,

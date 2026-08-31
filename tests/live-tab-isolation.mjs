@@ -33,9 +33,23 @@ try {
   await first.goto(url);
   await waitUntilReady(first);
   const initial = await artworkId(first);
+  await first.addInitScript(() => {
+    window.__pixtabLoadingFrames = [];
+    const sample = () => {
+      const spinner = document.getElementById("loadingSpinner");
+      if (spinner) {
+        const style = getComputedStyle(spinner);
+        window.__pixtabLoadingFrames.push(style.display !== "none" && style.visibility !== "hidden");
+      }
+      if (window.__pixtabLoadingFrames.length < 10) requestAnimationFrame(sample);
+    };
+    requestAnimationFrame(sample);
+  });
   await first.reload();
   await waitUntilReady(first);
+  await first.waitForTimeout(180);
   const afterReload = await artworkId(first);
+  const reloadShowedLoading = await first.evaluate(() => window.__pixtabLoadingFrames.some(Boolean));
 
   const second = await context.newPage();
   await second.goto(url);
@@ -46,10 +60,11 @@ try {
   await first.waitForFunction((previous) => document.querySelector("#illustTitle a")?.href !== previous, initial);
   const firstAdvanced = await artworkId(first);
   const secondAfterAdvance = await artworkId(second);
-  const report = { initial, afterReload, secondInitial, firstAdvanced, secondAfterAdvance };
+  const report = { initial, afterReload, reloadShowedLoading, secondInitial, firstAdvanced, secondAfterAdvance };
   console.log(JSON.stringify(report, null, 2));
   process.exitCode = initial === afterReload
     && initial === secondInitial
+    && !reloadShowedLoading
     && firstAdvanced !== initial
     && secondAfterAdvance === secondInitial
     ? 0

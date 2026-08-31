@@ -42,6 +42,7 @@ export class NewTabController {
     }, { once: true });
     const restored = this.#readTabArtwork();
     if (restored) return this.#renderArtwork(restored);
+    this.doc.documentElement.classList.remove("has-tab-artwork");
     return this.requestArtwork();
   }
 

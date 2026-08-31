@@ -24,6 +24,7 @@ for (const target of ["chrome", "firefox"]) {
     cp(path.join(root, "LICENSE"), path.join(directory, "LICENSE")),
     cp(path.join(root, "THIRD_PARTY_NOTICES"), path.join(directory, "THIRD_PARTY_NOTICES")),
     cp(path.join(root, "src", "newtab", "index.html"), path.join(directory, "src", "newtab", "index.html")),
+    cp(path.join(root, "src", "newtab", "restore-cache-state.js"), path.join(directory, "src", "newtab", "restore-cache-state.js")),
     cp(path.join(root, "src", "options", "options.html"), path.join(directory, "src", "options", "options.html")),
     minifyCss(path.join(root, "src", "newtab", "style.css"), path.join(directory, "src", "newtab", "style.css")),
     minifyCss(path.join(root, "src", "options", "options.css"), path.join(directory, "src", "options", "options.css"))
