@@ -3,7 +3,7 @@ import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import archiver from "archiver";
-import { build } from "esbuild";
+import { build, transform } from "esbuild";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outputRoot = path.join(root, "dist");
@@ -24,9 +24,9 @@ for (const target of ["chrome", "firefox"]) {
     cp(path.join(root, "LICENSE"), path.join(directory, "LICENSE")),
     cp(path.join(root, "THIRD_PARTY_NOTICES"), path.join(directory, "THIRD_PARTY_NOTICES")),
     cp(path.join(root, "src", "newtab", "index.html"), path.join(directory, "src", "newtab", "index.html")),
-    cp(path.join(root, "src", "newtab", "style.css"), path.join(directory, "src", "newtab", "style.css")),
     cp(path.join(root, "src", "options", "options.html"), path.join(directory, "src", "options", "options.html")),
-    cp(path.join(root, "src", "options", "options.css"), path.join(directory, "src", "options", "options.css"))
+    minifyCss(path.join(root, "src", "newtab", "style.css"), path.join(directory, "src", "newtab", "style.css")),
+    minifyCss(path.join(root, "src", "options", "options.css"), path.join(directory, "src", "options", "options.css"))
   ]);
 
   const targetManifest = structuredClone(manifest);
@@ -52,7 +52,7 @@ for (const target of ["chrome", "firefox"]) {
     format: "esm",
     platform: "browser",
     target: target === "firefox" ? "firefox140" : "chrome120",
-    minify: false,
+    minify: true,
     sourcemap: false,
     legalComments: "eof"
   });
@@ -76,4 +76,10 @@ function archive(sourceDirectory, destinationFile) {
     zip.directory(sourceDirectory, false);
     void zip.finalize();
   });
+}
+
+async function minifyCss(sourceFile, destinationFile) {
+  const source = await readFile(sourceFile, "utf8");
+  const result = await transform(source, { loader: "css", minify: true });
+  await writeFile(destinationFile, result.code);
 }
