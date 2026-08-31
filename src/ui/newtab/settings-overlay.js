@@ -1,6 +1,6 @@
 import { applyTheme, getThemePreference, setThemePreference } from "../../shared/theme.js";
 
-const OPEN_DURATION = 420;
+const OPEN_DURATION = 440;
 const CLOSE_DURATION = 320;
 const REDUCED_DURATION = 140;
 const EASING = "cubic-bezier(0.16, 1, 0.3, 1)";
@@ -51,6 +51,9 @@ export class SettingsOverlay {
     if (!this.card || this.state === "open" || this.state === "opening") return;
     if (this.state === "closing" && this.animations.length) {
       this.state = "opening";
+      this.card.classList.remove("settings-closing");
+      this.overlay?.classList.add("visible");
+      this.overlay?.setAttribute("aria-hidden", "false");
       this.#setExpandedA11y(true);
       this.#playAnimations(1);
       return;
@@ -58,37 +61,49 @@ export class SettingsOverlay {
 
     this.syncTheme();
     this.card.classList.remove("unfocused");
+    this.card.classList.remove("settings-closing");
     this.card.classList.add("focused");
     const first = this.card.getBoundingClientRect();
-    const firstRadius = getComputedStyle(this.card).borderRadius;
+    const firstStyle = getComputedStyle(this.card);
+    const firstRadius = firstStyle.borderRadius;
+    const firstShadow = firstStyle.boxShadow;
     this.doc.body.classList.add("settings-open");
     this.overlay?.classList.add("visible");
     this.overlay?.setAttribute("aria-hidden", "false");
     this.card.classList.add("settings-expanded");
     this.#setExpandedA11y(true);
     const last = this.card.getBoundingClientRect();
-    const lastRadius = getComputedStyle(this.card).borderRadius;
+    const lastStyle = getComputedStyle(this.card);
+    const lastRadius = lastStyle.borderRadius;
+    const lastShadow = lastStyle.boxShadow;
     this.state = "opening";
-    this.#createAnimations(first, last, firstRadius, lastRadius);
+    this.#createAnimations(first, last, firstRadius, lastRadius, { firstShadow, lastShadow });
     this.doc.dispatchEvent(new CustomEvent("settingscardopen"));
   }
 
   close() {
     if (this.state === "closed" || this.state === "closing") return;
     this.state = "closing";
+    this.card?.classList.add("settings-closing");
     this.card?.classList.remove("settings-settled");
+    this.overlay?.classList.remove("visible");
+    this.overlay?.setAttribute("aria-hidden", "true");
     this.#setExpandedA11y(false);
     if (this.animations.length) {
       this.#playAnimations(-OPEN_DURATION / CLOSE_DURATION);
       return;
     }
     const last = this.card.getBoundingClientRect();
-    const lastRadius = getComputedStyle(this.card).borderRadius;
+    const lastStyle = getComputedStyle(this.card);
+    const lastRadius = lastStyle.borderRadius;
+    const lastShadow = lastStyle.boxShadow;
     this.card.classList.remove("settings-expanded");
     const first = this.card.getBoundingClientRect();
-    const firstRadius = getComputedStyle(this.card).borderRadius;
+    const firstStyle = getComputedStyle(this.card);
+    const firstRadius = firstStyle.borderRadius;
+    const firstShadow = firstStyle.boxShadow;
     this.card.classList.add("settings-expanded");
-    this.#createAnimations(first, last, firstRadius, lastRadius, { reversed: true });
+    this.#createAnimations(first, last, firstRadius, lastRadius, { reversed: true, firstShadow, lastShadow });
   }
 
   syncTheme() {
@@ -101,7 +116,11 @@ export class SettingsOverlay {
     if (this.frame?.contentDocument) applyTheme(this.frame.contentDocument);
   }
 
-  #createAnimations(first, last, firstRadius, lastRadius, { reversed = false } = {}) {
+  #createAnimations(first, last, firstRadius, lastRadius, {
+    reversed = false,
+    firstShadow,
+    lastShadow
+  } = {}) {
     this.#cancelAnimations();
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const duration = reduced ? REDUCED_DURATION : OPEN_DURATION;
@@ -111,30 +130,34 @@ export class SettingsOverlay {
       : [{
           width: `${first.width}px`,
           height: `${first.height}px`,
-          borderRadius: firstRadius
+          borderRadius: firstRadius,
+          boxShadow: firstShadow
         }, {
           width: `${last.width}px`,
           height: `${last.height}px`,
-          borderRadius: lastRadius
+          borderRadius: lastRadius,
+          boxShadow: lastShadow
         }];
     const options = { duration, easing: EASING, fill: "both" };
     const cardAnimation = this.card.animate(cardFrames, options);
     this.animations = [
       cardAnimation,
       this.infoView.animate([
-        { opacity: 1, offset: 0 },
-        { opacity: 0, offset: 0.34 },
-        { opacity: 0, offset: 1 }
+        { opacity: 1, filter: "blur(0)", transform: "translateY(0) scale(1)", offset: 0 },
+        { opacity: 0.45, filter: "blur(2px)", transform: "translateY(2px) scale(0.992)", offset: 0.2 },
+        { opacity: 0, filter: "blur(5px)", transform: "translateY(5px) scale(0.985)", offset: 0.34 },
+        { opacity: 0, filter: "blur(5px)", transform: "translateY(5px) scale(0.985)", offset: 1 }
       ], options),
       this.settingsView.animate([
-        { opacity: 0, offset: 0 },
-        { opacity: 0, offset: 0.44 },
-        { opacity: 1, offset: 1 }
+        { opacity: 0, filter: "blur(10px)", transform: "translateY(14px) scale(0.985)", offset: 0 },
+        { opacity: 0, filter: "blur(10px)", transform: "translateY(14px) scale(0.985)", offset: 0.36 },
+        { opacity: 0.3, filter: "blur(5px)", transform: "translateY(7px) scale(0.992)", offset: 0.58 },
+        { opacity: 1, filter: "blur(0)", transform: "translateY(0) scale(1)", offset: 1 }
       ], options),
       this.themeSwitcher.animate([
-        { opacity: 0, offset: 0 },
-        { opacity: 0, offset: 0.56 },
-        { opacity: 1, offset: 1 }
+        { opacity: 0, filter: "blur(5px)", transform: "translateY(-6px) scale(0.96)", offset: 0 },
+        { opacity: 0, filter: "blur(5px)", transform: "translateY(-6px) scale(0.96)", offset: 0.58 },
+        { opacity: 1, filter: "blur(0)", transform: "translateY(0) scale(1)", offset: 1 }
       ], options)
     ].filter(Boolean);
     cardAnimation.onfinish = () => {
@@ -159,6 +182,7 @@ export class SettingsOverlay {
 
   #finishOpen() {
     this.state = "open";
+    this.card?.classList.remove("settings-closing");
     this.card?.classList.add("settings-settled");
     this.#cancelAnimations();
     this.card.style.willChange = "";
@@ -168,7 +192,7 @@ export class SettingsOverlay {
   #finishClose() {
     this.state = "closed";
     this.#cancelAnimations();
-    this.card?.classList.remove("settings-expanded", "settings-settled");
+    this.card?.classList.remove("settings-expanded", "settings-settled", "settings-closing");
     this.card.style.willChange = "";
     this.doc.body.classList.remove("settings-open");
     this.overlay?.classList.remove("visible");

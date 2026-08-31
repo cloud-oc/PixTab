@@ -283,6 +283,11 @@ body[data-theme="dark"] #backgroundImage {
     linear-gradient(112deg, rgba(255, 255, 255, 0.32), transparent 30%),
     radial-gradient(circle at 86% 12%, rgba(255, 255, 255, 0.28), transparent 30%);
   opacity: 0.72;
+  transition: opacity 320ms var(--ease-liquid);
+}
+
+#illustInfo.settings-expanded::before {
+  opacity: 0.46;
 }
 
 #illustInfo.unfocused {
@@ -513,6 +518,16 @@ body[data-theme="dark"] #backgroundImage {
   transform: rotate(0deg) scale(1);
 }
 
+#illustInfo.settings-closing #settingsButton .menu-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+#illustInfo.settings-closing #settingsButton .close-icon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.68);
+}
+
 #refreshButton.loading {
   cursor: progress;
   pointer-events: none;
@@ -544,9 +559,9 @@ body[data-theme="dark"] #backgroundImage {
   backdrop-filter: blur(0) saturate(100%);
   -webkit-backdrop-filter: blur(0) saturate(100%);
   transition:
-    opacity 220ms var(--ease-liquid),
-    visibility 220ms,
-    backdrop-filter 360ms var(--ease-liquid);
+    opacity 180ms var(--ease-liquid),
+    visibility 180ms,
+    backdrop-filter 240ms var(--ease-liquid);
 }
 
 .settings-overlay.visible {
@@ -555,6 +570,7 @@ body[data-theme="dark"] #backgroundImage {
   pointer-events: auto;
   backdrop-filter: blur(14px) saturate(120%);
   -webkit-backdrop-filter: blur(14px) saturate(120%);
+  transition-duration: 300ms, 0s, 400ms;
 }
 
 .overlay-theme-switcher {
