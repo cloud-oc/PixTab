@@ -1,4 +1,4 @@
-import { safeCallable } from "../../shared/browser-polyfill.js";
+import { safeCallable } from "../../shared/callable.js";
 
 export class ConnectivityMonitor {
   constructor({ proxyPolicy, preferenceStore, fetchImpl = fetch, intervalMs = 600_000, now = Date.now }) {

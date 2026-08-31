@@ -1,8 +1,9 @@
-import browserAPI, { storageLocalGet, storageLocalSet } from "../../shared/browser-polyfill.js";
+import browserAPI, { storageLocalGet, storageLocalSet } from "../../shared/browser-api.js";
 import { MessageType } from "../../domain/messages.js";
 import { defaultPreferences } from "../../domain/preferences.js";
 import { RuntimeClient } from "../../infrastructure/browser/runtime-client.js";
 import { applyTheme, getThemePreference, setThemePreference } from "../../shared/theme.js";
+import { CustomSelectManager } from "./custom-select.js";
 import { LocalizationController } from "./localization.js";
 import { OptionsView } from "./options-view.js";
 
@@ -11,18 +12,25 @@ export class OptionsController {
     this.doc = doc;
     this.view = view;
     this.runtime = runtime;
+    this.customSelects = new CustomSelectManager(doc);
     this.saveTimer = null;
     this.loginTimer = null;
+    this.scrollbarTimer = null;
   }
 
   async initialize() {
     this.localization = new LocalizationController({ doc: this.doc });
-    this.localization.initialize(() => this.view.refreshLoginStatus());
+    this.localization.initialize(() => {
+      this.view.refreshLoginStatus();
+      this.customSelects.refresh();
+    });
     const values = await storageLocalGet(defaultPreferences);
     this.view.apply(values);
+    this.customSelects.initialize();
     this.#bindForm();
     this.#bindNavigation();
     this.#bindTheme();
+    this.#bindScrollbarFeedback();
     await this.refreshLogin();
   }
 
@@ -39,6 +47,7 @@ export class OptionsController {
   async reset() {
     await storageLocalSet(defaultPreferences);
     this.view.apply(defaultPreferences);
+    this.customSelects.refresh();
   }
 
   async refreshLogin() {
@@ -107,5 +116,14 @@ export class OptionsController {
       });
     });
     render();
+  }
+
+  #bindScrollbarFeedback() {
+    const root = this.doc.documentElement;
+    this.doc.addEventListener("scroll", () => {
+      root.classList.add("is-scrolling");
+      clearTimeout(this.scrollbarTimer);
+      this.scrollbarTimer = setTimeout(() => root.classList.remove("is-scrolling"), 700);
+    }, { capture: true, passive: true });
   }
 }

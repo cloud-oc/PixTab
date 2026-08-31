@@ -26,8 +26,14 @@ try {
   await options.goto(`chrome-extension://${extensionId}/src/options/options.html`);
   await options.locator("#settingsHeading").waitFor();
   await options.screenshot({ path: path.join(output, "desktop-options.png"), fullPage: true, animations: "disabled" });
+  await options.locator("#orderCustomButton").click();
+  await options.screenshot({ path: path.join(output, "desktop-options-dropdown.png"), fullPage: true, animations: "disabled" });
+  await options.keyboard.press("Escape");
   await options.setViewportSize({ width: 390, height: 844 });
   await options.screenshot({ path: path.join(output, "mobile-options.png"), fullPage: true, animations: "disabled" });
+  await options.locator("#languageSelectCustomButton").click();
+  await options.screenshot({ path: path.join(output, "mobile-options-dropdown.png"), fullPage: true, animations: "disabled" });
+  await options.keyboard.press("Escape");
   const optionsOverflow = await options.evaluate(() => {
     if (document.documentElement.scrollWidth <= innerWidth) return [];
     return [...document.querySelectorAll("body *")].flatMap((element) => {
@@ -50,7 +56,7 @@ try {
   await newtab.locator("#settingsButton").click();
   await newtab.locator("#settingsOverlay.visible").waitFor();
   await newtab.screenshot({ path: path.join(output, "desktop-overlay.png"), animations: "disabled" });
-  await newtab.locator("#settingsCloseButton").click();
+  await newtab.locator("#settingsButton").click();
 
   await newtab.setViewportSize({ width: 390, height: 844 });
   await newtab.locator("#illustInfo").evaluate((element) => {
@@ -81,7 +87,7 @@ try {
   await newtab.locator("#settingsButton").click();
   await newtab.locator("#settingsOverlay.visible").waitFor();
   await newtab.screenshot({ path: path.join(output, "mobile-overlay.png"), animations: "disabled" });
-  const overlayFits = await newtab.locator(".settings-overlay-panel").evaluate((element) => {
+  const overlayFits = await newtab.locator("#illustInfo.settings-expanded").evaluate((element) => {
     const box = element.getBoundingClientRect();
     return box.left >= 0 && box.right <= innerWidth && box.top >= 0 && box.bottom <= innerHeight;
   });

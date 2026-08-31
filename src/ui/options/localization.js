@@ -1,4 +1,5 @@
-import { browserAPI, safeCallable } from "../../shared/browser-polyfill.js";
+import { browserAPI } from "../../shared/browser-api.js";
+import { safeCallable } from "../../shared/callable.js";
 
 const SUPPORTED_LANGUAGES = Object.freeze(["en", "zh-CN", "zh-TW", "ja", "ko", "ru"]);
 

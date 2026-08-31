@@ -37,12 +37,30 @@ test.describe("packaged PixTab", () => {
     const pageErrors = [];
     page.on("pageerror", (error) => pageErrors.push(error.message));
     await page.goto(`chrome-extension://${extensionId}/src/options/options.html`);
-    await expect(page.locator("#order")).toBeVisible();
+    await expect(page.locator("#orderCustomButton")).toBeVisible();
     await expect(page.locator("#themeAutoBtn")).toBeVisible();
+    const themeButtons = await page.locator(".theme-switcher button").evaluateAll((buttons) => buttons.map((button) => {
+      const box = button.getBoundingClientRect();
+      return { x: box.x, y: box.y };
+    }));
+    expect(themeButtons.every(({ x }) => x === themeButtons[0].x)).toBe(true);
+    expect(themeButtons[0].x).toBeGreaterThan(720);
+    expect(themeButtons[0].y).toBeLessThan(themeButtons[1].y);
+    expect(themeButtons[1].y).toBeLessThan(themeButtons[2].y);
     await expect(page.locator("#settingsHeading")).toHaveText("Settings");
     await expect(page.locator("#orderLabel")).toHaveText("Update Mode");
     await expect(page.locator("#dailyRankingOrder")).toHaveText("Daily Ranking");
     await expect(page.locator("#reset")).toHaveText("Reset to default settings");
+    await page.locator("#orderCustomButton").click();
+    await expect(page.locator("#orderCustomList")).toBeVisible();
+    await expect(page.locator("#orderCustomList")).toHaveCSS("border-radius", "13px");
+    await page.locator('#orderCustomList [data-value="artist"]').click();
+    await expect(page.locator("#order")).toHaveValue("artist");
+    await expect(page.locator("#orderCustomButton .custom-select__value")).toHaveText("Specific Artist");
+    await page.evaluate(() => window.scrollTo({ top: 500, behavior: "instant" }));
+    await expect(page.locator("html")).toHaveClass(/is-scrolling/);
+    await page.waitForTimeout(750);
+    await expect(page.locator("html")).not.toHaveClass(/is-scrolling/);
     await page.screenshot({
       path: testInfo.outputPath("options.png"),
       fullPage: true,
@@ -100,21 +118,96 @@ test.describe("packaged PixTab", () => {
     await expect(page.locator(".pix-spinner")).toHaveCSS("box-shadow", "none");
     await expect(page.locator(".pix-spinner")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await page.locator("#container").evaluate((element) => element.classList.remove("notReady"));
+    await page.locator("#illustInfo").evaluate((element) => { element.className = "unfocused"; });
+    await page.locator("#illustInfo").hover();
+    await expect(page.locator("#illustInfo")).toHaveClass(/focused/);
+    const saveTarget = await page.evaluate(() => {
+      const element = document.elementFromPoint(innerWidth / 2, innerHeight / 2);
+      return { id: element?.id, tagName: element?.tagName };
+    });
+    expect(saveTarget).toEqual({ id: "saveableArtwork", tagName: "IMG" });
     await expect(page.locator("#settingsButton")).toBeVisible();
+    await expect(page.locator("#refreshButton .icon")).toHaveCSS("width", "19px");
+    await expect(page.locator("#refreshButton .icon")).toHaveCSS("height", "19px");
+    expect(await page.locator("#refreshButton .icon").getAttribute("style")).toBeNull();
+    const [compactCardBox, compactToggleBox] = await Promise.all([
+      page.locator("#illustInfo").boundingBox(),
+      page.locator("#settingsButton").boundingBox()
+    ]);
     await page.locator("#settingsButton").click();
     await expect(page.locator("#settingsOverlay")).toHaveClass(/visible/);
-    await expect(page.locator("#container")).toHaveJSProperty("inert", true);
-    await expect(page.locator("#settingsCloseButton")).toBeFocused();
+    await expect(page.locator("#illustInfo")).toHaveClass(/settings-expanded/);
+    await expect(page.locator("#settingsButton")).toHaveAttribute("aria-expanded", "true");
+    await expect(page.locator("#settingsButton")).toHaveAttribute("aria-label", "Close settings");
+    await expect(page.locator("#settingsButton")).toBeFocused();
+    await page.waitForTimeout(100);
+    const motionToggleBox = await page.locator("#settingsButton").boundingBox();
+    expect(Math.abs((motionToggleBox.x + motionToggleBox.width / 2) - (compactToggleBox.x + compactToggleBox.width / 2))).toBeLessThanOrEqual(0.75);
+    expect(Math.abs((motionToggleBox.y + motionToggleBox.height / 2) - (compactToggleBox.y + compactToggleBox.height / 2))).toBeLessThanOrEqual(0.75);
+    expect(Math.abs(motionToggleBox.width - compactToggleBox.width)).toBeLessThanOrEqual(0.75);
+    expect(Math.abs(motionToggleBox.height - compactToggleBox.height)).toBeLessThanOrEqual(0.75);
+    await page.waitForTimeout(350);
+    await expect(page.locator("#artworkInfoView")).toHaveCSS("visibility", "hidden");
+    await expect(page.locator("#artworkInfoView")).toHaveCSS("opacity", "0");
+    const [expandedCardBox, toggleBox, themeBox] = await Promise.all([
+      page.locator("#illustInfo").boundingBox(),
+      page.locator("#settingsButton").boundingBox(),
+      page.locator("#overlayThemeSwitcher").boundingBox()
+    ]);
+    expect(expandedCardBox.width).toBeGreaterThan(compactCardBox.width);
+    expect(expandedCardBox.height).toBeGreaterThan(compactCardBox.height);
+    expect(expandedCardBox.x).toBeLessThan(compactCardBox.x);
+    expect(expandedCardBox.y).toBeLessThan(compactCardBox.y);
+    expect(Math.abs((expandedCardBox.x + expandedCardBox.width) - (compactCardBox.x + compactCardBox.width))).toBeLessThanOrEqual(0.5);
+    expect(Math.abs((expandedCardBox.y + expandedCardBox.height) - (compactCardBox.y + compactCardBox.height))).toBeLessThanOrEqual(0.5);
+    expect(Math.abs((toggleBox.x + toggleBox.width / 2) - (compactToggleBox.x + compactToggleBox.width / 2))).toBeLessThanOrEqual(0.5);
+    expect(Math.abs((toggleBox.y + toggleBox.height / 2) - (compactToggleBox.y + compactToggleBox.height / 2))).toBeLessThanOrEqual(0.5);
+    expect(toggleBox.width).toBe(compactToggleBox.width);
+    expect(toggleBox.height).toBe(compactToggleBox.height);
+    expect(themeBox).not.toBeNull();
+    expect(themeBox.x + themeBox.width).toBeLessThan(expandedCardBox.x + expandedCardBox.width);
+    expect(themeBox.y).toBeLessThan(toggleBox.y);
+    const originalViewport = page.viewportSize();
+    await page.setViewportSize({ width: 900, height: 600 });
+    await expect.poll(async () => {
+      const box = await page.locator("#illustInfo").boundingBox();
+      return { width: box.width, height: box.height, right: box.x + box.width, bottom: box.y + box.height };
+    }).toEqual({ width: 852, height: 552, right: 876, bottom: 576 });
+    await expect(page.locator("#artworkInfoView")).toHaveCSS("visibility", "hidden");
+    await page.setViewportSize(originalViewport);
+    await expect.poll(async () => (await page.locator("#illustInfo").boundingBox()).width).toBe(960);
+    await page.locator('#overlayThemeSwitcher [data-theme-value="dark"]').click();
+    await expect(page.locator("body")).toHaveAttribute("data-theme", "dark");
+    await expect(page.frameLocator("#settingsFrame").locator("body")).toHaveAttribute("data-theme", "dark");
     await page.addStyleTag({ content: "*,*::before,*::after{animation:none!important;transition:none!important}" });
     await page.screenshot({
       path: testInfo.outputPath("newtab-settings.png"),
       fullPage: true,
       animations: "disabled"
     });
-    await page.locator("#settingsCloseButton").click();
+    await page.locator("#settingsButton").click();
     await expect(page.locator("#settingsOverlay")).not.toHaveClass(/visible/);
-    await expect(page.locator("#container")).toHaveJSProperty("inert", false);
+    await expect(page.locator("#illustInfo")).not.toHaveClass(/settings-expanded/);
+    await expect(page.locator("#artworkInfoView")).toHaveCSS("visibility", "visible");
+    await expect(page.locator("#settingsButton")).toHaveAttribute("aria-expanded", "false");
     await expect(page.locator("#settingsButton")).toBeFocused();
+
+    await page.locator("#settingsButton").dispatchEvent("click");
+    await page.waitForTimeout(70);
+    await page.locator("#settingsButton").dispatchEvent("click");
+    await page.waitForTimeout(45);
+    await page.locator("#settingsButton").dispatchEvent("click");
+    await expect(page.locator("#illustInfo")).toHaveClass(/settings-expanded/);
+    await expect(page.locator("#settingsButton")).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#illustInfo")).not.toHaveClass(/settings-expanded/);
+
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.locator("#settingsButton").click();
+    await expect(page.locator("#illustInfo")).toHaveClass(/settings-expanded/);
+    await page.locator("#settingsOverlay").click({ position: { x: 8, y: 8 } });
+    await expect(page.locator("#illustInfo")).not.toHaveClass(/settings-expanded/);
+    await expect(page.locator("#settingsOverlay")).not.toHaveClass(/visible/);
     expect(pageErrors).toEqual([]);
     await page.close();
   });

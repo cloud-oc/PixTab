@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ArtworkView } from "../src/ui/newtab/artwork-view.js";
 import { NewTabController } from "../src/ui/newtab/newtab-controller.js";
+import { WallpaperRenderer } from "../src/ui/newtab/wallpaper-renderer.js";
+import { CustomSelect } from "../src/ui/options/custom-select.js";
 import { OptionsController } from "../src/ui/options/options-controller.js";
 import { OptionsView } from "../src/ui/options/options-view.js";
 
@@ -107,6 +109,70 @@ describe("ArtworkView", () => {
     expect(document.getElementById("refreshButton").classList.contains("loading")).toBe(false);
     expect(document.getElementById("refreshButton").getAttribute("aria-busy")).toBe("false");
     expect(document.getElementById("container").classList.contains("load-failed")).toBe(true);
+  });
+
+  it("reveals the artwork card again when hovered after fading", async () => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `
+      <div id="container"><div id="loadingSpinner"></div><div class="pix-spinner__core"></div></div>
+      <div id="illustInfo"><a id="avatar"><div id="avatarImage"></div></a><div id="illustTitle"><a></a></div><div id="illustName"><a></a></div></div>
+      <button id="refreshButton"></button>`;
+    const view = new ArtworkView(document);
+    view.render({ title: "Title", userName: "Artist", imageObjectUrl: "image" }, { show: vi.fn() });
+
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(document.getElementById("illustInfo").classList.contains("unfocused")).toBe(true);
+
+    document.getElementById("illustInfo").dispatchEvent(new MouseEvent("mouseenter"));
+    expect(document.getElementById("illustInfo").classList.contains("focused")).toBe(true);
+    vi.useRealTimers();
+  });
+});
+
+describe("CustomSelect", () => {
+  it("keeps the native select as the value source", () => {
+    document.body.innerHTML = `
+      <label for="mode">Mode</label>
+      <select id="mode"><option value="safe">Safe</option><option value="all">All</option></select>`;
+    const select = document.getElementById("mode");
+    const change = vi.fn();
+    select.addEventListener("change", change);
+    const control = new CustomSelect(select);
+
+    control.open();
+    document.querySelector('[role="option"][data-value="all"]').click();
+
+    expect(select.value).toBe("all");
+    expect(change).toHaveBeenCalledOnce();
+    expect(document.querySelector(".custom-select__value").textContent).toBe("All");
+    expect(document.querySelector(".custom-select__button").getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("refreshes localized option text without replacing the select", async () => {
+    document.body.innerHTML = `<select id="size"><option value="full">Full</option></select>`;
+    const select = document.getElementById("size");
+    new CustomSelect(select);
+
+    select.options[0].textContent = "完整显示";
+    await Promise.resolve();
+
+    expect(document.querySelector(".custom-select__value").textContent).toBe("完整显示");
+    expect(document.querySelector('[role="option"]').textContent).toBe("完整显示");
+  });
+});
+
+describe("WallpaperRenderer", () => {
+  it("exposes the preview image and Ugoira archive to the native context menu", () => {
+    const background = document.createElement("div");
+    const foreground = document.createElement("div");
+    const saveTarget = document.createElement("a");
+    const saveableArtwork = document.createElement("img");
+    const renderer = new WallpaperRenderer({ background, foreground, saveTarget, saveableArtwork });
+
+    renderer.show("data:image/jpeg;base64,eA==", "https://example.test/ugoira.zip");
+
+    expect(saveableArtwork.src).toBe("data:image/jpeg;base64,eA==");
+    expect(saveTarget.href).toBe("https://example.test/ugoira.zip");
   });
 });
 

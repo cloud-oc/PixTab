@@ -1,4 +1,4 @@
-import browserAPI, { IS_FIREFOX, promisify } from "../../shared/browser-polyfill.js";
+import browserAPI from "../../shared/browser-api.js";
 
 export class PixivAuthService {
   constructor(client) {
@@ -8,9 +8,7 @@ export class PixivAuthService {
   async status() {
     try {
       const request = { url: "https://www.pixiv.net", name: "PHPSESSID" };
-      const cookie = IS_FIREFOX
-        ? await browserAPI.cookies.get(request)
-        : await promisify(browserAPI.cookies.get.bind(browserAPI.cookies), request);
+      const cookie = await browserAPI.cookies.get(request);
       const userId = /^\d+$/.test(cookie?.value?.split("_")[0] || "") ? cookie.value.split("_")[0] : null;
       if (!userId) return { loggedIn: false };
       const profile = await this.client.json(`/ajax/user/${userId}?full=0`);

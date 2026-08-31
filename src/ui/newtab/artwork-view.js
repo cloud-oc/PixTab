@@ -23,7 +23,7 @@ export class ArtworkView {
     this.artistAnchor.href = artwork.userIdUrl || "";
     this.avatar.href = artwork.userIdUrl || "";
     this.avatarImage.style.backgroundImage = `url(${artwork.profileImageUrl || ""})`;
-    wallpaper.show(artwork.imageObjectUrl);
+    wallpaper.show(artwork.imageObjectUrl, artwork.ugoira?.zipUrl);
     this.container.classList.remove("notReady");
     this.setLoading(false);
     this.#scheduleFade();
@@ -64,18 +64,27 @@ export class ArtworkView {
   }
 
   #bindInfoFocus() {
-    const focus = () => {
-      this.info.className = "focused";
+    const reveal = () => {
+      this.info.classList.remove("unfocused");
+      this.info.classList.add("focused");
       clearTimeout(this.fadeTimer);
     };
-    this.info?.addEventListener("mouseenter", focus);
-    this.info?.addEventListener("mouseover", focus);
+    this.info?.addEventListener("mouseenter", reveal);
+    this.info?.addEventListener("focusin", reveal);
     this.info?.addEventListener("mouseleave", () => this.#scheduleFade());
+    this.info?.addEventListener("focusout", () => this.#scheduleFade());
     this.info?.addEventListener("click", (event) => event.stopPropagation());
+    this.doc.addEventListener("settingscardopen", () => clearTimeout(this.fadeTimer));
+    this.doc.addEventListener("settingscardclosed", () => this.#scheduleFade());
   }
 
   #scheduleFade() {
     clearTimeout(this.fadeTimer);
-    this.fadeTimer = setTimeout(() => { this.info.className = "unfocused"; }, 10_000);
+    this.fadeTimer = setTimeout(() => {
+      if (this.info?.classList.contains("settings-expanded")) return;
+      if (this.info?.matches(":hover") || this.info?.contains(this.doc.activeElement)) return;
+      this.info?.classList.remove("focused");
+      this.info?.classList.add("unfocused");
+    }, 10_000);
   }
 }

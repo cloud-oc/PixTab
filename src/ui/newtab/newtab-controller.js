@@ -1,4 +1,4 @@
-import browserAPI from "../../shared/browser-polyfill.js";
+import browserAPI from "../../shared/browser-api.js";
 import { MessageType } from "../../domain/messages.js";
 import { RuntimeClient } from "../../infrastructure/browser/runtime-client.js";
 import { ArtworkView } from "./artwork-view.js";
@@ -14,7 +14,9 @@ export class NewTabController {
     this.view = new ArtworkView(doc);
     this.wallpaper = new WallpaperRenderer({
       background: doc.getElementById("backgroundImage"),
-      foreground: doc.getElementById("foregroundImage")
+      foreground: doc.getElementById("foregroundImage"),
+      saveTarget: doc.getElementById("artworkSaveTarget"),
+      saveableArtwork: doc.getElementById("saveableArtwork")
     });
     this.player = null;
     this.playerTask = null;

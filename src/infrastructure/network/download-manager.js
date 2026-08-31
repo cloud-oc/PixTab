@@ -1,5 +1,5 @@
 import { abortableDelay, abortReason, createTimedSignal } from "./abort.js";
-import { safeCallable } from "../../shared/browser-polyfill.js";
+import { safeCallable } from "../../shared/callable.js";
 
 export class DownloadManager {
   #active = 0;

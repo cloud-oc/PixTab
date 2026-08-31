@@ -94,6 +94,7 @@ a:focus-visible {
 }
 
 #container.notReady #wallpaper,
+#container.notReady #artworkSaveTarget,
 #container.notReady #illustInfo {
   visibility: hidden;
 }
@@ -112,6 +113,28 @@ a:focus-visible {
 
 #wallpaper {
   z-index: -1;
+  pointer-events: none;
+}
+
+#artworkSaveTarget,
+#saveableArtwork {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#artworkSaveTarget {
+  z-index: 2;
+  display: block;
+  pointer-events: auto;
+  cursor: default;
+}
+
+#saveableArtwork {
+  object-fit: cover;
+  opacity: 0.001;
+  user-select: none;
 }
 
 #backgroundImage,
@@ -140,7 +163,7 @@ body[data-theme="dark"] #backgroundImage {
 }
 
 .maskLayer {
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
   background:
     linear-gradient(to top, rgba(4, 8, 15, 0.2), transparent 34%),
@@ -225,6 +248,7 @@ body[data-theme="dark"] #backgroundImage {
 
 #illustInfo {
   position: fixed;
+  z-index: 3;
   right: 24px;
   bottom: 24px;
   width: min(320px, calc(100vw - 48px));
@@ -244,9 +268,9 @@ body[data-theme="dark"] #backgroundImage {
   transform-origin: 100% 100%;
   transition:
     opacity 260ms var(--ease-liquid),
-    transform 320ms var(--ease-liquid),
     background-color 240ms var(--ease-liquid),
-    border-color 240ms var(--ease-liquid);
+    border-color 240ms var(--ease-liquid),
+    box-shadow 320ms var(--ease-liquid);
 }
 
 #illustInfo::before {
@@ -264,12 +288,31 @@ body[data-theme="dark"] #backgroundImage {
 #illustInfo.unfocused {
   opacity: 0;
   transform: translateY(12px) scale(0.97);
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 #illustInfo.focused {
   opacity: 1;
   transform: translateY(0) scale(1);
+}
+
+#illustInfo.settings-expanded {
+  top: auto;
+  right: 24px;
+  bottom: 24px;
+  left: auto;
+  z-index: 30;
+  width: min(960px, calc(100vw - 48px));
+  height: min(700px, calc(100vh - 48px));
+  padding: 0;
+  overflow: visible;
+  border-radius: 24px;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+  box-shadow:
+    0 30px 88px var(--liquid-shadow-deep),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62);
 }
 
 #illustInfo a {
@@ -287,6 +330,17 @@ body[data-theme="dark"] #backgroundImage {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.artwork-info-view {
+  min-height: 52px;
+  padding-right: 52px;
+}
+
+#illustInfo.settings-settled .artwork-info-view {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 #avatar,
@@ -346,8 +400,7 @@ body[data-theme="dark"] #backgroundImage {
 }
 
 #refreshButton,
-#settingsButton,
-.settings-close-button {
+#settingsButton {
   width: 40px;
   height: 40px;
   margin: 0;
@@ -372,25 +425,63 @@ body[data-theme="dark"] #backgroundImage {
 }
 
 #refreshButton:hover,
-#settingsButton:hover,
-.settings-close-button:hover {
+#settingsButton:hover {
   background: var(--liquid-control-hover);
+}
+
+#refreshButton:hover {
   transform: scale(1.05);
 }
 
-#refreshButton:active,
-#settingsButton:active,
-.settings-close-button:active {
+#refreshButton:active {
   transform: scale(0.94);
   transition-duration: 80ms;
 }
 
+#settingsButton:active {
+  background: var(--liquid-surface-strong);
+  transition-duration: 80ms;
+}
+
 #refreshButton svg,
-#settingsButton .icon,
-.settings-close-button svg {
+#settingsButton .icon {
   width: 19px;
   height: 19px;
   fill: currentColor;
+}
+
+#settingsButton {
+  position: absolute;
+  right: 12px;
+  bottom: 18px;
+  z-index: 34;
+}
+
+#settingsButton .icon {
+  position: absolute;
+  transition:
+    opacity 180ms var(--ease-liquid),
+    transform 260ms var(--ease-liquid);
+}
+
+#settingsButton .menu-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+#settingsButton .close-icon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.68);
+}
+
+#illustInfo.settings-expanded #settingsButton .menu-icon {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.68);
+}
+
+#illustInfo.settings-expanded #settingsButton .close-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
 }
 
 #refreshButton.loading {
@@ -416,10 +507,7 @@ body[data-theme="dark"] #backgroundImage {
 .settings-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1200;
-  display: grid;
-  place-items: center;
-  padding: 32px;
+  z-index: 20;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -440,38 +528,70 @@ body[data-theme="dark"] #backgroundImage {
   -webkit-backdrop-filter: blur(14px) saturate(120%);
 }
 
-.settings-overlay-panel {
-  position: relative;
-  width: min(960px, 92vw);
-  height: min(90vh, 700px);
-  border-radius: 24px;
-  color: var(--liquid-ink);
-  background:
-    linear-gradient(145deg, var(--liquid-surface-strong), var(--liquid-surface));
-  border: 1px solid var(--liquid-edge);
-  box-shadow:
-    0 30px 88px var(--liquid-shadow-deep),
-    inset 0 1px 0 rgba(255, 255, 255, 0.62);
-  backdrop-filter: blur(34px) saturate(190%);
-  -webkit-backdrop-filter: blur(34px) saturate(190%);
-  transform: translate(18px, 22px) scale(0.94);
-  transform-origin: 100% 100%;
-  filter: blur(8px);
-  transition:
-    transform 380ms var(--ease-liquid),
-    filter 260ms var(--ease-liquid);
-}
-
-.settings-overlay.visible .settings-overlay-panel {
-  transform: translate(0, 0) scale(1);
-  filter: blur(0);
-}
-
-.settings-close-button {
+.overlay-theme-switcher {
   position: absolute;
-  top: -16px;
-  right: -16px;
-  z-index: 2;
+  right: 12px;
+  top: 18px;
+  z-index: 33;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--liquid-edge-soft);
+  border-radius: 16px;
+  background: var(--liquid-control);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.17),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms var(--ease-liquid);
+}
+
+#illustInfo.settings-expanded .overlay-theme-switcher {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.overlay-theme-switcher button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--liquid-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 160ms var(--ease-liquid),
+    background-color 160ms var(--ease-liquid),
+    transform 200ms cubic-bezier(0.2, 1.45, 0.4, 1);
+}
+
+.overlay-theme-switcher button:hover {
+  color: var(--liquid-ink);
+  background: var(--liquid-control-hover);
+  transform: scale(1.08);
+}
+
+.overlay-theme-switcher button:active {
+  transform: scale(0.9);
+}
+
+.overlay-theme-switcher button.active {
+  color: var(--liquid-surface-strong);
+  background: var(--liquid-ink);
+}
+
+.overlay-theme-switcher .icon {
+  width: 16px;
+  height: 16px;
 }
 
 #settingsFrame {
@@ -482,6 +602,20 @@ body[data-theme="dark"] #backgroundImage {
   border-radius: inherit;
   background: transparent;
   color-scheme: light dark;
+}
+
+.settings-card-view {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#illustInfo.settings-expanded .settings-card-view {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .play-pause-btn {
@@ -559,23 +693,24 @@ body[data-theme="dark"] #backgroundImage {
     width: calc(100vw - 24px);
   }
 
+  #illustInfo.settings-expanded {
+    top: auto;
+    right: 12px;
+    bottom: 12px;
+    left: auto;
+    width: calc(100vw - 24px);
+    height: calc(100vh - 24px);
+    border-radius: 20px;
+    transform: none;
+  }
+
   .info-card-actions {
     flex-direction: row;
   }
 
-  .settings-overlay {
-    padding: 12px;
-  }
-
-  .settings-overlay-panel {
-    width: 100%;
-    height: calc(100vh - 24px);
-    border-radius: 20px;
-  }
-
-  .settings-close-button {
-    top: 10px;
-    right: 10px;
+  .overlay-theme-switcher {
+    right: 12px;
+    top: 12px;
   }
 
   .play-pause-btn {
@@ -599,11 +734,8 @@ body[data-theme="dark"] #backgroundImage {
     transition-duration: 120ms !important;
   }
 
-  .settings-overlay-panel,
-  .settings-overlay.visible .settings-overlay-panel,
   #illustInfo.unfocused,
   #illustInfo.focused {
-    transform: none;
     filter: none;
   }
 }
@@ -626,11 +758,14 @@ body[data-theme="dark"] #backgroundImage {
 
   #illustInfo,
   .settings-overlay,
-  .settings-overlay-panel,
   .play-pause-btn,
   #refreshButton,
-  #settingsButton,
-  .settings-close-button {
+  #settingsButton {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .overlay-theme-switcher {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -656,7 +791,6 @@ body[data-theme="dark"] #backgroundImage {
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   #illustInfo,
-  .settings-overlay-panel,
   .play-pause-btn {
     background: var(--liquid-surface-strong);
   }

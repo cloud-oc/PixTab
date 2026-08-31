@@ -55,7 +55,7 @@ export class MessageRouter {
 
   async #notify(action) {
     try {
-      await Promise.resolve(this.browserAPI.runtime.sendMessage({ action }));
+      await this.browserAPI.runtime.sendMessage({ action });
     } catch {
       // New-tab listeners are optional.
     }

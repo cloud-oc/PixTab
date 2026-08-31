@@ -1,4 +1,4 @@
-import browserAPI from "../../shared/browser-polyfill.js";
+import browserAPI from "../../shared/browser-api.js";
 
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
@@ -13,7 +13,7 @@ export class RuntimeClient {
         let timer;
         try {
           return await Promise.race([
-            Promise.resolve(this.api.runtime.sendMessage(message)),
+            this.api.runtime.sendMessage(message),
             new Promise((_, reject) => {
               timer = setTimeout(() => reject(new Error("MESSAGE_TIMEOUT")), timeout);
             })

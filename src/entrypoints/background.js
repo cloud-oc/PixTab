@@ -1,4 +1,4 @@
-import browserAPI from "../shared/browser-polyfill.js";
+import browserAPI from "../shared/browser-api.js";
 import { BackgroundApplication } from "../application/background-application.js";
 import { installNetworkRules } from "../infrastructure/browser/net-rules.js";
 

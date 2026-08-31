@@ -8,7 +8,7 @@ import { DownloadManager } from "../infrastructure/network/download-manager.js";
 import { RequestScheduler } from "../infrastructure/network/request-scheduler.js";
 import { PixivClient } from "../infrastructure/pixiv/client.js";
 import { ProxyPolicy } from "../infrastructure/pixiv/proxy-policy.js";
-import { sessionStore } from "../shared/browser-polyfill.js";
+import { sessionStore } from "../shared/browser-api.js";
 
 export class BackgroundApplication {
   constructor(browserAPI) {

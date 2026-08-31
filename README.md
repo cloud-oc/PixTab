@@ -72,7 +72,7 @@
 2. Open `chrome://extensions` in your browser.
 3. Enable **Developer mode** (usually in the top right corner).
 4. **Option A — Install from packaged ZIP (Quick):**
-    - If you downloaded a release from `dist/` (e.g., `dist/pixtab-1.8-chrome.zip`), try dragging the `.zip` file onto the `chrome://extensions` page.
+    - If you downloaded a release from `dist/` (e.g., `dist/pixtab-2.0-chrome.zip`), try dragging the `.zip` file onto the `chrome://extensions` page.
     - If drag-and-drop fails, unzip the package and use **Load unpacked** to select the extracted folder.
 5. **Option B — Install from source (Developer):**
     - Click **Load unpacked** and select the project folder.
@@ -86,7 +86,7 @@
 2. Use Firefox 140 or later, and open `about:debugging#/runtime/this-firefox`.
 3. Click **Load Temporary Add-on...**
 4. **Option A — Install packaged XPI (Testing):**
-    - If you downloaded a release `dist/*.xpi` (e.g., `dist/pixtab-1.8-firefox.xpi`), open `about:addons`, click the gear icon ⚙️ → **Install Add-on From File...**, or drag the `.xpi` file onto the page.
+    - If you downloaded a release `dist/*.xpi` (e.g., `dist/pixtab-2.0-firefox.xpi`), open `about:addons`, click the gear icon ⚙️ → **Install Add-on From File...**, or drag the `.xpi` file onto the page.
 5. **Option B — Load temporary add-on (Developer):**
     - Click **Load Temporary Add-on...** and select the `manifest.json` file in the project folder.
 6. Open a new tab and enjoy! ✨

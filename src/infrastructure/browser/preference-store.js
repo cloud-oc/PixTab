@@ -1,5 +1,5 @@
 import { defaultPreferences, normalizePreferences } from "../../domain/preferences.js";
-import { storageLocalGet, storageLocalSet } from "../../shared/browser-polyfill.js";
+import { storageLocalGet, storageLocalSet } from "../../shared/browser-api.js";
 
 export class PreferenceStore {
   async read() {
