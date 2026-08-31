@@ -168,9 +168,9 @@ export class UgoiraPlayer {
     this.canvas.id = "ugoiraCanvas";
     Object.assign(this.canvas.style, {
       position: "fixed", inset: "0", width: "100%", height: "100%",
-      objectFit: "contain", zIndex: "-1", pointerEvents: "none"
+      objectFit: "contain", zIndex: "0", pointerEvents: "none"
     });
-    this.doc.body.appendChild(this.canvas);
+    (this.doc.getElementById("container") || this.doc.body).appendChild(this.canvas);
     this.context = this.canvas.getContext("2d");
     return this.canvas;
   }
@@ -211,6 +211,9 @@ export class UgoiraPlayer {
   #setButtonAvailable(available) {
     const button = this.doc.getElementById("playPauseButton");
     if (!available) button?.classList.add("hidden");
-    else this.#renderButton();
+    else {
+      button?.classList.remove("hidden");
+      this.#renderButton();
+    }
   }
 }
