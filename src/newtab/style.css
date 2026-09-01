@@ -23,6 +23,11 @@
   --ease-liquid: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+html[data-theme="dark"],
+body[data-theme="dark"] {
+  color-scheme: dark;
+}
+
 body[data-theme="dark"] {
   --liquid-surface: rgba(18, 22, 30, 0.42);
   --liquid-surface-strong: rgba(28, 33, 44, 0.62);
@@ -40,9 +45,9 @@ body[data-theme="dark"] {
   --fail-red-rgb: 174, 45, 60;
   --loading-bg: rgba(5, 7, 11, 0);
   --loading-bg-fail: rgba(var(--fail-red-rgb), 0.76);
-  color-scheme: dark;
 }
 
+html[data-theme="light"],
 body[data-theme="light"] {
   color-scheme: light;
 }

@@ -43,7 +43,10 @@ export class NewTabController {
     const restored = this.#readTabArtwork();
     if (restored) return this.#renderArtwork(restored);
     this.doc.documentElement.classList.remove("has-tab-artwork");
-    return this.requestArtwork();
+    // A reload keeps its artwork through this tab's sessionStorage, so reaching
+    // this branch means this is a genuinely new tab. Consume the next prefetched
+    // artwork instead of reusing the background worker's shared current item.
+    return this.requestArtwork({ advance: true });
   }
 
   async requestArtwork({ allowAutomaticProxy = true, advance = false } = {}) {

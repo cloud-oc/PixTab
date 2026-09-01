@@ -178,11 +178,24 @@ test.describe("packaged PixTab", () => {
     await page.setViewportSize(originalViewport);
     await expect.poll(async () => (await page.locator("#illustInfo").boundingBox()).width).toBe(960);
     await page.locator('#overlayThemeSwitcher [data-theme-value="dark"]').click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     await expect(page.locator("body")).toHaveAttribute("data-theme", "dark");
+    await expect(page.frameLocator("#settingsFrame").locator("html")).toHaveAttribute("data-theme", "dark");
     await expect(page.frameLocator("#settingsFrame").locator("body")).toHaveAttribute("data-theme", "dark");
+    await expect(page.frameLocator("#settingsFrame").locator("html")).toHaveCSS("color-scheme", "dark");
     await expect(page.frameLocator("#settingsFrame").locator("body")).toHaveCSS("color-scheme", "dark");
     await page.locator('#overlayThemeSwitcher [data-theme-value="light"]').click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await expect(page.frameLocator("#settingsFrame").locator("html")).toHaveAttribute("data-theme", "light");
+    await expect(page.frameLocator("#settingsFrame").locator("html")).toHaveCSS("color-scheme", "light");
     await expect(page.frameLocator("#settingsFrame").locator("body")).toHaveCSS("color-scheme", "light");
+    await page.locator('#overlayThemeSwitcher [data-theme-value="auto"]').click();
+    await page.emulateMedia({ colorScheme: "dark" });
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await expect(page.frameLocator("#settingsFrame").locator("html")).toHaveCSS("color-scheme", "dark");
+    await page.emulateMedia({ colorScheme: "light" });
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await expect(page.frameLocator("#settingsFrame").locator("html")).toHaveCSS("color-scheme", "light");
     await page.locator('#overlayThemeSwitcher [data-theme-value="dark"]').click();
     await page.addStyleTag({ content: "*,*::before,*::after{animation:none!important;transition:none!important}" });
     await page.screenshot({

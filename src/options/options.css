@@ -31,6 +31,11 @@
   color-scheme: dark;
 }
 
+html[data-theme="light"],
+body[data-theme="light"] {
+  color-scheme: light;
+}
+
 body[data-theme="light"] {
   --page-bg: #e8edf5;
   --page-glow-a: rgba(31, 111, 235, 0.2);
@@ -54,7 +59,6 @@ body[data-theme="light"] {
   --success: #15803d;
   --danger: #d52d3a;
   --shadow: rgba(22, 31, 48, 0.28);
-  color-scheme: light;
 }
 
 html {

@@ -20,6 +20,11 @@ export function applyTheme(doc = document) {
     theme = preference;
   }
   
+  const root = doc.documentElement;
+  if (root && root.dataset.theme !== theme) {
+    root.dataset.theme = theme;
+  }
+
   const body = doc.body;
   if (body && body.dataset.theme !== theme) {
     body.dataset.theme = theme;

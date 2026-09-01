@@ -177,6 +177,27 @@ describe("WallpaperRenderer", () => {
 });
 
 describe("NewTabController", () => {
+  it("advances to a new artwork when a new tab has no tab-local artwork", async () => {
+    const artwork = { illustId: "fresh", imageObjectUrl: "image" };
+    const runtime = { send: vi.fn().mockResolvedValue(artwork) };
+    const tabStore = { getItem: vi.fn(() => null), setItem: vi.fn() };
+    const api = { storage: { onChanged: { addListener: vi.fn() } } };
+    const controller = new NewTabController({ doc: document, runtime, tabStore, api });
+    controller.wallpaper = { loadPreferences: vi.fn() };
+    controller.overlay = { bind: vi.fn() };
+    controller.view = {
+      container: document.createElement("div"), refreshButton: document.createElement("button"),
+      setLoading: vi.fn(), setFailure: vi.fn(), render: vi.fn()
+    };
+
+    await controller.initialize();
+
+    expect(runtime.send).toHaveBeenCalledWith(
+      { action: "artwork.get", advance: true },
+      { timeout: 60_000, retries: 0 }
+    );
+  });
+
   it("marks only an explicit card-button request as an artwork advance", async () => {
     const runtime = { send: vi.fn().mockResolvedValue({ illustId: "42", imageObjectUrl: "image" }) };
     const tabStore = { getItem: vi.fn(() => null), setItem: vi.fn() };

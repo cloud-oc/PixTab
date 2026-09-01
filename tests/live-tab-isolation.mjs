@@ -63,7 +63,7 @@ try {
   const report = { initial, afterReload, reloadShowedLoading, secondInitial, firstAdvanced, secondAfterAdvance };
   console.log(JSON.stringify(report, null, 2));
   process.exitCode = initial === afterReload
-    && initial === secondInitial
+    && initial !== secondInitial
     && !reloadShowedLoading
     && firstAdvanced !== initial
     && secondAfterAdvance === secondInitial
