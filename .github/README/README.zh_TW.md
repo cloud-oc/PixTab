@@ -116,6 +116,6 @@
 ## 🌟 致謝
 
 本項目的靈感來源於以下項目：
-- [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)
-- [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
 - [Newtab-Random-Pixiv-Images](https://github.com/vauxe/Newtab-Random-Pixiv-Images)
+- [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
+- [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)

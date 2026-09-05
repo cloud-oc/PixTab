@@ -117,6 +117,6 @@
 ## 🌟 Благодарности
 
 Этот проект был вдохновлен:
-- [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)
-- [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
 - [Newtab-Random-Pixiv-Images](https://github.com/vauxe/Newtab-Random-Pixiv-Images)
+- [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
+- [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)

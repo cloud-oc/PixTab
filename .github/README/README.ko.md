@@ -120,6 +120,6 @@ PixTab이 마음에 드셨다면, 작은 후원이라도 저에게는 큰 힘이
 ## 🌟 감사의 말
 
 이 프로젝트는 다음 프로젝트들에서 영감을 받았습니다:
-- [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)
-- [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
 - [Newtab-Random-Pixiv-Images](https://github.com/vauxe/Newtab-Random-Pixiv-Images)
+- [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
+- [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)

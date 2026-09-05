@@ -126,8 +126,8 @@ If you enjoy using PixTab, please consider supporting me. Your encouragement kee
 ## 🌟 Acknowledgements
 
 This project was inspired by:
-- [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)
-- [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
 - [Newtab-Random-Pixiv-Images](https://github.com/vauxe/Newtab-Random-Pixiv-Images)
+- [HumbleNewTabPage](https://github.com/ibillingsley/HumbleNewTabPage)
+- [PixivforMuzei3](https://github.com/yellowbluesky/PixivforMuzei3)
 
 Third-party code and license details are documented in [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES).
