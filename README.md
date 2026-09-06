@@ -19,22 +19,16 @@
   <p>
     <strong>◎ Let Pixiv artworks become your browser's new tab page! ◎</strong>
   </p>
-  <table align="center" style="border-collapse: collapse; margin: 0 auto;">
-    <tr>
-      <td align="center" style="padding: 12px 20px; border: 1px solid #ddd; border-radius: 8px;">
-        <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj" style="text-decoration: none;">
-          <img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/edge/edge_48x48.png" width="32" height="32" alt="Edge" style="display: block; margin: 0 auto 8px;"><br>
-          Edge
-        </a>
-      </td>
-      <td align="center" style="padding: 12px 20px; border: 1px solid #ddd; border-radius: 8px;">
-        <a href="https://addons.mozilla.org/firefox/addon/pixtab/" style="text-decoration: none;">
-          <img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/firefox/firefox_48x48.png" width="32" height="32" alt="Firefox" style="display: block; margin: 0 auto 8px;"><br>
-          Firefox
-        </a>
-      </td>
-    </tr>
-  </table>
+  <p align="center">
+    <a href="https://chromewebstore.google.com/detail/pixtab/nngdcbfakljadjehpdaghbmnachojldp"><img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/chrome/chrome_48x48.png" width="32" height="32" alt="Chrome"></a>
+    <a href="https://chromewebstore.google.com/detail/pixtab/nngdcbfakljadjehpdaghbmnachojldp">Chrome</a>
+    &nbsp;&nbsp;&nbsp;
+    <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj"><img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/edge/edge_48x48.png" width="32" height="32" alt="Edge"></a>
+    <a href="https://microsoftedge.microsoft.com/addons/detail/chpabpanagjfnglcpnpdpelacjfpnfoj">Edge</a>
+    &nbsp;&nbsp;&nbsp;
+    <a href="https://addons.mozilla.org/firefox/addon/pixtab/"><img src="https://cdn.jsdelivr.net/gh/alrra/browser-logos@master/src/firefox/firefox_48x48.png" width="32" height="32" alt="Firefox"></a>
+    <a href="https://addons.mozilla.org/firefox/addon/pixtab/">Firefox</a>
+  </p>
 </div>
 <br>
 
@@ -62,8 +56,6 @@
 - 🛡️ **Privacy First** — All settings are stored locally. No data is sent to external servers.
 
 ## 📦 Offline Installation
-
-> **Note**: This extension is not listed on the Chrome Web Store. Chrome users, please install it manually using the steps below.
 
 <details>
 <summary><strong>📥 Chromium-based Browsers (Chrome, Edge, Brave...)</strong></summary>
