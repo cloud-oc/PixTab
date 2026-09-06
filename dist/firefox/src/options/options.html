@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Pix Tab Options</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+
+<body data-theme="dark">
+  <div class="panel-base" aria-hidden="true"></div>
+  <div class="container">
+    <div class="settings-header">
+      <h1 id="settingsHeading" data-i18n="settingsHeading"></h1>
+      <div class="theme-switcher">
+        <button id="themeLightBtn" type="button" title="Light Theme" aria-label="Light Theme">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z" transform="scale(0.09375)" />
+          </svg>
+        </button>
+        <button id="themeDarkBtn" type="button" title="Dark Theme" aria-label="Dark Theme">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M240,96a8,8,0,0,1-8,8H216v16a8,8,0,0,1-16,0V104H184a8,8,0,0,1,0-16h16V72a8,8,0,0,1,16,0V88h16A8,8,0,0,1,240,96ZM144,56h8v8a8,8,0,0,0,16,0V56h8a8,8,0,0,0,0-16h-8V32a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16Zm72.77,97a8,8,0,0,1,1.43,8A96,96,0,1,1,95.07,37.8a8,8,0,0,1,10.6,9.06A88.07,88.07,0,0,0,209.14,150.33,8,8,0,0,1,216.77,153Zm-19.39,14.88c-1.79.09-3.59.14-5.38.14A104.11,104.11,0,0,1,88,64c0-1.79,0-3.59.14-5.38A80,80,0,1,0,197.38,167.86Z" transform="scale(0.09375)" />
+          </svg>
+        </button>
+        <button id="themeAutoBtn" type="button" title="Auto Theme" aria-label="Auto Theme">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,16.37a86.4,86.4,0,0,1,16,3V212.67a86.4,86.4,0,0,1-16,3Zm32,9.26a87.81,87.81,0,0,1,16,10.54V195.83a87.81,87.81,0,0,1-16,10.54ZM40,128a88.11,88.11,0,0,1,80-87.63V215.63A88.11,88.11,0,0,1,40,128Zm160,50.54V77.46a87.82,87.82,0,0,1,0,101.08Z" transform="scale(0.09375)" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="group display-section">
+      <h2 class="section-label" id="displaySettingsLabel" data-i18n="displaySettingsLabel"></h2>
+      <div class="display-settings-block">
+        <div class="control-block language-block">
+          <label id="languageLabel" data-i18n="languageLabel" for="languageSelect"></label>
+          <select id="languageSelect">
+            <option value="en">English</option>
+            <option value="zh-CN">中文（简体）</option>
+            <option value="zh-TW">中文（繁體）</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+            <option value="ru">Русский</option>
+          </select>
+        </div>
+        <div class="display-settings-grid">
+          <div class="control-block">
+            <label id="sizeLabel" data-i18n-title="sizeHelper" data-i18n="sizeLabel" for="size"></label>
+            <select id="size" name="size">
+              <option id="sizeOriginalOption" data-i18n="sizeOriginalOption" value="original"></option>
+              <option id="sizeFullOption" data-i18n="sizeFullOption" value="full"></option>
+              <option id="sizeBestFitOption" data-i18n="sizeBestFitOption" value="best_fit"></option>
+            </select>
+          </div>
+          <div class="control-block">
+            <label id="alignLabel" data-i18n-title="alignHelper" data-i18n="alignLabel" for="align"></label>
+            <select id="align" name="align">
+              <option id="alignTopLeftOption" data-i18n="alignTopLeftOption" value="top_left"></option>
+              <option id="alignTopOption" data-i18n="alignTopOption" value="top"></option>
+              <option id="alignTopRightOption" data-i18n="alignTopRightOption" value="top_right"></option>
+              <option id="alignLeftOption" data-i18n="alignLeftOption" value="left"></option>
+              <option id="alignCenterOption" data-i18n="alignCenterOption" value="center"></option>
+              <option id="alignRightOption" data-i18n="alignRightOption" value="right"></option>
+              <option id="alignBottomLeftOption" data-i18n="alignBottomLeftOption" value="bottom_left"></option>
+              <option id="alignBottomOption" data-i18n="alignBottomOption" value="bottom"></option>
+              <option id="alignBottomRightOption" data-i18n="alignBottomRightOption" value="bottom_right"></option>
+            </select>
+          </div>
+          <div class="control-block">
+            <label id="tilingLabel" data-i18n-title="tilingHelper" data-i18n="tilingLabel" for="tiling"></label>
+            <select id="tiling" name="tiling">
+              <option id="tilingTileOption" data-i18n="tilingTileOption" value="tile"></option>
+              <option id="tilingHorizontalOption" data-i18n="tilingHorizontalOption" value="horizontal"></option>
+              <option id="tilingVerticalOption" data-i18n="tilingVerticalOption" value="vertical"></option>
+              <option id="tilingNoneOption" data-i18n="tilingNoneOption" value="none"></option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="group filter-section">
+      <h2 class="section-label" id="filterSettingsLabel" data-i18n="filterSettingsLabel"></h2>
+      <div class="filter-settings-block">
+        <div class="group group-inline-row inline-field">
+          <label id="orderLabel" data-i18n="orderLabel" for="order"></label>
+          <select id="order" name="order">
+            <option id="dailyRankingOrder" data-i18n="dailyRankingOrder" value="ranking_daily"></option>
+            <option id="weeklyRankingOrder" data-i18n="weeklyRankingOrder" value="ranking_weekly"></option>
+            <option id="monthlyRankingOrder" data-i18n="monthlyRankingOrder" value="ranking_monthly"></option>
+            <option id="rookieRankingOrder" data-i18n="rookieRankingOrder" value="ranking_rookie"></option>
+            <option id="originalRankingOrder" data-i18n="originalRankingOrder" value="ranking_original"></option>
+            <option id="popular_dOrder" data-i18n="popular_dOrder" value="popular_d"></option>
+            <option id="popular_male_dOrder" data-i18n="popular_male_dOrder" value="popular_male_d"></option>
+            <option id="popular_female_dOrder" data-i18n="popular_female_dOrder" value="popular_female_d"></option>
+            <option id="artistOrder" data-i18n="artistOrder" value="artist"></option>
+            <option id="followingOrder" data-i18n="followingOrder" value="following"></option>
+            <option id="bookmarksOrder" data-i18n="bookmarksOrder" value="bookmarks"></option>
+            <option id="recommendationsOrder" data-i18n="recommendationsOrder" value="recommendations"></option>
+          </select>
+        </div>
+
+        <div id="keywordSettingsGroup" class="group group-inline-row keyword-sub-section">
+          <input type="hidden" id="keywords" name="keywords" />
+          <div class="sub-section-heading" id="keywordsSectionHeading" data-i18n="keywordsSectionHeading"></div>
+          <div id="keywordsTip" data-i18n="keywordsTip" class="tip"></div>
+          <div class="field-row">
+            <label id="andKeywordsLabel" data-i18n="andKeywordsLabel" for="andKeywords"></label>
+            <input type="text" id="andKeywords" name="andKeywords" />
+          </div>
+          <div class="field-row">
+            <label id="orKeywordsLabel" data-i18n="orKeywordsLabel" for="orKeywords"></label>
+            <input type="text" id="orKeywords" name="orKeywords" />
+          </div>
+          <div class="field-row">
+            <label id="minusKeywordsLabel" data-i18n="minusKeywordsLabel" for="minusKeywords"></label>
+            <input type="text" id="minusKeywords" name="minusKeywords" />
+          </div>
+          <div class="field-row keyword-mode-row">
+            <label id="s_modeLabel" data-i18n="s_modeLabel" for="s_mode"></label>
+            <select id="s_mode" name="s_mode">
+              <option id="s_tagOption" data-i18n="s_tagOption" value="s_tag"></option>
+              <option id="s_tag_fullOption" data-i18n="s_tag_fullOption" value="s_tag_full"></option>
+            </select>
+          </div>
+        </div>
+
+        <div class="group group-inline-row inline-field" id="artistIdGroup">
+          <label id="artistIdLabel" data-i18n="artistIdLabel" for="artistId"></label>
+          <div class="field-body">
+            <input type="text" id="artistId" name="artistId" data-i18n-placeholder="artistIdLabel" />
+            <div id="artistIdHelper" data-i18n="artistIdHelper" class="helper"></div>
+          </div>
+        </div>
+
+        <div class="group group-inline-row inline-field">
+          <label id="modeLabel" data-i18n="modeLabel" for="mode"></label>
+          <select id="mode" name="mode">
+            <option id="allMode" data-i18n="allMode" value="all"></option>
+            <option id="r18Mode" data-i18n="r18Mode" value="r18"></option>
+            <option id="safeMode" data-i18n="safeMode" value="safe"></option>
+          </select>
+        </div>
+
+        <div class="group group-inline-row inline-field">
+          <label id="aiTypeLabel" data-i18n-title="aiTypeHelper" data-i18n="aiTypeLabel" for="aiType"></label>
+          <select id="aiType" name="aiType">
+            <option id="aiTypeDisplayOption" data-i18n="aiTypeDisplayOption" value="display"></option>
+            <option id="aiTypeHideOption" data-i18n="aiTypeHideOption" value="hide"></option>
+          </select>
+        </div>
+
+        <div class="group group-inline-row inline-field bookmarks-row">
+          <label id="bookmarksLabel" data-i18n="bookmarksLabel" for="blt"></label>
+          <div class="field-body bookmarks-field-body">
+            <div class="bookmarks-inputs">
+              <div class="bookmarks-input">
+                <label id="bltLabel" data-i18n="bltLabel" class="sr-only" for="blt"></label>
+                <input type="number" id="blt" name="blt" data-i18n-placeholder="bltLabel" />
+              </div>
+              <span class="bookmarks-range-separator" aria-hidden="true">~</span>
+              <div class="bookmarks-input">
+                <label id="bgtLabel" data-i18n="bgtLabel" class="sr-only" for="bgt"></label>
+                <input type="number" id="bgt" name="bgt" data-i18n-placeholder="bgtLabel" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="group group-inline-row inline-field">
+          <label id="typeLabel" data-i18n="typeLabel" for="type"></label>
+          <select id="type" name="type">
+            <option id="allTypeLabel" data-i18n="allTypeLabel" value="all"></option>
+            <option id="illust_and_ugoiraTypeLabel" data-i18n="illust_and_ugoiraTypeLabel" value="illust_and_ugoira"></option>
+            <option id="illustTypeLabel" data-i18n="illustTypeLabel" value="illust"></option>
+            <option id="mangaTypeLabel" data-i18n="mangaTypeLabel" value="manga"></option>
+            <option id="ugoiraTypeLabel" data-i18n="ugoiraTypeLabel" value="ugoira"></option>
+          </select>
+        </div>
+
+        <div class="group group-inline-row inline-field resolution-row">
+          <label id="resolutionLabel" data-i18n-title="resolutionHelper" data-i18n="resolutionLabel" for="minWidthPx"></label>
+          <div class="field-body resolution-field-body">
+            <div class="resolution-inputs">
+              <div class="resolution-input">
+                <label id="minWidthLabel" data-i18n="minWidthLabel" class="sr-only" for="minWidthPx"></label>
+                <input type="number" id="minWidthPx" name="minWidthPx" min="0" data-i18n-placeholder="minWidthLabel" />
+              </div>
+              <span class="resolution-multiply" aria-hidden="true">×</span>
+              <div class="resolution-input">
+                <label id="minHeightLabel" data-i18n="minHeightLabel" class="sr-only" for="minHeightPx"></label>
+                <input type="number" id="minHeightPx" name="minHeightPx" min="0"
+                  data-i18n-placeholder="minHeightLabel" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group account-section">
+      <h2 class="section-label" id="pixivAccountSection" data-i18n="pixivAccountSection"></h2>
+      <div class="filter-settings-block">
+        <div class="group group-inline-row inline-field">
+          <label id="loginStatusLabel" data-i18n="loginStatusLabel" for="loginStatusValue"></label>
+          <div class="field-body login-status-row">
+            <!-- Hidden spans for localization lookup -->
+            <span id="loginStatusLoggedIn" data-i18n="loginStatusLoggedIn" style="display:none;"></span>
+            <span id="loginStatusNotLoggedIn" data-i18n="loginStatusNotLoggedIn" style="display:none;"></span>
+            <button type="button" id="loginStatusValue" class="login-status-value"></button>
+          </div>
+        </div>
+        <div class="group group-inline-row inline-field">
+          <label id="loginFallbackModeLabel" data-i18n="loginFallbackModeLabel" for="loginFallbackMode"></label>
+          <select id="loginFallbackMode" name="loginFallbackMode">
+            <option id="fallbackDailyRanking" data-i18n="fallbackDailyRanking" value="ranking_daily"></option>
+            <option id="fallbackWeeklyRanking" data-i18n="fallbackWeeklyRanking" value="ranking_weekly"></option>
+            <option id="fallbackMonthlyRanking" data-i18n="fallbackMonthlyRanking" value="ranking_monthly"></option>
+            <option id="fallbackRookieRanking" data-i18n="fallbackRookieRanking" value="ranking_rookie"></option>
+            <option id="fallbackOriginalRanking" data-i18n="fallbackOriginalRanking" value="ranking_original"></option>
+            <option id="fallbackPopularD" data-i18n="fallbackPopularD" value="popular_d"></option>
+            <option id="fallbackPopularMaleD" data-i18n="fallbackPopularMaleD" value="popular_male_d"></option>
+            <option id="fallbackPopularFemaleD" data-i18n="fallbackPopularFemaleD" value="popular_female_d"></option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="group advanced-section">
+      <h2 class="section-label" id="advancedSettingsLabel" data-i18n="advancedSettingsLabel"></h2>
+      <div class="filter-settings-block">
+        <div class="group group-inline-row inline-field">
+          <label id="reverseProxyDomainLabel" data-i18n="reverseProxyDomainLabel" for="reverseProxyDomain"></label>
+          <div class="field-body">
+            <input type="text" id="reverseProxyDomain" name="reverseProxyDomain" placeholder="i.pixiv.re" />
+            <div id="reverseProxyDomainHelper" data-i18n="reverseProxyDomainHelper" class="helper"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button id="reset" data-i18n="reset" type="button">Reset</button>
+    </div>
+  </div>
+  <script type="module" src="../entrypoints/options.js"></script>
+</body>
+
+</html>

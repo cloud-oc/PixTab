@@ -1,9 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+
     // 粒子背景 - 游戏主界面风格
     const canvas = document.getElementById('particleCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
-    const particleCount = 40;
+    const particleCount = finePointer.matches ? 40 : 18;
 
     // 统一的飘动方向（略微向右上飘）
     const windX = 0.3;
@@ -91,9 +94,13 @@ document.addEventListener('DOMContentLoaded', () => {
             particle.draw();
         });
 
-        requestAnimationFrame(animateParticles);
+        if (!reducedMotion.matches) requestAnimationFrame(animateParticles);
     }
     animateParticles();
+    reducedMotion.addEventListener('change', () => {
+        if (!reducedMotion.matches) animateParticles();
+        else startTyping(i18n[currentLang].typeText);
+    });
 
     // 自定义光标
     const cursorDot = document.querySelector('.cursor-dot');
@@ -120,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cursorOutline.style.left = outlineX + 'px';
         cursorOutline.style.top = outlineY + 'px';
 
-        requestAnimationFrame(animateOutline);
+        if (finePointer.matches && !reducedMotion.matches) requestAnimationFrame(animateOutline);
     }
     animateOutline();
 
@@ -228,10 +235,34 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('pixtab-lang', lang);
     }
 
+    const langTrigger = document.getElementById('langTrigger');
+    const langDropdown = document.querySelector('.lang-dropdown');
+    function setLanguageMenu(open) {
+        langDropdown.classList.toggle('is-open', open);
+        langTrigger.setAttribute('aria-expanded', String(open));
+    }
+    langTrigger.addEventListener('click', () => {
+        setLanguageMenu(langTrigger.getAttribute('aria-expanded') !== 'true');
+    });
+    document.addEventListener('click', event => {
+        if (!langDropdown.contains(event.target)) setLanguageMenu(false);
+    });
+    langDropdown.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            setLanguageMenu(false);
+            langTrigger.focus();
+        }
+    });
+    langDropdown.addEventListener('focusout', event => {
+        if (!langDropdown.contains(event.relatedTarget)) setLanguageMenu(false);
+    });
+
     // 语言切换事件
     document.querySelectorAll('.lang-option').forEach(opt => {
         opt.addEventListener('click', () => {
             applyTranslation(opt.dataset.lang);
+            setLanguageMenu(false);
+            langTrigger.focus();
         });
     });
 
@@ -258,6 +289,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // 清除之前的定时器
         if (typeTimer) {
             clearTimeout(typeTimer);
+        }
+
+        if (reducedMotion.matches) {
+            subtitleElement.textContent = text;
+            return;
         }
 
         let index = 0;
